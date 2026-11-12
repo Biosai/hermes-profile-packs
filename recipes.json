@@ -193,6 +193,54 @@
       "workflow": ["Dean scopes the learner goal and current level.", "Cybersecurity Instructor owns defensive security teaching and transfer assessment.", "Computer Science and Cloud/Systems faculty fill prerequisite gaps when needed.", "Research Methods supports evidence evaluation for security claims and standards.", "Authorized practice remains bounded and safety-aware."],
       "success_criteria": ["The learner demonstrates the target concept on a novel defensive scenario.", "Instruction distinguishes secure-design reasoning from unauthorized offensive activity.", "The learner can explain relevant assumptions and uncertainty."],
       "optional_routines": ["Periodic study review only when explicitly requested by the learner"]
+    },
+    {
+      "id": "gated-repo-delivery",
+      "display_name": "Gated Repository Delivery",
+      "pack": "agency",
+      "description": "A small team that delivers work items on a code repository end to end under one shared gate: clarified items, real test runs with counts, a ready-to-merge check, and merges and applies only by the configured policy.",
+      "when_to_use": "Use when agents work a repository for weeks and the cost of a false 'done' is high: autonomous delivery, regulated code, or a team that merges only on a human's word.",
+      "keywords": ["gated", "merge", "ready-to-merge", "regression", "repository", "repo", "monorepo", "backlog", "golang", "migration", "autonomous", "squad"],
+      "tiers": {
+        "minimal": ["agency-product-manager", "agency-backend-engineer", "agency-qa-tester"],
+        "recommended": ["agency-product-manager", "agency-backend-engineer", "agency-qa-tester", "agency-orchestrator", "agency-software-architect"],
+        "expanded": ["agency-product-manager", "agency-backend-engineer", "agency-qa-tester", "agency-orchestrator", "agency-software-architect", "agency-infrastructure-engineer", "agency-compliance-reviewer", "agency-knowledge-manager"]
+      },
+      "workflow": ["Every member loads the gated-delivery skill and reads its [Skill config] first: code host, repo layout, issue tracker, board, merge and apply policy.", "Product Manager writes the work item with acceptance criteria (issue-authoring-standard) and keeps a queue of ready items (ready-queue).", "Backend Engineer clarifies the item before writing code (issue-clarification), implements it with tests, and opens the pull or merge request.", "QA Tester verifies with runs it executed itself, with PASS/SKIP/FAIL counts against a baseline (real-run-verification).", "Software Architect reviews readiness when boundaries move, citing evidence at the freshly fetched default branch (readiness-review, fresh-main-evidence).", "Product Manager runs the ready-to-merge gate; merging follows delivery.merge_policy, and infrastructure applies follow delivery.apply_policy.", "After merge, the post-merge protocol updates docs and the knowledge base (post-merge-protocol, post-merge-kb-update)."],
+      "success_criteria": ["Every 'done' claim carries a test run with PASS/SKIP/FAIL counts.", "Nothing is merged or applied outside the configured merge and apply policies.", "Each work item has one owner and a visible state.", "Findings not fixed now are recorded in the configured tracker, or in the report when there is none."],
+      "optional_routines": ["Weekly audit of open pull or merge requests and work items, when the operator configures it", "Live regression run after each merge"]
+    },
+    {
+      "id": "solo-founder-portfolio",
+      "display_name": "Solo Founder Portfolio",
+      "pack": "agency",
+      "description": "A founder running several ventures at once: one scoped operator per venture, a chief of staff for owner decisions, revenue-first growth, approval-gated publishing, and company books.",
+      "when_to_use": "Use when one person runs several ventures or side projects and wants each one worked in its own scope, with every outward action approved by them.",
+      "keywords": ["founder", "solo", "ventures", "venture", "portfolio", "startup", "startups", "revenue", "bootstrapped", "cofounder", "side-projects"],
+      "tiers": {
+        "minimal": ["agency-chief-of-staff", "agency-venture-operator"],
+        "recommended": ["agency-chief-of-staff", "agency-venture-operator", "agency-growth-marketer", "agency-social-media-manager", "agency-finance-ops"],
+        "expanded": ["agency-chief-of-staff", "agency-venture-operator", "agency-growth-marketer", "agency-social-media-manager", "agency-finance-ops", "agency-email-marketer", "agency-git-steward", "agency-onchain-engineer"]
+      },
+      "workflow": ["Install one Venture Operator per venture from a copy and fill in its Scope; each copy works one venture only.", "Chief of Staff routes requests to the right venture, asks the owner one decision at a time (owner-question-protocol), and tracks owner actions (owner-action-handoff).", "Growth Marketer audits the measured revenue state before proposing work (revenue-state-audit).", "Social Media Manager and Email Marketer draft freely; nothing is published, sent, scheduled or paid for without the owner's approval (approval-gated-publishing).", "Finance Ops keeps the company books (double-entry-books), separate from the owner's personal books."],
+      "success_criteria": ["No venture's facts or credentials reach another venture's profile.", "Every outward action has a recorded owner approval.", "Revenue claims cite a measured source and its date.", "Owner questions arrive one decision at a time, with options and a recommendation."],
+      "optional_routines": ["Weekly cross-venture digest, when the operator configures it", "Monthly close of the company books"]
+    },
+    {
+      "id": "property-deal-review",
+      "display_name": "Property Deal Review (BE/FR)",
+      "pack": "immo",
+      "description": "A French-language expert panel that reviews one property deal in Belgium or France: strategies and scenarios, works costing, tax, deed and lease, each prepared for the real professional who signs.",
+      "when_to_use": "Use when an investor weighs a purchase, an option, a public sale, a division or a rental in Belgium or France and wants every figure as a range with its basis, before talking to a notary, accountant or architect.",
+      "keywords": ["property", "real", "estate", "immobilier", "immeuble", "bien", "achat", "acheter", "revente", "investissement", "investir", "notaire", "travaux", "division", "diviser", "belgique", "location", "louer", "deal"],
+      "tiers": {
+        "minimal": ["immo-bras-droit", "immo-associe", "immo-conducteur-travaux"],
+        "recommended": ["immo-bras-droit", "immo-associe", "immo-conducteur-travaux", "immo-comptable-be", "immo-notaire"],
+        "expanded": ["immo-bras-droit", "immo-associe", "immo-conducteur-travaux", "immo-comptable-be", "immo-notaire", "immo-architecte", "immo-avocat", "immo-comptable-fr"]
+      },
+      "workflow": ["Bras droit captures the deal and the investor's own rules, establishes the region, and asks the investor one question at a time.", "Conducteur de travaux turns the listing, photos and certificates into cost lines with ranges.", "Associé tests every strategy for the property across optimistic, realistic and worst-case scenarios.", "Comptable BE (and Comptable FR for French deals) sets out the tax regimes as scenarios to confirm with the investor's accountant.", "Notaire lists what the investor signs, inherits and must ask before signing; Architecte confirms which dwellings are legally recognized; Avocat answers every legal question on the primary text.", "Bras droit runs the expert debate when experts disagree and delivers one synthesis with its weak assumptions named."],
+      "success_criteria": ["Every figure is a range with its sample size or basis and the date it was read.", "Missing data is named as missing, never estimated to move forward.", "Each regulated act is prepared with the exact question for the professional, never performed.", "Nothing is sent to an agency, notary, syndic or supplier without the investor's approval."],
+      "optional_routines": ["Follow-up of open questions on a cadence the investor chooses, when the host can carry reminders"]
     }
   ]
 }

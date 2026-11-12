@@ -54,6 +54,24 @@ def normalize_pack(value:str)->str:
 def short_pack_name(name:str)->str:
     return normalize_pack(name[len("hermes-"):] if name.startswith("hermes-") else name)
 
+def register_pack(record:dict)->str:
+    """Make a packs.json entry known to the selector and return its short key.
+    The three original packs keep their built-in labels and hints; any other pack
+    brings its own optional display_name and hints from packs.json."""
+    name=str(record["name"]); key=name[len("hermes-"):] if name.startswith("hermes-") else name
+    PACK_ALIASES.setdefault(key,key); PACK_ALIASES.setdefault(name,key)
+    PACK_DISPLAY.setdefault(key,str(record.get("display_name") or name.replace("-"," ").title()))
+    if record.get("hints"): PACK_HINTS.setdefault(key,{str(h).lower() for h in record["hints"]})
+    return key
+
+def register_registry(pack_file:Path=PACK_FILE)->None:
+    try: records=json.loads(pack_file.read_text(encoding="utf-8")).get("packs",[])
+    except (OSError,json.JSONDecodeError): return
+    for record in records:
+        if record.get("name"): register_pack(record)
+
+register_registry()  # recipes.py and tests score recipes without loading the catalog first
+
 def _yaml_scalar(path:Path,key:str)->str:
     if not path.is_file(): return ""
     prefix=f"{key}:"
@@ -88,7 +106,7 @@ def load_catalog(root:Path=ROOT)->tuple[dict[str,PackInfo],list[Profile]]:
     if not pack_file.is_file(): raise CLIError(f"missing pack registry: {pack_file}")
     registry=json.loads(pack_file.read_text(encoding="utf-8")); packs={}; profiles=[]
     for record in registry.get("packs",[]):
-        key=short_pack_name(record["name"]); pack_dir=root/record["path"]; manifest_path=root/record["manifest"]
+        key=register_pack(record); pack_dir=root/record["path"]; manifest_path=root/record["manifest"]
         if not manifest_path.is_file(): raise CLIError(f"missing pack manifest: {record['manifest']}")
         manifest=json.loads(manifest_path.read_text(encoding="utf-8")); rows=manifest.get("profiles",[]); backbone=frozenset(manifest.get("backbone_profiles",[])); orchestrator=manifest.get("orchestrator")
         packs[key]=PackInfo(key,record["name"],pack_dir,record["namespace"],manifest_path,record.get("purpose",manifest.get("description","")),str(manifest.get("version","")),orchestrator,backbone,tuple(sorted({str(i.get("category","other")) for i in rows})),tuple(str(i["name"]) for i in rows))
@@ -196,7 +214,7 @@ def install_selected(selected,packs,*,force,json_mode):
     grouped={}
     for p in selected: grouped.setdefault(p.pack,[]).append(p)
     results=[]
-    for key in ("agency","council","academy"):
+    for key in packs:
         members=grouped.get(key)
         if not members: continue
         cmd=[sys.executable,str(pack_installer(packs[key])),*[p.name for p in members]]
@@ -211,8 +229,7 @@ def install_selected(selected,packs,*,force,json_mode):
 def print_pack_list(packs,profiles):
     counts={k:0 for k in packs}
     for p in profiles: counts[p.pack]=counts.get(p.pack,0)+1
-    for k in ("agency","council","academy"):
-        if k in packs: print(f"{k:<8} {packs[k].namespace:<11} {counts[k]:>3} profiles  {packs[k].purpose}")
+    for k in packs: print(f"{k:<8} {packs[k].namespace:<11} {counts[k]:>3} profiles  {packs[k].purpose}")
 def print_catalog(profiles):
     cur=None
     for p in sorted(profiles,key=lambda x:(x.pack,x.category,x.name)):
@@ -292,7 +309,7 @@ def wizard_browse_recipes(recipes,profiles):
         if len(idx)!=1: print("  Choose exactly one recipe."); continue
         return _choose_recipe_tier(ordered[idx[0]],profiles)[1]
 def wizard_browse(packs,profiles):
-    keys=[k for k in ("agency","council","academy") if k in packs]; print("\nChoose a pack:")
+    keys=list(packs); print("\nChoose a pack:")
     for i,k in enumerate(keys,1): print(f"  {i}. {PACK_DISPLAY[k]} ({sum(1 for p in profiles if p.pack==k)} profiles) - {packs[k].purpose}")
     while True:
         try: idx=_parse_indices(_prompt("Pack number: "),len(keys))
@@ -327,7 +344,7 @@ def run_wizard(packs,profiles,recipes,*,force):
         else: print("Choose 1, 2, 3, 4, 5, or 6."); continue
         if selected: break
     stats=selected_stats(selected,profiles); print("\nInstall plan")
-    for pack in ("agency","council","academy"):
+    for pack in packs:
         members=[p for p in selected if p.pack==pack]
         if members:
             print(f"  {PACK_DISPLAY[pack]}: {len(members)}")
@@ -338,6 +355,7 @@ def run_wizard(packs,profiles,recipes,*,force):
     return install_selected(selected,packs,force=force,json_mode=False)[0]
 def legacy_delegate(argv):
     if not argv or argv[0].startswith("-"): return None
+    register_registry()
     try: key=normalize_pack(argv[0])
     except CLIError: return None
     reg=json.loads(PACK_FILE.read_text(encoding="utf-8")); rec=next((i for i in reg.get("packs",[]) if short_pack_name(i["name"])==key),None)
@@ -381,7 +399,7 @@ def main(argv=None):
                     else: print(f"  {k:<18} {v}")
             return 0
         if args.list_packs:
-            if args.json: emit_json({"packs":[{"key":k,"name":packs[k].name,"namespace":packs[k].namespace,"purpose":packs[k].purpose,"profile_count":sum(1 for p in profiles if p.pack==k),"version":packs[k].version} for k in ("agency","council","academy") if k in packs and (not pf or k in pf)]})
+            if args.json: emit_json({"packs":[{"key":k,"name":packs[k].name,"namespace":packs[k].namespace,"purpose":packs[k].purpose,"profile_count":sum(1 for p in profiles if p.pack==k),"version":packs[k].version} for k in packs if not pf or k in pf]})
             else: print_pack_list({k:v for k,v in packs.items() if not pf or k in pf},fprofiles)
             return 0
         if args.catalog:

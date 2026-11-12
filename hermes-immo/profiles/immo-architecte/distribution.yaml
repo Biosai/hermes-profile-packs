@@ -1,0 +1,5 @@
+name: immo-architecte
+version: 0.1.0
+description: "Architecte et géomètre : établit combien de logements sont légalement reconnus, ce qu'il faut pour en créer un de plus, et prépare la question exacte au service urbanisme."
+author: "Hermes Profile Packs contributors"
+license: "AGPL-3.0-only"

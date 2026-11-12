@@ -11,11 +11,22 @@ This repository is the public upstream home for reusable Hermes profile distribu
 | **Hermes Agency** | `agency-*` | Professional specialists for engineering, product, design, QA, operations, marketing, content, and coordinated project work. |
 | **Hermes Council** | `council-*` | Personal specialists for growth, health, fitness, parenting, relationships, communication, community, faith, finances, home stewardship, personal admin, career, learning, recreation, travel, nutrition, sleep, and preparedness. |
 | **Hermes Academy** | `academy-*` | Professors and instructors for academic, technical, vocational, and professional learning. |
+| **Hermes Immo** | `immo-*` | A French-language expert panel for a property investor in Belgium and France: deal strategy, works costing, tax, deeds, leases and planning. Each expert prepares the real professional's work; none replaces it. |
+
+### What this fork adds
+
+This fork adds what three teams of Hermes profiles running in production learned, generalized for public use: names, accounts, numbers and history removed, and the rules each team learned the hard way kept. It adapts upstream profiles where one already owns the work and adds new profiles only where none does:
+
+- **Hermes Immo** (`immo-*`), a new pack: no upstream profile covers property investment under Belgian and French law. Its team-wide rules live once in `hermes-immo/shared/RULES.md`; `sync_shared.py` copies them into every SOUL and the pack validator holds them byte-identical.
+- **Adapted Agency and Council profiles**: new role-owned skills added beside the upstream ones (see [Adaptations](#adaptations-in-this-fork)). Upstream SOUL and skill files are never edited in place, so `capabilities/baseline.json` still holds and upstream changes merge cleanly.
+- **Two new Agency profiles** for work no upstream profile owned: `agency-venture-operator` and `agency-onchain-engineer`.
+- **Team Recipes** that assemble them: `gated-repo-delivery`, `solo-founder-portfolio` and `property-deal-review`.
 
 The packs deliberately separate durable context domains. Agency executes professional work, Council supports the person, and Academy teaches. A work profile should not need private life context, a personal profile should not inherit repository state merely because both run on Hermes, and a teaching profile should not silently become a production executor.
 
 <!-- profile-counts:start -->
-Hermes Agency contains 113 professional specialists. Hermes Council contains 22 focused profiles and 88 purpose-built personal-life skills. Hermes Academy contains 30 faculty profiles and 120 purpose-built teaching skills.
+Hermes Agency contains 115 professional specialists. Hermes Council contains 22 focused profiles and 90 purpose-built personal-life skills. Hermes Academy contains 30 faculty profiles and 120 purpose-built teaching skills.
+Hermes Immo contains 8 profiles and 38 role-owned skills.
 <!-- profile-counts:end -->
 
 ### Academy Continuing Education
@@ -26,6 +37,36 @@ The flow requires a Hermes build that supports `goal_manage`, profile-distributi
 
 See the [`Continuing Education guide`](docs/CONTINUING_EDUCATION.md) and [`architecture contract`](docs/CONTINUING_EDUCATION_ARCHITECTURE.md).
 
+## Adaptations in this fork
+
+Where an upstream profile already owned the work, this fork adds role-owned skills beside its existing ones instead of creating a near-duplicate profile. Every added skill follows [`docs/PORTABLE_SKILLS.md`](docs/PORTABLE_SKILLS.md): settings such as the code host, repository layout, issue tracker, board, merge and apply policy are declared under `metadata.hermes.config` (set them with `hermes config set skills.config.<key> <value>`, or let `hermes config migrate` prompt for them), credentials under `required_environment_variables`, and each skill names its prerequisites and stops cleanly when one is missing.
+
+| Profile | Added skills |
+| --- | --- |
+| `agency-backend-engineer` | `go-backend-craft`, `issue-clarification`, `post-merge-protocol`, `gated-delivery` |
+| `agency-qa-tester` | `real-run-verification`, `test-design-maxims`, `gated-delivery` |
+| `agency-product-manager` | `issue-authoring-standard`, `ready-queue`, `ready-to-merge-gate`, `gated-delivery` |
+| `agency-software-architect` | `fresh-main-evidence`, `readiness-review`, `gated-delivery` |
+| `agency-infrastructure-engineer` | `iac-human-apply`, `infra-security-review`, `gated-delivery` |
+| `agency-compliance-reviewer` | `regulated-engineering-controls`, `vendor-integration-review`, `migration-verification`, `gated-delivery` |
+| `agency-knowledge-manager` | `post-merge-kb-update`, `glossary-discipline`, `gated-delivery` |
+| `agency-orchestrator` | `coordination-board`, `gated-delivery` |
+| `agency-chief-of-staff` | `owner-question-protocol`, `owner-action-handoff` |
+| `agency-growth-marketer` | `revenue-state-audit`, `value-proposition-diagnosis` |
+| `agency-social-media-manager`, `agency-email-marketer` | `approval-gated-publishing` |
+| `agency-finance-ops`, `council-finance-coach` | `double-entry-books` |
+| `council-fitness-coach` | `endurance-race-plan` |
+
+New profiles, only where no upstream profile owned the work:
+
+| Profile | Role |
+| --- | --- |
+| `agency-venture-operator` | Works one venture only, from its brief and binding constraint. Install one copy per venture. |
+| `agency-onchain-engineer` | One token or protocol project, testnet first, contract changes gated by tests, independent review and owner approval. |
+| `immo-*` (8 profiles) | French-language expert panel for a property investor in Belgium and France. See [`hermes-immo/README.md`](hermes-immo/README.md). |
+
+`gated-delivery`, `approval-gated-publishing` and `double-entry-books` ship in several profiles. Each has one canonical source in `shared-skills/`; edit it there and run `python scripts/sync_shared_skills.py`.
+
 ## Role-specific capability upgrade
 
 Every profile, including standalone Wear, now has an on-demand capability guide. The release includes 24 reviewed skill trees with full supporting files, six role-selected plugin opt-ins, and 13 disabled MCP integration templates. Existing role-owned jobs, tool restrictions, bundled-skill opt-outs and user-controlled activation remain intact.
@@ -34,7 +75,7 @@ See the [complete profile matrix](docs/CAPABILITY_MATRIX.md), [capability guide 
 
 ## Start small with Team Recipes
 
-You rarely need all 165 profiles. Team Recipes are validated compositions of existing profiles for common outcomes, with `minimal`, `recommended`, and `expanded` tiers.
+You rarely need all 175 profiles. Team Recipes are validated compositions of existing profiles for common outcomes, with `minimal`, `recommended`, and `expanded` tiers.
 
 The main installer understands them directly:
 
@@ -58,6 +99,8 @@ hermes-profile-packs/
 ├── hermes-agency/
 ├── hermes-council/
 ├── hermes-academy/
+├── hermes-immo/
+├── shared-skills/          # canonical copies of skills shipped by several profiles
 ├── docs/
 │   ├── CONTINUING_EDUCATION.md
 │   └── CONTINUING_EDUCATION_ARCHITECTURE.md
@@ -131,6 +174,7 @@ See [`docs/PROFILE_QUALITY.md`](docs/PROFILE_QUALITY.md), the source-to-catalog 
 ```bash
 python validate.py
 python scripts/update_readme_counts.py --check
+python scripts/sync_shared_skills.py --check
 python -m unittest discover -s tests -p 'test_*.py'
 ```
 
@@ -141,7 +185,7 @@ The validation suite checks pack manifests, namespaces, distribution metadata, s
 ## Design principles
 
 1. **Coherent teams, not prompt dumps.** Profiles have explicit ownership and clean handoffs.
-2. **Namespace isolation.** `agency-*` is professional, `council-*` is personal, and `academy-*` is educational.
+2. **Namespace isolation.** `agency-*` is professional, `council-*` is personal, `academy-*` is educational, and `immo-*` serves a property investor.
 3. **Portable distributions only.** No runtime state, secrets, personal filesystem paths, or local caches.
 4. **Specialists remain specialists.** Profiles hand off rather than silently absorbing unrelated domains.
 5. **Smallest useful team.** Add profiles only for distinct expertise, independent review, or useful parallelism.

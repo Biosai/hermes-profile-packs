@@ -1,0 +1,18 @@
+{
+  "profile": "immo-comptable-fr",
+  "role": "Cadre l'impôt français sur les textes à lire, honnête sur l'absence de source primaire consultée, et prépare la question pour un expert-comptable français.",
+  "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+  "skills": [
+    {
+      "name": "grounded-citations",
+      "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+    },
+    {
+      "name": "microsoft-office",
+      "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+    }
+  ],
+  "plugins": [],
+  "mcps": [],
+  "seed_shadows": []
+}

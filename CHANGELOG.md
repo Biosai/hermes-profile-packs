@@ -4,6 +4,16 @@ All notable changes to Hermes Profile Packs will be documented here.
 
 ## Unreleased
 
+### Added (fork)
+
+- Distilled three Hermes teams running in production into public, generalized content, adapting upstream profiles wherever one already owned the work:
+  - **Hermes Immo** (`immo-*`), a new French-language pack: an expert panel for a property investor in Belgium and France, with a canonical `shared/RULES.md` that `sync_shared.py` copies into every SOUL.
+  - New role-owned skills on existing Agency and Council profiles (Go backend craft, real test runs with counts, ready-to-merge gate, IaC with human apply, approval-gated publishing, double-entry books, endurance race plans, and more), added beside the upstream skills without editing any baselined file.
+  - Two new Agency profiles: `agency-venture-operator` and `agency-onchain-engineer`.
+  - Recipes `gated-repo-delivery`, `solo-founder-portfolio` and `property-deal-review`.
+- Skills shipped by several profiles have one canonical source in `shared-skills/`; `scripts/sync_shared_skills.py` writes the copies and validation holds them byte-identical.
+- The root installer and README count generator now read packs from `packs.json` instead of a fixed list of three; a pack may declare its own `display_name` and recommendation `hints` there.
+
 ### Profile quality
 
 - Clarified Council interaction modes so listening and direct answers can complete a conversation without mandatory files, actions or ending questions. Corrected assumed user biography, stale collaborator references and malformed SOUL Markdown.

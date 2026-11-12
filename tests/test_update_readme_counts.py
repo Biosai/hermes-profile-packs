@@ -78,6 +78,26 @@ class ReadmeCountUpdaterTests(unittest.TestCase):
             self.assertIn("Hermes Academy contains 3 faculty profiles and 4 purpose-built teaching skills.", readme)
             self.assertIn("You rarely need all 6 profiles.", readme)
 
+    def test_extra_registered_packs_get_their_own_sentence(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.make_repo(root)
+            registry = json.loads((root / "packs.json").read_text(encoding="utf-8"))
+            registry["packs"].append(
+                {"path": "hermes-garden", "manifest": "hermes-garden/garden.json", "display_name": "Hermes Garden"}
+            )
+            (root / "packs.json").write_text(json.dumps(registry), encoding="utf-8")
+            (root / "hermes-garden").mkdir()
+            (root / "hermes-garden" / "garden.json").write_text(
+                json.dumps({"profiles": [{"name": "garden-a", "jobs": ["x", "y"]}, {"name": "garden-b", "jobs": ["z"]}]}),
+                encoding="utf-8",
+            )
+            result = self.run_script(root)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            readme = (root / "README.md").read_text(encoding="utf-8")
+            self.assertIn("Hermes Garden contains 2 profiles and 3 role-owned skills.", readme)
+            self.assertIn("You rarely need all 8 profiles.", readme)
+
     def test_check_mode_detects_stale_readme_without_writing(self):
         self.assertTrue(SCRIPT.is_file(), "README count updater script is missing")
         with tempfile.TemporaryDirectory() as tmp:

@@ -241,7 +241,11 @@
         "backend-testing",
         "background-jobs",
         "domain-modeling",
-        "failure-debugging"
+        "failure-debugging",
+        "gated-delivery",
+        "go-backend-craft",
+        "issue-clarification",
+        "post-merge-protocol"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -401,6 +405,8 @@
         "cross-functional-alignment",
         "decision-log",
         "executive-briefing",
+        "owner-action-handoff",
+        "owner-question-protocol",
         "priority-triage",
         "risk-escalation"
       ],
@@ -547,8 +553,12 @@
         "audit-evidence",
         "compliance-assessment",
         "data-handling-review",
+        "gated-delivery",
         "license-review",
-        "policy-control-mapping"
+        "migration-verification",
+        "policy-control-mapping",
+        "regulated-engineering-controls",
+        "vendor-integration-review"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -1165,6 +1175,7 @@
       "role": "You are the **Email Marketer** in Hermes Agency. Plans and writes lifecycle, launch, nurture, retention, and campaign email programs tied to measurable outcomes.",
       "existing_skills": [
         "academy-continuing-education",
+        "approval-gated-publishing",
         "deliverability-review",
         "email-campaign",
         "email-experiment",
@@ -1221,6 +1232,7 @@
         "academy-continuing-education",
         "budget-tracking",
         "cash-flow-forecast",
+        "double-entry-books",
         "expense-review",
         "financial-controls",
         "financial-operations-review",
@@ -1460,7 +1472,9 @@
         "activation-experiment",
         "channel-test",
         "growth-experiment",
-        "retention-analysis"
+        "retention-analysis",
+        "revenue-state-audit",
+        "value-proposition-diagnosis"
       ],
       "bundled_skills_opt_out": false,
       "skills": [],
@@ -1506,6 +1520,9 @@
         "academy-continuing-education",
         "capacity-planning",
         "disaster-recovery",
+        "gated-delivery",
+        "iac-human-apply",
+        "infra-security-review",
         "infrastructure-change",
         "infrastructure-design",
         "networking",
@@ -1594,9 +1611,12 @@
       "existing_skills": [
         "academy-continuing-education",
         "content-lifecycle",
+        "gated-delivery",
+        "glossary-discipline",
         "knowledge-base-design",
         "knowledge-curation",
         "knowledge-gap-analysis",
+        "post-merge-kb-update",
         "source-of-truth-audit",
         "taxonomy"
       ],
@@ -2120,9 +2140,11 @@
       "role": "You are the **Agency Orchestrator** in Hermes Agency. Coordinates multi-specialist work by choosing the smallest useful coordination pattern, decomposing goals when clean ownership seams exist, routing assignments, managing dependencies, and synthesizing validated results.",
       "existing_skills": [
         "academy-continuing-education",
+        "coordination-board",
         "coordination-pattern-selection",
         "dependency-planning",
         "escalation-routing",
+        "gated-delivery",
         "profile-routing",
         "result-synthesis",
         "validation-planning",
@@ -2399,9 +2421,13 @@
       "existing_skills": [
         "academy-continuing-education",
         "acceptance-criteria",
+        "gated-delivery",
+        "issue-authoring-standard",
         "prioritization",
         "product-discovery",
         "product-requirements",
+        "ready-queue",
+        "ready-to-merge-gate",
         "release-scope",
         "roadmap-decision"
       ],
@@ -2679,8 +2705,11 @@
         "bug-reproduction",
         "e2e-validation",
         "exploratory-testing",
+        "gated-delivery",
+        "real-run-verification",
         "regression-testing",
-        "test-case-design"
+        "test-case-design",
+        "test-design-maxims"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -3206,6 +3235,7 @@
       "role": "You are the **Social Media Manager** in Hermes Agency. Plans and executes platform-native social content, demo narratives, post series, community interactions, and publishing cadence.",
       "existing_skills": [
         "academy-continuing-education",
+        "approval-gated-publishing",
         "community-reply",
         "content-repurposing",
         "demo-capture-plan",
@@ -3239,8 +3269,11 @@
         "architecture-review",
         "dependency-boundaries",
         "failure-mode-analysis",
+        "fresh-main-evidence",
+        "gated-delivery",
         "interface-design",
         "migration-design",
+        "readiness-review",
         "technical-research"
       ],
       "bundled_skills_opt_out": false,
@@ -3724,6 +3757,70 @@
         {
           "name": "creative-ideation",
           "reason": "Structured ideation methods complement craft-specific procedures without introducing external services."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "agency-onchain-engineer",
+      "pack": "agency",
+      "path": "hermes-agency/profiles/agency-onchain-engineer",
+      "category": "engineering",
+      "role": "You are the **Onchain Engineer** in Hermes Agency. Builds and operates one token or protocol project testnet-first, with contract changes gated by tests, independent review and owner approval, and community copy free of price talk or promised returns.",
+      "existing_skills": [
+        "academy-continuing-education",
+        "contract-change-review",
+        "onchain-metrics",
+        "testnet-deployment",
+        "token-community-copy"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "systematic-debugging",
+          "reason": "Root-cause contract and deployment failures on testnet before any retry."
+        },
+        {
+          "name": "test-driven-development",
+          "reason": "Contract changes start from a failing test; no change ships without one."
+        },
+        {
+          "name": "grounded-citations",
+          "reason": "Cite current chain, standard and regulatory sources instead of recalled facts."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "agency-venture-operator",
+      "pack": "agency",
+      "path": "hermes-agency/profiles/agency-venture-operator",
+      "category": "product",
+      "role": "You are the **Venture Operator** in Hermes Agency. Operates one venture only, from its brief and binding constraint, proving work by execution, recording findings where the team tracks work, and delivering reviewable changes under the configured merge policy.",
+      "existing_skills": [
+        "academy-continuing-education",
+        "binding-constraint-check",
+        "bounded-task-delivery",
+        "repo-audit-to-issues",
+        "venture-scope-setup"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "dogfood",
+          "reason": "Walk the venture's real product paths before claiming a flow works."
+        },
+        {
+          "name": "systematic-debugging",
+          "reason": "Root-cause a failing venture flow before proposing a fix."
         }
       ],
       "plugins": [],
@@ -4744,6 +4841,7 @@
       "category": "body",
       "role": "Plans and adapts training, movement, recovery, and practical fitness routines.",
       "existing_skills": [
+        "endurance-race-plan",
         "progress-review",
         "recovery-check",
         "workout-adaptation",
@@ -4867,6 +4965,7 @@
         "budget-review",
         "cashflow-plan",
         "debt-plan",
+        "double-entry-books",
         "purchase-decision"
       ],
       "bundled_skills_opt_out": true,
@@ -5243,6 +5342,236 @@
         {
           "name": "maps",
           "reason": "Location/route discovery uses public mapping services; disclose location queries, rate limits, and accessibility/freshness limits."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "immo-architecte",
+      "pack": "immo",
+      "path": "hermes-immo/profiles/immo-architecte",
+      "category": "technique",
+      "role": "Prépare le dossier d'urbanisme et la question à la commune ; le permis reste à l'architecte réel et à la commune.",
+      "existing_skills": [
+        "division-et-permis",
+        "lecture-plans-metres",
+        "logements-reconnus",
+        "question-urbanisme"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "concept-diagrams",
+          "reason": "Sketch lot layouts and division options for the investor, never as a signed plan."
+        },
+        {
+          "name": "maps",
+          "reason": "Locate the property to establish its region and planning context."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "immo-associe",
+      "pack": "immo",
+      "path": "hermes-immo/profiles/immo-associe",
+      "category": "strategie",
+      "role": "Arbitre un dossier avant l'offre : stratégies, trois scénarios, prix plafond, valeur de marché, et contradiction des analyses externes.",
+      "existing_skills": [
+        "contradicteur-analyses-externes",
+        "rentabilite-locative",
+        "strategies-sur-un-bien",
+        "trois-scenarios",
+        "valeur-de-marche-comparables"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "microsoft-office",
+          "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+        },
+        {
+          "name": "maps",
+          "reason": "Place named comparables and the property on a map to test that they share a neighbourhood."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "immo-avocat",
+      "pack": "immo",
+      "path": "hermes-immo/profiles/immo-avocat",
+      "category": "droit",
+      "role": "Dit ce que dit le texte et prépare le dossier et la question pour l'avocat réel, sans prédire l'issue ni citer une décision non lue.",
+      "existing_skills": [
+        "analyse-clause",
+        "bail-et-locataire",
+        "dossier-litige",
+        "relecture-contradictoire",
+        "sources-droit-primaire"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "grounded-citations",
+          "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "immo-bras-droit",
+      "pack": "immo",
+      "path": "hermes-immo/profiles/immo-bras-droit",
+      "category": "coordination",
+      "role": "Tient la relation avec l'investisseur, ses données et ses questions, et fait travailler les experts sans parler à leur place.",
+      "existing_skills": [
+        "capture-donnees-client",
+        "consulter-expert",
+        "debat-experts",
+        "questions-ouvertes-client",
+        "suivi-demandes-client"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "document-to-action-items",
+          "reason": "Turn a listing, a deed draft or an expert report into the investor's open questions and next actions."
+        },
+        {
+          "name": "meeting-action-items",
+          "reason": "Capture decisions and figures from a call or voice note with their source."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "immo-comptable-be",
+      "pack": "immo",
+      "path": "hermes-immo/profiles/immo-comptable-be",
+      "category": "fiscalite",
+      "role": "Référent comptable de l'équipe : règle, texte, effet en fourchette, conditions, et question exacte pour le comptable de l'investisseur.",
+      "existing_skills": [
+        "droits-enregistrement",
+        "frais-operation",
+        "impot-societes-operation",
+        "question-au-comptable",
+        "tva-immobilier"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "grounded-citations",
+          "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+        },
+        {
+          "name": "microsoft-office",
+          "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "immo-comptable-fr",
+      "pack": "immo",
+      "path": "hermes-immo/profiles/immo-comptable-fr",
+      "category": "fiscalite",
+      "role": "Cadre l'impôt français sur les textes à lire, honnête sur l'absence de source primaire consultée, et prépare la question pour un expert-comptable français.",
+      "existing_skills": [
+        "marchand-de-biens-france",
+        "question-expert-comptable-fr",
+        "regimes-locatifs-france",
+        "societe-belge-en-france"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "grounded-citations",
+          "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+        },
+        {
+          "name": "microsoft-office",
+          "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "immo-conducteur-travaux",
+      "pack": "immo",
+      "path": "hermes-immo/profiles/immo-conducteur-travaux",
+      "category": "travaux",
+      "role": "Chiffre les travaux sur des bases sourcées et datées, nomme ce qui reste à voir en visite, et ne valide jamais une commande.",
+      "existing_skills": [
+        "bibliotheque-ouvrages",
+        "chiffrage-travaux",
+        "fournitures-quantites-prix",
+        "lecture-photo-travaux",
+        "obligations-et-aides-renovation"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "microsoft-office",
+          "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "immo-notaire",
+      "pack": "immo",
+      "path": "hermes-immo/profiles/immo-notaire",
+      "category": "acte",
+      "role": "Prépare la liste des pièces et les questions au notaire instrumentant ; l'acte reste au notaire réel.",
+      "existing_skills": [
+        "cahier-des-charges-vente-publique",
+        "compromis-et-option",
+        "dossier-copropriete",
+        "pieces-a-reclamer",
+        "questionnaire-garde-fou"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "grounded-citations",
+          "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+        },
+        {
+          "name": "document-to-action-items",
+          "reason": "Turn a sale agreement or auction conditions into the list of documents to request and questions to ask."
         }
       ],
       "plugins": [],

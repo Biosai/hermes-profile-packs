@@ -117,6 +117,8 @@ Every public profile is included. Supplemental skills are shipped on demand; all
 | agency-user-researcher | excalidraw | none | none |
 | agency-video-producer | creative-ideation | none | none |
 | agency-worldbuilder | creative-ideation | none | none |
+| agency-onchain-engineer | systematic-debugging, test-driven-development, grounded-citations | none | none |
+| agency-venture-operator | dogfood, systematic-debugging | none | none |
 | academy-dean | retain only | none | none |
 | academy-mathematics-professor | arxiv, concept-diagrams, grounded-citations | none | wolfram |
 | academy-writing-rhetoric-professor | grounded-citations | none | none |
@@ -169,4 +171,12 @@ Every public profile is included. Supplemental skills are shipped on demand; all
 | council-travel-planner | grounded-citations, maps | none | kiwi, trivago |
 | council-communication-coach | retain only | none | none |
 | council-community-coach | maps | none | none |
+| immo-architecte | concept-diagrams, maps | none | none |
+| immo-associe | microsoft-office, maps | none | none |
+| immo-avocat | grounded-citations | none | none |
+| immo-bras-droit | document-to-action-items, meeting-action-items | none | none |
+| immo-comptable-be | grounded-citations, microsoft-office | none | none |
+| immo-comptable-fr | grounded-citations, microsoft-office | none | none |
+| immo-conducteur-travaux | microsoft-office | none | none |
+| immo-notaire | grounded-citations, document-to-action-items | none | none |
 | hermes-wear | retain only | none | none |

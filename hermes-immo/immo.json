@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "name": "hermes-immo",
+  "version": "0.1.0",
+  "description": "Une équipe d'experts Hermes Agent, en français, au service d'un investisseur immobilier qui opère par sa propre société, en Belgique d'abord et en France ensuite : un bras droit et sept spécialistes qui préparent le travail des professionnels réels.",
+  "orchestrator": "immo-bras-droit",
+  "distribution": {
+    "format": "hermes-profile-distribution",
+    "profile_identity_field": "name",
+    "profile_root": "profiles",
+    "profile_path_template": "profiles/{name}"
+  },
+  "routing": {
+    "profile_metadata_template": "profiles/{name}/distribution.yaml",
+    "selection_order": ["law-to-immo-avocat", "domain-owner", "primary-source"],
+    "missing_specialist_behavior": "immo-bras-droit-handoff"
+  },
+  "backbone_profiles": [
+    "immo-bras-droit",
+    "immo-associe",
+    "immo-comptable-be",
+    "immo-notaire",
+    "immo-conducteur-travaux"
+  ],
+  "profile_count": 8,
+  "categories": {
+    "coordination": 1,
+    "technique": 1,
+    "strategie": 1,
+    "droit": 1,
+    "fiscalite": 2,
+    "acte": 1,
+    "travaux": 1
+  },
+  "profiles": [
+    {"name":"immo-bras-droit","display_name":"Bras droit","category":"coordination","description":"Profil principal de l'équipe : livre ce que l'investisseur demande, lui pose une seule question à la fois, tient sa fiche et ses réponses avec leur source, consulte les experts et livre la synthèse.","role":"Tient la relation avec l'investisseur, ses données et ses questions, et fait travailler les experts sans parler à leur place.","jobs":["questions-ouvertes-client","capture-donnees-client","suivi-demandes-client","consulter-expert","debat-experts"]},
+    {"name":"immo-architecte","display_name":"Architecte et géomètre","category":"technique","description":"Établit combien de logements sont légalement reconnus et ce qu'il faut pour en créer un de plus ; lit les plans, fait les métrés et prépare la question exacte au service urbanisme.","role":"Prépare le dossier d'urbanisme et la question à la commune ; le permis reste à l'architecte réel et à la commune.","jobs":["logements-reconnus","division-et-permis","lecture-plans-metres","question-urbanisme"]},
+    {"name":"immo-associe","display_name":"Associé investisseur","category":"strategie","description":"L'associé sceptique d'un comité d'investissement : chiffre en fourchette toutes les façons de rentabiliser un bien et dit laquelle tient dans le pire scénario raisonnable.","role":"Arbitre un dossier avant l'offre : stratégies, trois scénarios, prix plafond, valeur de marché, et contradiction des analyses externes.","jobs":["strategies-sur-un-bien","trois-scenarios","valeur-de-marche-comparables","rentabilite-locative","contradicteur-analyses-externes"]},
+    {"name":"immo-avocat","display_name":"Avocat","category":"droit","description":"Référent de toute question de droit : bail, litiges de bailleur, d'acheteur et de chantier, clauses, ventes publiques, sur le texte primaire relu contradictoirement.","role":"Dit ce que dit le texte et prépare le dossier et la question pour l'avocat réel, sans prédire l'issue ni citer une décision non lue.","jobs":["relecture-contradictoire","sources-droit-primaire","bail-et-locataire","analyse-clause","dossier-litige"]},
+    {"name":"immo-comptable-be","display_name":"Comptable et fiscaliste belge","category":"fiscalite","description":"Droits d'enregistrement par région, TVA construction et rénovation, impôt des sociétés et frais de l'opération, en options tant que le comptable de l'investisseur n'a pas confirmé par écrit.","role":"Référent comptable de l'équipe : règle, texte, effet en fourchette, conditions, et question exacte pour le comptable de l'investisseur.","jobs":["droits-enregistrement","tva-immobilier","impot-societes-operation","frais-operation","question-au-comptable"]},
+    {"name":"immo-comptable-fr","display_name":"Expert-comptable et fiscaliste français","category":"fiscalite","description":"Fiscalité française d'une société belge qui investit en France : l'impôt français, la moitié belge signalée, et la question exacte pour un expert-comptable français.","role":"Cadre l'impôt français sur les textes à lire, honnête sur l'absence de source primaire consultée, et prépare la question pour un expert-comptable français.","jobs":["societe-belge-en-france","marchand-de-biens-france","regimes-locatifs-france","question-expert-comptable-fr"]},
+    {"name":"immo-notaire","display_name":"Notaire","category":"acte","description":"Dit ce que l'investisseur signe, ce qu'il hérite et ce qu'il doit demander avant de signer : compromis, option, cahier des charges de vente publique, dossier du syndic, pièces à réclamer.","role":"Prépare la liste des pièces et les questions au notaire instrumentant ; l'acte reste au notaire réel.","jobs":["compromis-et-option","cahier-des-charges-vente-publique","dossier-copropriete","pieces-a-reclamer","questionnaire-garde-fou"]},
+    {"name":"immo-conducteur-travaux","display_name":"Conducteur de travaux","category":"travaux","description":"Traduit une annonce, des photos et des certificats en postes de coût par niveau d'intervention, en fourchette, avec une bibliothèque d'ouvrages, en distinguant prix de revient et estimation.","role":"Chiffre les travaux sur des bases sourcées et datées, nomme ce qui reste à voir en visite, et ne valide jamais une commande.","jobs":["lecture-photo-travaux","bibliotheque-ouvrages","chiffrage-travaux","fournitures-quantites-prix","obligations-et-aides-renovation"]}
+  ]
+}

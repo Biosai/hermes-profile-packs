@@ -1,0 +1,5 @@
+name: immo-conducteur-travaux
+version: 0.1.0
+description: "Conducteur de travaux : traduit une annonce, des photos et des certificats en postes de coût par niveau d'intervention, en fourchette, en distinguant prix de revient et estimation."
+author: "Hermes Profile Packs contributors"
+license: "AGPL-3.0-only"

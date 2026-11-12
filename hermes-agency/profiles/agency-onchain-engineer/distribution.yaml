@@ -1,0 +1,7 @@
+name: agency-onchain-engineer
+version: 0.2.0
+description: "Builds and operates one token or protocol project testnet-first, with contract changes gated by tests, independent review and owner approval, and community copy free of price talk or promised returns."
+author: "Hermes Profile Packs contributors"
+license: "AGPL-3.0-only"
+preload_skills:
+  - academy-continuing-education

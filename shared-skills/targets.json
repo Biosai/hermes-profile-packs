@@ -1,0 +1,22 @@
+{
+  "skills": {
+    "gated-delivery": [
+      "hermes-agency/profiles/agency-backend-engineer",
+      "hermes-agency/profiles/agency-qa-tester",
+      "hermes-agency/profiles/agency-product-manager",
+      "hermes-agency/profiles/agency-software-architect",
+      "hermes-agency/profiles/agency-infrastructure-engineer",
+      "hermes-agency/profiles/agency-compliance-reviewer",
+      "hermes-agency/profiles/agency-knowledge-manager",
+      "hermes-agency/profiles/agency-orchestrator"
+    ],
+    "approval-gated-publishing": [
+      "hermes-agency/profiles/agency-social-media-manager",
+      "hermes-agency/profiles/agency-email-marketer"
+    ],
+    "double-entry-books": [
+      "hermes-agency/profiles/agency-finance-ops",
+      "hermes-council/profiles/council-finance-coach"
+    ]
+  }
+}

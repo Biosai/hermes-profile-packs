@@ -9,6 +9,10 @@ This repository contains public, portable Hermes Agent profile packs. Treat prof
 - `agency-*` belongs only under `hermes-agency/profiles/`.
 - `council-*` belongs only under `hermes-council/profiles/`.
 - `academy-*` belongs only under `hermes-academy/profiles/`.
+- `immo-*` belongs only under `hermes-immo/profiles/`. Its team-wide rules live once in `hermes-immo/shared/RULES.md`: edit that file, then run `python hermes-immo/sync_shared.py`; never hand-edit the block between `<!-- shared-rules:start -->` and `<!-- shared-rules:end -->` in a SOUL.
+- A skill copied into several profiles has one canonical source under `shared-skills/<name>/`. Edit it there, then run `python scripts/sync_shared_skills.py`; `shared-skills/targets.json` lists every copy and the tests hold them byte-identical.
+- Extend an existing Agency or Council profile by ADDING a skill directory. Never edit an upstream SOUL or skill in place: `capabilities/baseline.json` pins them, and in-place edits make upstream merges conflict.
+- Content distilled from live profiles must be generalized: no names, accounts, handles, chat ids, domains, client numbers, dated anecdotes or live-system paths.
 - Never copy a live Hermes profile directory wholesale into the repository.
 - Never commit auth files, `.env`, state databases, caches, logs, session dumps, PIDs, local mount paths, or personal home paths.
 - `distribution.yaml` names must match their directory names.
@@ -61,6 +65,7 @@ python -m unittest discover -s tests -p 'test_*.py'
 python -m unittest discover -s hermes-agency/tests -p 'test_*.py'
 python -m unittest discover -s hermes-council/tests -p 'test_*.py'
 python -m unittest discover -s hermes-academy/tests -p 'test_*.py'
+python -m unittest discover -s hermes-immo/tests -p 'test_*.py'
 ```
 
 Do not weaken a validator merely to make a failing artifact pass. Determine whether the finding is a real portability/security problem or an overly broad rule, then fix the correct layer.

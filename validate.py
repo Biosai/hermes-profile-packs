@@ -137,6 +137,14 @@ def main() -> int:
     if readme_count_check.returncode:
         errors.append("README profile counts are stale or could not be verified")
 
+    if (ROOT / "shared-skills" / "targets.json").is_file():
+        shared_check = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "sync_shared_skills.py"), "--check"],
+            cwd=ROOT,
+        )
+        if shared_check.returncode:
+            errors.append("a shared skill copy differs from its canonical source in shared-skills/")
+
     for path in ROOT.rglob("*"):
         if not path.is_file() or ".git" in path.parts or "__pycache__" in path.parts or path.suffix == ".pyc":
             continue

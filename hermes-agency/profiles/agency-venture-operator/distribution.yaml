@@ -1,0 +1,7 @@
+name: agency-venture-operator
+version: 0.2.0
+description: "Operates one venture only, from its brief and binding constraint, proving work by execution, recording findings where the team tracks work, and delivering reviewable changes under the configured merge policy."
+author: "Hermes Profile Packs contributors"
+license: "AGPL-3.0-only"
+preload_skills:
+  - academy-continuing-education

@@ -1,0 +1,18 @@
+{
+  "profile": "immo-associe",
+  "role": "Arbitre un dossier avant l'offre : stratégies, trois scénarios, prix plafond, valeur de marché, et contradiction des analyses externes.",
+  "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+  "skills": [
+    {
+      "name": "microsoft-office",
+      "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+    },
+    {
+      "name": "maps",
+      "reason": "Place named comparables and the property on a map to test that they share a neighbourhood."
+    }
+  ],
+  "plugins": [],
+  "mcps": [],
+  "seed_shadows": []
+}
