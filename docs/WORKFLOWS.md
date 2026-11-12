@@ -87,7 +87,14 @@ A step whose profile is not installed is never run by another profile: the workf
 | `ready-queue` | single-profile | `agency-product-manager` | refill the ready queue |
 | `coordination-board` | single-profile | `agency-orchestrator` | sweep claims before routing |
 | `repo-audit-to-issues` | single-profile | `agency-venture-operator` | audit a repository into findings |
+| `remaining-work-to-issues` | single-profile | `agency-venture-operator` | file the work left between the plan and the tracker |
 | `bounded-task-delivery` | single-profile | `agency-venture-operator` | deliver one bounded change |
+| `open-pr-readiness-sweep` | single-profile | `agency-product-manager` | read-only merge verdict for every open PR in scope |
+| `mutation-proof` | single-profile | `agency-qa-tester` | prove a new test fails when its fix is undone |
 | `owner-action-handoff` | single-profile | `agency-chief-of-staff` | hand the owner a prepared action |
+| `product-direction-review` | single-profile | `agency-product-manager` | decide what to build next, document the vision |
+| `conversion-drop-diagnosis` | single-profile | `agency-growth-marketer` | find where a zero or falling conversion is lost |
+| `one-to-one-email-send` | single-profile | `agency-email-marketer` | send approved personal emails from the owner's mailbox |
+| `gear-shopping-list` | single-profile | `council-fitness-coach` | choose, price and check sport gear the user buys |
 
 Recipes list the workflows their team can run in a `workflows` field.

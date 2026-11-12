@@ -15,8 +15,10 @@ steps:
     skills: [email-campaign, approval-gated-publishing]
     extra_skills:
       - {skill: segmentation, when: "the audience is a segment, not the whole list"}
-    does: Draft the campaign and pick the audience from the venture's brief.
-    output: subject, body, audience and send time, as a draft in the email platform
+    does: >-
+      Draft the campaign and pick the audience from the venture's brief, with each recipient's
+      consent basis. An imported "subscribed" status needs the owner's dated opt-in statement.
+    output: subject, body, audience, consent basis and send time, as a draft in the email platform
   - id: deliverability
     profile: agency-email-marketer
     skills: [deliverability-review]
@@ -35,7 +37,10 @@ steps:
     profile: agency-email-marketer
     skills: [approval-gated-publishing]
     needs: [approve]
-    does: Schedule or send exactly the approved campaign to the approved audience.
-    output: the sent or scheduled campaign, linked
+    does: >-
+      Schedule or send exactly the approved campaign to the approved audience, then read each
+      message back and compare its status and send time with the approved ones. An unexpected
+      error on a send call goes to the owner, not to a retry on another endpoint.
+    output: the sent or scheduled campaign, linked, with its read-back send time
 done_when:
   - The sent campaign and audience match the approved ones exactly.

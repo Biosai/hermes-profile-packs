@@ -35,12 +35,12 @@ Current values appear in the `[Skill config]` block when the skill loads; an uns
 Fetch. Record the PR head SHA and the `origin/<default>` SHA. Check each line and write its evidence.
 1. **Scanners resolved** on changed files, on the dashboard and in PR comments (they disagree): fixed, or dismissed with a written reason.
 2. **No open review threads**, bots and outdated ones included.
-3. **Tests**: the developer's impacted selection with PASS / SKIP / FAIL counts at this head; required CI green at this head. A skip from a missing credential is a FAIL; no conclusion yet is pending.
+3. **Tests**: the developer's impacted selection with PASS / SKIP / FAIL counts at this head; required CI green at this head. A skip from a missing credential is a FAIL; no conclusion yet is pending. Say what the green is worth: list the jobs that ran at this head and what they execute (tests; compile and lint; a validator that parses files). Zero CI runs at this head is "nothing ran", not green.
 4. **QA verdict** VERIFIED against the acceptance criteria, at this head or with a later diff that cannot change the result.
-5. **No conflicts**: `git merge-tree --write-tree origin/<default> <branch>`, grep CONFLICT. Never the deprecated three-argument form.
+5. **No conflicts**: `git merge-tree --write-tree origin/<default> <branch>`, grep CONFLICT. Never the deprecated three-argument form. A conflicting branch whose commits are already on `<default>` under other SHAs (a rebase skips every commit; the diff is nearly all deletions) is a stale snapshot: merging it deletes newer work, so the verdict is "recommend closing", never "rebase and merge".
 6. **Coverage raised** by tests that exercise the new behavior.
 7. **Data change declared**: "none", or the rows per environment, declared before code started or, if found later, before merge and restated after merge as an actionable note. Counts scope a data change; only the owner authorizes applying it.
-8. **Migrations** numbered above the tip, unique across open PRs, proven at the production version.
+8. **Migrations** numbered above the tip, unique across open PRs, proven at the production version. A renumbered migration may duplicate one already landed: diff it against the base's migrations, comments ignored.
 9. **Base current**: `git rev-list --count <head>..origin/<default>` is zero when you report. After a rebase, require any new CI gate, template or definition of done to have been met.
 
 ## Output standard
@@ -57,3 +57,8 @@ READY goes to whoever `delivery.merge_policy` names. NOT READY goes back with th
 - A branch-filtered green can belong to a superseded base; match the SHA.
 - A rollup red on every PR while `<default>` is green is usually a token that cannot read some checks; read comments and job logs.
 - Never hard-code an expected PASS total; demand counts measured at this head.
+- An endpoint your token cannot read answers 403 with no list; parsed as an empty list it reads as all green. Assert the HTTP status before parsing; on github a mergeable state of `unstable` with no failing check found means your probe is blind.
+- `mergeable` on github is null until computed: poll it rather than reading null as either answer.
+- Branch protection is unreadable without admin rights: then READY means git state plus observed CI, and the report says so.
+- A deploy-preview status is a build, not tests, and a cancelled preview can post success: read its description.
+- Across many PRs at once, use the `open-pr-readiness-sweep` workflow; this gate is for the one PR about to be merged.

@@ -51,16 +51,27 @@ entries are unchecked; never report balances you could not compute.
 1. Identify whose money each item is. When unclear, ask; never guess the entity.
 2. Read the books' own notes (accounts, currencies, conventions) before adding to them.
 3. Book balanced entries: date, payee, narration, accounts, amounts, currency, a link to the
-   source document; foreign amounts with the rate used and its source. Open a new account
-   only when none fits, and say so.
-4. Change files only when requested or agreed; in version control, on a branch, as a
-   reviewable change with the documents attached.
-5. Run the checker on every ledger touched and fix every error; never silence one.
-6. Reconcile each account against its statement at the same date. Explain each difference;
+   source document; foreign amounts in their original currency with the rate used and its
+   source. Open a new account only when none fits, and say so. State the lot method for
+   crypto and other lots (e.g. FIFO). Link both legs of a flow between owners (beancount
+   `^link`). Mark an estimate as such with its basis in metadata (e.g. `estimate: TRUE`,
+   `basis: "..."`) and replace it when the document arrives.
+4. File each source document beside the books under the format's convention (beancount:
+   `documents/<book>/<Account/Path>/`), account numbers masked to the last four in notes.
+5. Change files only when requested or agreed; in version control, on a branch, as a
+   reviewable change with the documents attached. First look for an open change touching the
+   same ledger and add to it: two parallel ledger changes conflict on the same files. Where
+   ready changes merge automatically, open it as a draft so nothing lands unseen, and say
+   whether the repository's checks run the ledger checker; if not, yours is the only gate.
+6. Run the checker on every ledger touched, from the books' own folder (relative document
+   paths resolve from there; a missing documents folder fails the check, so keep a placeholder
+   file in each), and fix every error; never silence one.
+7. Reconcile each account against its statement at the same date. Explain each difference;
    an unexplained one stays visible as an open item, never a plug entry.
-7. Monthly close: list the exports only the user can fetch, book and reconcile, then a
-   numbers-first summary and the next dated deadlines.
-8. Tax questions, especially across countries: facts with sources, assumptions, options
+8. Monthly close: list the exports only the user can fetch, book and reconcile, then a
+   numbers-first summary and the next dated deadlines. Data or access only the user can
+   supply is recorded as an action for them, with a check that proves it done.
+9. Tax questions, especially across countries: facts with sources, assumptions, options
    with a worked estimate each, what would change the answer, primary sources with an as-of
    date, and the questions to confirm with an accountant or tax adviser.
 

@@ -24,13 +24,13 @@ A campaign is needed: a launch, a newsletter slot, or a lifecycle message.
 ## Steps
 | # | Step | Actor | Loads | After | Produces |
 |---|---|---|---|---|---|
-| 1 | `draft` | `agency-email-marketer` | `email-campaign`, `approval-gated-publishing` | — | subject, body, audience and send time, as a draft in the email platform |
+| 1 | `draft` | `agency-email-marketer` | `email-campaign`, `approval-gated-publishing` | — | subject, body, audience, consent basis and send time, as a draft in the email platform |
 | 2 | `deliverability` | `agency-email-marketer` | `deliverability-review` | `draft` | a deliverability check that passes, or what to fix |
 | 3 | `approve` | the human named by `publishing.approval` | — | `deliverability` | the owner's approval, recorded verbatim |
-| 4 | `send` | `agency-email-marketer` | `approval-gated-publishing` | `approve` | the sent or scheduled campaign, linked |
+| 4 | `send` | `agency-email-marketer` | `approval-gated-publishing` | `approve` | the sent or scheduled campaign, linked, with its read-back send time |
 
 ### 1. `draft` — `agency-email-marketer`
-Draft the campaign and pick the audience from the venture's brief.
+Draft the campaign and pick the audience from the venture's brief, with each recipient's consent basis. An imported "subscribed" status needs the owner's dated opt-in statement.
 - Also loads `segmentation` when the audience is a segment, not the whole list.
 
 ### 2. `deliverability` — `agency-email-marketer`
@@ -43,7 +43,7 @@ The owner approves the exact campaign and audience.
 - Who acts follows `publishing.approval`.
 
 ### 4. `send` — `agency-email-marketer`
-Schedule or send exactly the approved campaign to the approved audience.
+Schedule or send exactly the approved campaign to the approved audience, then read each message back and compare its status and send time with the approved ones. An unexpected error on a send call goes to the owner, not to a retry on another endpoint.
 
 ## Prerequisites
 | Needs | Why | Check |

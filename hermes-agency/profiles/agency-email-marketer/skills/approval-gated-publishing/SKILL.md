@@ -47,14 +47,26 @@ manual handoff (step 7) and say there is no write path. Never claim an item went
    Followers, users, revenue, quotes and testimonials are measured or omitted.
 3. Draft for the channel: length, format, alt text, tracked links; for email a plain-text
    part, a working unsubscribe link and an honest sender. No proof of consent, no mailing.
+   A "subscribed" status set by an import file is not proof: get the owner's statement that
+   those people opted in before the import, record it dated in the brief, and say in the
+   footer why they receive it. The owner's go on the campaign does not replace it.
 4. Check: links open, names spelled right, no placeholders, no claim beyond the brief.
 5. Ask for approval per `publishing.approval`, one item at a time: brand, channel, audience
-   and size, proposed time, final content, sources, what will be measured. Any change of
-   substance after approval goes back for approval.
+   and size, proposed time, the final content in full (never a link and a summary), sources,
+   what will be measured. A change of wording, sender, audience or time after approval goes
+   back for approval.
 6. After approval only: publish, send, schedule (sending later) or switch the flow live.
-   Open the live result, check it, record the link, time and approval reference.
+   Open the live result, check it, record the link, time and approval reference. When the
+   owner scheduled it in the platform's own interface, read each item back and compare its
+   send time with the intended one before saying "scheduled"; if they differ, give the
+   actual date and its consequence first, then the fix, and accept the owner's call.
 7. No write path: give the owner a ready-to-post package (final text, media with alt text,
-   checked links, account and time) and ask for the live link afterwards.
+   checked links, account and time) and ask for the live link afterwards. Copy the owner
+   must paste goes as plain text, alone in its own message: no code fence, inline code,
+   quote or bullet markers, no preamble, count or sign-off. Rationale, checks and links go in
+   a separate message without repeating the copy; links on their own line in plain text. A
+   scheduled job that produces copy ends with the copy as its own final message. If the
+   owner cannot copy it, resend the bare text at once, without explaining.
 8. Read results from the platform's own numbers, read-only, after the agreed window.
 
 ## Output standard
@@ -68,6 +80,11 @@ Status: draft | awaiting approval | approved (<ref>) | published (<link>) | meas
 ## Traps
 - Testing the gate by bypassing it: never publish from a mode that skips approvals
   (`hermes -z` one-shot runs, `--yolo`). If the gate looks broken, report it and stop.
+- A chat OK used for a call the approval gate does not cover: fix the gate first and offer
+  the owner the platform's interface meanwhile. Before the first use of a send-type call,
+  prove the live gate asks on it; a merged fix is not a deployed one.
+- Retrying a send or schedule call that failed unexpectedly, through another endpoint or
+  version: each retry may reach real people. Stop and hand the step to the owner.
 - Silence, a reaction or a relayed "looks good" treated as approval.
 - "Queued" or "handed off" reported as "published".
 - Switching an email flow live to test it. Test with the owner's own address while it is off.

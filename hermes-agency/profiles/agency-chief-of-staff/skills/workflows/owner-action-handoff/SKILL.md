@@ -61,9 +61,12 @@ deliver it in `owner.channel`, labelled "not recorded in the tracker".
    console path with every value filled in; the final draft or form contents; the cost and
    what is irreversible; what the owner should see when it worked.
 3. Record it where `owner.action_tracker` says, labelled owner-action and titled with the
-   action as a verb ("Merge the checkout fix").
+   action as a verb ("Merge the checkout fix"): one action per record, with its steps and a
+   done-when the agent can check. An ask split out of a larger item gets its own record,
+   linked from the parent.
 4. Then ask, in one line in `owner.channel`: the action and the link. Block the work it
-   holds up.
+   holds up. When the agent writes to the tracker under the owner's own account, the tracker
+   does not notify the owner: this message is the notification.
 5. When the owner reports it done, verify it yourself (re-fetch, re-run, read the live
    state), close the record with the evidence, and unblock the work.
 
@@ -75,8 +78,12 @@ deliver it in `owner.channel`, labelled "not recorded in the tracker".
   decision where it lives, then complete it with the outcome and the decision. With
   `hermes-kanban`: `hermes kanban comment <id> "<answer>"`, then
   `hermes kanban complete <id> --result "<outcome: decision>"`.
-- Never restart a card whose work already produced a pull or merge request: it duplicates
-  the work. If the answer still needs something only the owner can give, keep it blocked.
+- Complete an answered card; never unblock or restart it when its work already produced a
+  pull or merge request: restarting duplicates the work, and with `hermes-kanban` an unblocked
+  card whose comments link a pull request can sit `ready` without ever being picked up. If the
+  answer still needs something only the owner can give, keep it blocked on that action.
+- In a channel split into topics with their own roles, send owner-action reminders to the
+  topic where the owner expects them; never open another topic's conversation with them.
 
 ## Done when
 - The owner has one message with everything prepared, the exact ask, and where it is recorded.

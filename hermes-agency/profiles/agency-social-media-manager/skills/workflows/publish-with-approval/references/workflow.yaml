@@ -37,7 +37,10 @@ steps:
     profile: agency-social-media-manager
     skills: [approval-gated-publishing]
     needs: [approve]
-    does: Publish exactly the approved text, then link the live post.
+    does: >-
+      Publish exactly the approved text, then link the live post. Without a write path, hand the
+      owner the copy as plain text alone in its own message, commentary in a separate one, and
+      ask for the live link.
     output: the live post URL
   - id: engage
     profile: agency-social-media-manager

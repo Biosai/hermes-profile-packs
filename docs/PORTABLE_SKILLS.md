@@ -48,6 +48,7 @@ In the body, a `## Configuration` section says how each value changes the proced
 | `growth.analytics_source` | ga4, plausible, posthog, matomo, other, none | none | Where traffic and funnel numbers come from. |
 | `growth.payments_source` | stripe, paddle, lemonsqueezy, other, none | none | Where revenue numbers come from. |
 | `publishing.approval` | hermes-approval, explicit-message | explicit-message | How the owner's approval of an outward action is captured. |
+| `publishing.mailbox` | gmail, microsoft365, other, none | none | The owner's mailbox for one-to-one emails sent in the owner's name. `none`: the agent prepares each message and the owner sends it. |
 | `books.format` | beancount, hledger, ledger, spreadsheet, detect | detect | Bookkeeping file format. |
 | `books.location` | a path | (empty: ask) | Where the books live. |
 | `training.record` | memory, a file path, an app export | memory | Where the training log lives. |

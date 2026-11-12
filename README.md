@@ -20,7 +20,7 @@ This fork adds what three teams of Hermes profiles running in production learned
 - **Hermes Property** (`property-*`), a new pack: no upstream profile covers property investment under Belgian and French law. Its team-wide rules live once in `hermes-property/shared/RULES.md`; `sync_shared.py` copies them into every SOUL and the pack validator holds them byte-identical.
 - **Adapted Agency and Council profiles**: new role-owned skills added beside the upstream ones (see [Adaptations](#adaptations-in-this-fork)). Upstream SOUL and skill files are never edited in place, so `capabilities/baseline.json` still holds and upstream changes merge cleanly.
 - **Two new Agency profiles** for work no upstream profile owned: `agency-venture-operator` and `agency-onchain-engineer`.
-- **Workflows**, kept apart from skills: seven multi-profile workflows defined in `workflows/` (such as `issue-to-merge`, `after-merge`, `infra-change`, `property-deal-review`) and five single-profile ones. See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md).
+- **Workflows**, kept apart from skills: seven multi-profile workflows defined in `workflows/` (such as `issue-to-merge`, `after-merge`, `infra-change`, `property-deal-review`) and twelve single-profile ones. See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md).
 - **Team Recipes** that assemble them and list the workflows each team can run: `gated-repo-delivery`, `solo-founder-portfolio` and `property-deal-review`.
 
 The packs deliberately separate durable context domains. Agency executes professional work, Council supports the person, and Academy teaches. A work profile should not need private life context, a personal profile should not inherit repository state merely because both run on Hermes, and a teaching profile should not silently become a production executor.
@@ -45,25 +45,25 @@ Where an upstream profile already owned the work, this fork adds role-owned skil
 | Profile | Added skills | Added workflows |
 | --- | --- | --- |
 | `agency-backend-engineer` | `go-backend-craft`, `issue-clarification`, `merge-followups`, `gated-delivery` | |
-| `agency-qa-tester` | `real-run-verification`, `test-design-maxims`, `gated-delivery` | |
-| `agency-product-manager` | `issue-authoring-standard`, `ready-to-merge-gate`, `gated-delivery` | `issue-to-merge`, `after-merge`, `ready-queue` |
+| `agency-qa-tester` | `real-run-verification`, `test-design-maxims`, `gated-delivery` | `mutation-proof` |
+| `agency-product-manager` | `issue-authoring-standard`, `ready-to-merge-gate`, `gated-delivery` | `issue-to-merge`, `after-merge`, `ready-queue`, `product-direction-review`, `open-pr-readiness-sweep` |
 | `agency-software-architect` | `fresh-main-evidence`, `readiness-review`, `gated-delivery` | |
 | `agency-infrastructure-engineer` | `iac-change-safety`, `infra-security-review`, `gated-delivery` | `infra-change` |
 | `agency-compliance-reviewer` | `regulated-engineering-controls`, `vendor-integration-review`, `migration-verification`, `gated-delivery` | |
 | `agency-knowledge-manager` | `post-merge-kb-update`, `glossary-discipline`, `gated-delivery` | |
 | `agency-orchestrator` | `gated-delivery` | `coordination-board` |
 | `agency-chief-of-staff` | `owner-question-protocol` | `owner-action-handoff` |
-| `agency-growth-marketer` | `revenue-state-audit`, `value-proposition-diagnosis` | |
+| `agency-growth-marketer` | `revenue-state-audit`, `value-proposition-diagnosis` | `conversion-drop-diagnosis` |
 | `agency-social-media-manager` | `approval-gated-publishing` | `publish-with-approval` |
-| `agency-email-marketer` | `approval-gated-publishing` | `email-send-with-approval` |
+| `agency-email-marketer` | `approval-gated-publishing` | `email-send-with-approval`, `one-to-one-email-send` |
 | `agency-finance-ops`, `council-finance-coach` | `double-entry-books` | |
-| `council-fitness-coach` | `endurance-race-plan` | |
+| `council-fitness-coach` | `endurance-race-plan` | `gear-shopping-list` |
 
 New profiles, only where no upstream profile owned the work:
 
 | Profile | Role |
 | --- | --- |
-| `agency-venture-operator` | Works one venture only, from its brief and binding constraint. Install one copy per venture. Workflows `repo-audit-to-issues` and `bounded-task-delivery`. |
+| `agency-venture-operator` | Works one venture only, from its brief and binding constraint. Install one copy per venture. Workflows `repo-audit-to-issues`, `remaining-work-to-issues` and `bounded-task-delivery`. |
 | `agency-onchain-engineer` | One token or protocol project, testnet first. Coordinates the `contract-change` workflow (independent code and security review, testnet, owner-approved mainnet). |
 | `property-*` (8 profiles) | Expert panel for a property investor in Belgium and France. The coordinator runs the `property-deal-review` workflow. See [`hermes-property/README.md`](hermes-property/README.md). |
 

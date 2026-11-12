@@ -43,8 +43,10 @@ Current values appear in the `[Skill config]` block when this skill loads; an un
 ## 1. Claim before you start
 Several sessions share the same repositories; duplicated work is pure waste. Before any substantial item (fix, review, migration, test campaign, refactor, design review), look for a claim where `delivery.board` says. With `none`, skip this section and say so.
 - Claimed with recent activity: do not touch it; tell the owner which session holds it. Claimed but stale: still do not take it over; point the owner at the claiming session.
+- Never pick an item parked as waiting on a human. An item missing from the board is not "no free work": the board mirrors the tracker and lags it, so add the item, then claim it.
 - Unclaimed: claim it first, with `session: <name> — started <UTC time>`. On Hermes Kanban, park the card as blocked at once: a dispatchable claim gets picked up by a worker and the work runs twice.
-- Comment on real progress, complete when done, release if you abandon.
+- Confirm your own claims with a dated progress comment, never another session's: refreshing someone else's claim hides the silence the board exists to show. Link the PR on the claim as soon as it exists.
+- Complete only against proof: the change merged on `<default>` and the work item closed; otherwise it waits in a verify state. Completing frees the claim. Release with a one-line reason when you abandon: bookkeeping, not failure.
 
 ## 2. Testing means the real thing, with numbers
 - Report PASS / SKIP / FAIL counts, never "tests pass". A skip is a test that did not run; a skip from a missing credential or local file is a FAIL.
@@ -85,6 +87,7 @@ A tool that tracks one version number silently skips a migration numbered below 
 
 ## 9. Keep shared knowledge true
 Code wins: fix documents that disagree, in the same delivery. A standing rule from the owner goes into the SOUL that follows it. Use the glossary's terms. No secret values in PRs, work items, chat or logs.
+A verified finding you will not fix in this turn becomes a work item where `delivery.issue_tracker` says, never only a chat line: search item bodies, open and closed, first; same root cause, add your evidence to the existing item.
 
 ## 10. Keep tool output small
 Logs and test runs go to a file; read `tail` or `grep -c`. `grep -n` before reading a range. Diffs start with `--stat`. Select JSON fields. Never re-read what has not changed.

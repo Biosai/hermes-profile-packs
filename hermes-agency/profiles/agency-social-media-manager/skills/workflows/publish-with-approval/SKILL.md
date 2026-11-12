@@ -46,7 +46,7 @@ The owner approves the exact text. An approval of a different version does not c
 - Who acts follows `publishing.approval`.
 
 ### 4. `publish` — `agency-social-media-manager`
-Publish exactly the approved text, then link the live post.
+Publish exactly the approved text, then link the live post. Without a write path, hand the owner the copy as plain text alone in its own message, commentary in a separate one, and ask for the live link.
 
 ### 5. `engage` — `agency-social-media-manager`
 Answer replies within the brief's limits and report what the post did.

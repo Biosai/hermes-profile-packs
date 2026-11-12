@@ -58,7 +58,9 @@ for the owner are acceptable only if the owner agrees; never push through anothe
 1. Restate the task as one outcome with an executable done criterion. Two outcomes are two
    tasks.
 2. Start from a fresh fetch of the default branch in an isolated worktree, one branch per
-   task. Never write to a protected branch directly, "just a typo" included.
+   task. Never write to a protected branch directly, "just a typo" included. To fix a broken
+   check, first run the repository's gate on the default branch: green there means an
+   unmerged branch broke it, and the fix is a commit on that branch, not a new branch.
 3. Write or update the test first and watch it fail for the right reason.
 4. Make the smallest change that makes it pass. Unrelated findings go to
    `repo-audit-to-issues`, not into extra commits.
@@ -69,6 +71,15 @@ for the owner are acceptable only if the owner agrees; never push through anothe
 7. Ask a reviewer other than the author (`agency-code-reviewer` or a person). Hand base,
    check and thread problems to `agency-git-steward`.
 8. After the merge, re-probe from a fresh clone of the default branch before calling it done.
+
+## Unfinished work
+Written code never stays only on a local disk. Commit it and push it as a draft whose
+description opens with what fails (the failing suites and why, the passing count), says "do not
+merge", names the item that finishes it, lists what is deliberately absent and the decisions
+worth challenging now; post the measured CI conclusion as a comment. Split a finished fix from
+unfinished work into two requests (check the finished paths out onto the right base). Pushed
+branches ahead of the default branch with no request are a missing request or dead weight:
+raise them. When your own sequencing was wrong, say so in the reply.
 
 ## Done when
 - One reviewable change exists for that one task, with the run that proves it and the evidence linked.
@@ -85,3 +96,6 @@ Review: <reviewer> - <status>   Not covered: <...>
 - A green check on a job that skipped the new test.
 - Scope creep: four fixes on one branch, none revertible alone.
 - Calling it done at merge. Done is the merged code observed working.
+- `git reset --hard`, `git clean -xdf` and a bare `git checkout .` destroy unpushed work. Use
+  `git restore --source=HEAD -- <path>`, `git switch`, or `git stash push -m <why> -- <path>`;
+  an approval prompt on a destructive command is a signal to re-read the plan.

@@ -56,9 +56,16 @@ This skill reads no settings: the maxims hold for any language, framework, repos
 21. **A fixed budget is a data-size ceiling.** A fixed timeout, page size or memory budget caps the volume the code can handle. Test near the ceiling.
 22. **Vendor assertions are dated facts.** "The vendor does X" holds as of a date and a source; tests that encode it say both.
 
+## What a check must assert
+23. **Assert the value your change moves.** A verdict string that another threshold can also produce, or a sign where an exact value is known, survives the change being reverted.
+24. **A check fails by name, never by crashing.** A bare index, key lookup or parse inside an assertion or its setup aborts the run under a fault and hides which guard broke.
+25. **An empty collection is a finding.** A section wrapped in "if there are items" reports "collected nothing" exactly like "nothing wrong". Test the empty case.
+26. **A pass rate needs its denominator.** Count the candidates independently of the items the checker processed; a checker whose pattern skipped some still prints 100%.
+27. **Testing the judge does not test the collector.** A checker split into collecting and judging facts needs a test that runs the collector whole.
+
 ## Output standard
 In a review: `Maxim 5 — <test name> — passes without contention: actors start sequentially`. In your own work: the maxims checked for each new test file.
 
 ## Traps
-- A test that passes with the change reverted is not testing the change.
+- A test that passes with the change reverted is not testing the change. Prove it with the `mutation-proof` workflow: one mutation per way the change can be undone.
 - This list is not exhaustive. Add a maxim when a new false green teaches one.
