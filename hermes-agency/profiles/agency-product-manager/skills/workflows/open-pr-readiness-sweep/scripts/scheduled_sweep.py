@@ -45,6 +45,10 @@ def main():
         print(f"ERROR: auditor script missing at {AUDITOR}")
         return 1
     os.makedirs(WORK, exist_ok=True)
+    path = os.path.join(WORK, "prs_open.json")
+    # A previous run's file must never stand in for this run's result.
+    if os.path.exists(path):
+        os.remove(path)
 
     env = dict(os.environ, GH_AUDIT_ORG=ORG)
     try:
@@ -69,9 +73,14 @@ def main():
         print(out[-1500:])
         return 1
 
+    if r.returncode != 0:
+        print(f"ERROR: the auditor exited with status {r.returncode}: no verdict.")
+        print(out[-1500:])
+        print((r.stderr or "")[-800:])
+        return 1
+
     print(out.strip())
 
-    path = os.path.join(WORK, "prs_open.json")
     if os.path.exists(path):
         try:
             with open(path, encoding="utf-8") as fh:
