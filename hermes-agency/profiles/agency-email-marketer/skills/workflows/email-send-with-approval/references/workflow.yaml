@@ -1,0 +1,41 @@
+name: email-send-with-approval
+version: 0.1.0
+description: "Draft, check, approve and send an email campaign"
+summary: >-
+  An email campaign is sent only after deliverability is checked and the owner approved the exact
+  campaign and audience. Drafts are free; the send is gated.
+pack: agency
+coordinator: agency-email-marketer
+trigger: >-
+  A campaign is needed: a launch, a newsletter slot, or a lifecycle message.
+uses_settings: [venture.brief, publishing.approval, owner.channel]
+steps:
+  - id: draft
+    profile: agency-email-marketer
+    skills: [email-campaign, approval-gated-publishing]
+    extra_skills:
+      - {skill: segmentation, when: "the audience is a segment, not the whole list"}
+    does: Draft the campaign and pick the audience from the venture's brief.
+    output: subject, body, audience and send time, as a draft in the email platform
+  - id: deliverability
+    profile: agency-email-marketer
+    skills: [deliverability-review]
+    needs: [draft]
+    on_fail: draft
+    does: Check authentication, links, list hygiene and spam risk before anyone approves.
+    output: a deliverability check that passes, or what to fix
+  - id: approve
+    human: true
+    decided_by: publishing.approval
+    needs: [deliverability]
+    asks: approve this exact campaign, audience and send time, or say what to change
+    does: The owner approves the exact campaign and audience.
+    output: the owner's approval, recorded verbatim
+  - id: send
+    profile: agency-email-marketer
+    skills: [approval-gated-publishing]
+    needs: [approve]
+    does: Schedule or send exactly the approved campaign to the approved audience.
+    output: the sent or scheduled campaign, linked
+done_when:
+  - The sent campaign and audience match the approved ones exactly.

@@ -11,22 +11,23 @@ This repository is the public upstream home for reusable Hermes profile distribu
 | **Hermes Agency** | `agency-*` | Professional specialists for engineering, product, design, QA, operations, marketing, content, and coordinated project work. |
 | **Hermes Council** | `council-*` | Personal specialists for growth, health, fitness, parenting, relationships, communication, community, faith, finances, home stewardship, personal admin, career, learning, recreation, travel, nutrition, sleep, and preparedness. |
 | **Hermes Academy** | `academy-*` | Professors and instructors for academic, technical, vocational, and professional learning. |
-| **Hermes Immo** | `immo-*` | A French-language expert panel for a property investor in Belgium and France: deal strategy, works costing, tax, deeds, leases and planning. Each expert prepares the real professional's work; none replaces it. |
+| **Hermes Property** | `property-*` | An expert panel for a property investor in Belgium and France: deal strategy, works costing, tax, deeds, leases and planning. Each expert prepares the real professional's work; none replaces it. |
 
 ### What this fork adds
 
 This fork adds what three teams of Hermes profiles running in production learned, generalized for public use: names, accounts, numbers and history removed, and the rules each team learned the hard way kept. It adapts upstream profiles where one already owns the work and adds new profiles only where none does:
 
-- **Hermes Immo** (`immo-*`), a new pack: no upstream profile covers property investment under Belgian and French law. Its team-wide rules live once in `hermes-immo/shared/RULES.md`; `sync_shared.py` copies them into every SOUL and the pack validator holds them byte-identical.
+- **Hermes Property** (`property-*`), a new pack: no upstream profile covers property investment under Belgian and French law. Its team-wide rules live once in `hermes-property/shared/RULES.md`; `sync_shared.py` copies them into every SOUL and the pack validator holds them byte-identical.
 - **Adapted Agency and Council profiles**: new role-owned skills added beside the upstream ones (see [Adaptations](#adaptations-in-this-fork)). Upstream SOUL and skill files are never edited in place, so `capabilities/baseline.json` still holds and upstream changes merge cleanly.
 - **Two new Agency profiles** for work no upstream profile owned: `agency-venture-operator` and `agency-onchain-engineer`.
-- **Team Recipes** that assemble them: `gated-repo-delivery`, `solo-founder-portfolio` and `property-deal-review`.
+- **Workflows**, kept apart from skills: seven multi-profile workflows defined in `workflows/` (such as `issue-to-merge`, `after-merge`, `infra-change`, `property-deal-review`) and five single-profile ones. See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md).
+- **Team Recipes** that assemble them and list the workflows each team can run: `gated-repo-delivery`, `solo-founder-portfolio` and `property-deal-review`.
 
 The packs deliberately separate durable context domains. Agency executes professional work, Council supports the person, and Academy teaches. A work profile should not need private life context, a personal profile should not inherit repository state merely because both run on Hermes, and a teaching profile should not silently become a production executor.
 
 <!-- profile-counts:start -->
 Hermes Agency contains 115 professional specialists. Hermes Council contains 22 focused profiles and 90 purpose-built personal-life skills. Hermes Academy contains 30 faculty profiles and 120 purpose-built teaching skills.
-Hermes Immo contains 8 profiles and 38 role-owned skills.
+Hermes Property contains 8 profiles and 38 role-owned skills.
 <!-- profile-counts:end -->
 
 ### Academy Continuing Education
@@ -41,29 +42,32 @@ See the [`Continuing Education guide`](docs/CONTINUING_EDUCATION.md) and [`archi
 
 Where an upstream profile already owned the work, this fork adds role-owned skills beside its existing ones instead of creating a near-duplicate profile. Every added skill follows [`docs/PORTABLE_SKILLS.md`](docs/PORTABLE_SKILLS.md): settings such as the code host, repository layout, issue tracker, board, merge and apply policy are declared under `metadata.hermes.config` (set them with `hermes config set skills.config.<key> <value>`, or let `hermes config migrate` prompt for them), credentials under `required_environment_variables`, and each skill names its prerequisites and stops cleanly when one is missing.
 
-| Profile | Added skills |
-| --- | --- |
-| `agency-backend-engineer` | `go-backend-craft`, `issue-clarification`, `post-merge-protocol`, `gated-delivery` |
-| `agency-qa-tester` | `real-run-verification`, `test-design-maxims`, `gated-delivery` |
-| `agency-product-manager` | `issue-authoring-standard`, `ready-queue`, `ready-to-merge-gate`, `gated-delivery` |
-| `agency-software-architect` | `fresh-main-evidence`, `readiness-review`, `gated-delivery` |
-| `agency-infrastructure-engineer` | `iac-human-apply`, `infra-security-review`, `gated-delivery` |
-| `agency-compliance-reviewer` | `regulated-engineering-controls`, `vendor-integration-review`, `migration-verification`, `gated-delivery` |
-| `agency-knowledge-manager` | `post-merge-kb-update`, `glossary-discipline`, `gated-delivery` |
-| `agency-orchestrator` | `coordination-board`, `gated-delivery` |
-| `agency-chief-of-staff` | `owner-question-protocol`, `owner-action-handoff` |
-| `agency-growth-marketer` | `revenue-state-audit`, `value-proposition-diagnosis` |
-| `agency-social-media-manager`, `agency-email-marketer` | `approval-gated-publishing` |
-| `agency-finance-ops`, `council-finance-coach` | `double-entry-books` |
-| `council-fitness-coach` | `endurance-race-plan` |
+| Profile | Added skills | Added workflows |
+| --- | --- | --- |
+| `agency-backend-engineer` | `go-backend-craft`, `issue-clarification`, `merge-followups`, `gated-delivery` | |
+| `agency-qa-tester` | `real-run-verification`, `test-design-maxims`, `gated-delivery` | |
+| `agency-product-manager` | `issue-authoring-standard`, `ready-to-merge-gate`, `gated-delivery` | `issue-to-merge`, `after-merge`, `ready-queue` |
+| `agency-software-architect` | `fresh-main-evidence`, `readiness-review`, `gated-delivery` | |
+| `agency-infrastructure-engineer` | `iac-change-safety`, `infra-security-review`, `gated-delivery` | `infra-change` |
+| `agency-compliance-reviewer` | `regulated-engineering-controls`, `vendor-integration-review`, `migration-verification`, `gated-delivery` | |
+| `agency-knowledge-manager` | `post-merge-kb-update`, `glossary-discipline`, `gated-delivery` | |
+| `agency-orchestrator` | `gated-delivery` | `coordination-board` |
+| `agency-chief-of-staff` | `owner-question-protocol` | `owner-action-handoff` |
+| `agency-growth-marketer` | `revenue-state-audit`, `value-proposition-diagnosis` | |
+| `agency-social-media-manager` | `approval-gated-publishing` | `publish-with-approval` |
+| `agency-email-marketer` | `approval-gated-publishing` | `email-send-with-approval` |
+| `agency-finance-ops`, `council-finance-coach` | `double-entry-books` | |
+| `council-fitness-coach` | `endurance-race-plan` | |
 
 New profiles, only where no upstream profile owned the work:
 
 | Profile | Role |
 | --- | --- |
-| `agency-venture-operator` | Works one venture only, from its brief and binding constraint. Install one copy per venture. |
-| `agency-onchain-engineer` | One token or protocol project, testnet first, contract changes gated by tests, independent review and owner approval. |
-| `immo-*` (8 profiles) | French-language expert panel for a property investor in Belgium and France. See [`hermes-immo/README.md`](hermes-immo/README.md). |
+| `agency-venture-operator` | Works one venture only, from its brief and binding constraint. Install one copy per venture. Workflows `repo-audit-to-issues` and `bounded-task-delivery`. |
+| `agency-onchain-engineer` | One token or protocol project, testnet first. Coordinates the `contract-change` workflow (independent code and security review, testnet, owner-approved mainnet). |
+| `property-*` (8 profiles) | Expert panel for a property investor in Belgium and France. The coordinator runs the `property-deal-review` workflow. See [`hermes-property/README.md`](hermes-property/README.md). |
+
+**Skills and workflows are separate.** A skill is know-how a role brings to any task; a workflow is an ordered process with a trigger, where each step names who acts, with which skills, and where a human decides. Workflows live in each profile's `skills/workflows/` (the Hermes `workflows` category). A workflow that hands work between profiles is defined once in `workflows/<name>.yaml` and rendered into its coordinating profile by `python scripts/sync_workflows.py`; on a Hermes Kanban board it runs as one card per step. See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md).
 
 `gated-delivery`, `approval-gated-publishing` and `double-entry-books` ship in several profiles. Each has one canonical source in `shared-skills/`; edit it there and run `python scripts/sync_shared_skills.py`.
 
@@ -99,8 +103,9 @@ hermes-profile-packs/
 ├── hermes-agency/
 ├── hermes-council/
 ├── hermes-academy/
-├── hermes-immo/
+├── hermes-property/
 ├── shared-skills/          # canonical copies of skills shipped by several profiles
+├── workflows/              # multi-profile workflow definitions (docs/WORKFLOWS.md)
 ├── docs/
 │   ├── CONTINUING_EDUCATION.md
 │   └── CONTINUING_EDUCATION_ARCHITECTURE.md
@@ -175,6 +180,7 @@ See [`docs/PROFILE_QUALITY.md`](docs/PROFILE_QUALITY.md), the source-to-catalog 
 python validate.py
 python scripts/update_readme_counts.py --check
 python scripts/sync_shared_skills.py --check
+python scripts/sync_workflows.py --check
 python -m unittest discover -s tests -p 'test_*.py'
 ```
 
@@ -185,7 +191,7 @@ The validation suite checks pack manifests, namespaces, distribution metadata, s
 ## Design principles
 
 1. **Coherent teams, not prompt dumps.** Profiles have explicit ownership and clean handoffs.
-2. **Namespace isolation.** `agency-*` is professional, `council-*` is personal, `academy-*` is educational, and `immo-*` serves a property investor.
+2. **Namespace isolation.** `agency-*` is professional, `council-*` is personal, `academy-*` is educational, and `property-*` serves a property investor.
 3. **Portable distributions only.** No runtime state, secrets, personal filesystem paths, or local caches.
 4. **Specialists remain specialists.** Profiles hand off rather than silently absorbing unrelated domains.
 5. **Smallest useful team.** Add profiles only for distinct expertise, independent review, or useful parallelism.

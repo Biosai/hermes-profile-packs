@@ -1,0 +1,49 @@
+name: publish-with-approval
+version: 0.1.0
+description: "Draft, fact-check, approve and publish a social post"
+summary: >-
+  A social post goes out only after the owner approved the exact text. Drafting is free; claims are
+  checked by someone other than the writer; publishing and replies follow.
+pack: agency
+coordinator: agency-social-media-manager
+trigger: >-
+  A post is needed: a launch, a result, an announcement, or a slot in the content plan.
+uses_settings: [venture.brief, publishing.approval, owner.channel]
+steps:
+  - id: draft
+    profile: agency-social-media-manager
+    skills: [approval-gated-publishing]
+    extra_skills:
+      - {skill: launch-post, when: "the post announces a launch"}
+      - {skill: thread-writing, when: "the post is a thread"}
+    does: Draft the post in the venture's voice from its brief, with every claim sourced.
+    output: the exact text, media and target account
+  - id: fact-check
+    profile: agency-content-writer
+    skills: [fact-checking]
+    needs: [draft]
+    optional_when: the post states numbers, results, or claims about other people or products
+    on_fail: draft
+    does: Check every claim and number against its source.
+    output: every claim confirmed with its source, or the ones to fix
+  - id: approve
+    human: true
+    decided_by: publishing.approval
+    needs: [fact-check]
+    asks: approve this exact text and media for this account, or say what to change
+    does: The owner approves the exact text. An approval of a different version does not count.
+    output: the owner's approval, recorded verbatim
+  - id: publish
+    profile: agency-social-media-manager
+    skills: [approval-gated-publishing]
+    needs: [approve]
+    does: Publish exactly the approved text, then link the live post.
+    output: the live post URL
+  - id: engage
+    profile: agency-social-media-manager
+    skills: [community-reply]
+    needs: [publish]
+    does: Answer replies within the brief's limits and report what the post did.
+    output: replies handled and first numbers, with the window measured
+done_when:
+  - The live post matches the approved text exactly.

@@ -1,0 +1,18 @@
+{
+  "profile": "property-architect",
+  "role": "Prepares the planning file and the question for the municipality; the permit stays with the real architect and the municipality.",
+  "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+  "skills": [
+    {
+      "name": "concept-diagrams",
+      "reason": "Sketch lot layouts and division options for the investor, never as a signed plan."
+    },
+    {
+      "name": "maps",
+      "reason": "Locate the property to establish its region and planning context."
+    }
+  ],
+  "plugins": [],
+  "mcps": [],
+  "seed_shadows": []
+}

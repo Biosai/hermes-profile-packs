@@ -7,6 +7,6 @@
     {"name":"hermes-agency","path":"hermes-agency","namespace":"agency-*","manifest":"hermes-agency/agency.json","purpose":"Professional multidisciplinary work."},
     {"name":"hermes-council","path":"hermes-council","namespace":"council-*","manifest":"hermes-council/council.json","purpose":"Personal life support, coaching, stewardship, and growth."},
     {"name":"hermes-academy","path":"hermes-academy","namespace":"academy-*","manifest":"hermes-academy/academy.json","purpose":"Academic, technical, vocational, and professional teaching."},
-    {"name":"hermes-immo","path":"hermes-immo","namespace":"immo-*","manifest":"hermes-immo/immo.json","display_name":"Hermes Immo","purpose":"French-language expert panel for a property investor in Belgium and France: deals, works, tax, deeds and leases.","hints":["immo","immobilier","immeuble","property","real","estate","bien","achat","acheter","revente","location","louer","bail","notaire","travaux","division","diviser","rental","renovation","landlord"]}
+    {"name":"hermes-property","path":"hermes-property","namespace":"property-*","manifest":"hermes-property/property.json","display_name":"Hermes Property","purpose":"Expert panel for a property investor in Belgium and France: deals, works, tax, deeds and leases.","hints":["property","real","estate","building","flat","apartment","buy","resale","rental","rent","lease","landlord","notary","renovation","works","division","immobilier","immeuble","bien","achat","acheter","location","bail","notaire","travaux","diviser"]}
   ]
 }

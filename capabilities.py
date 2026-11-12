@@ -19,6 +19,7 @@ import sys
 ROOT = Path(__file__).resolve().parent
 NARROW = {'hermes-wear', 'agency-orchestrator', 'academy-dean', 'council-steward'}
 GUIDE = 'skills/capabilities/profile-capabilities'
+WORKFLOWS = 'workflows'  # role-owned workflow skills (docs/WORKFLOWS.md), not supplemental payloads
 SHA = re.compile(r'^[0-9a-f]{40}$')
 
 
@@ -213,7 +214,7 @@ def run(root: Path = ROOT, *, check: bool = True) -> list[str]:
             path.write_bytes(content)
     for row in data['profiles']:
         bases = [p for p in (root / row['path'] / 'skills').iterdir()
-                 if p.is_dir() and p.name not in row['existing_skills']]
+                 if p.is_dir() and p.name not in row['existing_skills'] and p.name != WORKFLOWS]
         actual = {p for base in bases for p in base.rglob('*')
                   if p.is_file() and '__pycache__' not in p.parts and p.suffix != '.pyc'}
         extra = actual - set(outputs)

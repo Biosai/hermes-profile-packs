@@ -97,7 +97,7 @@ def derived_capabilities(source:Path)->tuple[str,...]:
     if not skills.is_dir(): return ()
     return tuple(sorted(
         skill.parent.name
-        for skill in skills.glob("*/SKILL.md")
+        for skill in [*skills.glob("*/SKILL.md"), *skills.glob("workflows/*/SKILL.md")]
         if skill.parent.name != "academy-continuing-education"
     ))
 
@@ -423,7 +423,7 @@ def main(argv=None):
         if args.recipe:
             r=recipes.get(args.recipe)
             if r is None: raise CLIError(f"unknown recipe: {args.recipe}")
-            tier=args.tier or recipe_catalog.DEFAULT_TIER; selected=resolve_recipe_selection(r,tier,profiles,pack_filter=pf); context={"recipe":r.id,"display_name":r.display_name,"pack":r.pack,"tier":tier,"workflow":list(r.workflow),"success_criteria":list(r.success_criteria),"optional_routines":list(r.optional_routines)}
+            tier=args.tier or recipe_catalog.DEFAULT_TIER; selected=resolve_recipe_selection(r,tier,profiles,pack_filter=pf); context={"recipe":r.id,"display_name":r.display_name,"pack":r.pack,"tier":tier,"workflow":list(r.workflow),"success_criteria":list(r.success_criteria),"optional_routines":list(r.optional_routines),"workflows":list(r.workflows)}
         else: selected=resolve_selection(profiles,explicit_names=args.profiles,category_specs=args.category,select_all=args.all,pack_filter=pf)
         if not selected: raise CLIError("no profiles selected. Use the wizard, --recipe, --profiles, --category, --all, --catalog, --list-recipes, or --recommend.")
         stats=selected_stats(selected,profiles); plan={"status":"plan","profiles":[p.name for p in selected],"stats":stats}; plan.update(context or {})

@@ -7,10 +7,11 @@ All notable changes to Hermes Profile Packs will be documented here.
 ### Added (fork)
 
 - Distilled three Hermes teams running in production into public, generalized content, adapting upstream profiles wherever one already owned the work:
-  - **Hermes Immo** (`immo-*`), a new French-language pack: an expert panel for a property investor in Belgium and France, with a canonical `shared/RULES.md` that `sync_shared.py` copies into every SOUL.
+  - **Hermes Property** (`property-*`), a new pack: an expert panel for a property investor in Belgium and France, with a canonical `shared/RULES.md` that `sync_shared.py` copies into every SOUL. Written in English; profiles reply in the investor's language.
   - New role-owned skills on existing Agency and Council profiles (Go backend craft, real test runs with counts, ready-to-merge gate, IaC with human apply, approval-gated publishing, double-entry books, endurance race plans, and more), added beside the upstream skills without editing any baselined file.
   - Two new Agency profiles: `agency-venture-operator` and `agency-onchain-engineer`.
   - Recipes `gated-repo-delivery`, `solo-founder-portfolio` and `property-deal-review`.
+- Workflows are separate from skills (`docs/WORKFLOWS.md`): seven multi-profile workflows are defined in `workflows/*.yaml` and rendered into their coordinating profile by `scripts/sync_workflows.py`, which checks every step's profile and skills, dependencies, human deciders and settings; five single-profile workflows live under `skills/workflows/`. On a Hermes Kanban board a workflow runs as one card per step. Recipes list the workflows their team can run.
 - Skills shipped by several profiles have one canonical source in `shared-skills/`; `scripts/sync_shared_skills.py` writes the copies and validation holds them byte-identical.
 - The root installer and README count generator now read packs from `packs.json` instead of a fixed list of three; a pack may declare its own `display_name` and recommendation `hints` there.
 

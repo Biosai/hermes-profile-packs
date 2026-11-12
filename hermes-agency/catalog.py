@@ -145,7 +145,7 @@ def _profile_capabilities(profile_dir: Path) -> list[str]:
     for skill_dir in sorted(path for path in skills_dir.iterdir() if path.is_dir()):
         if skill_dir.is_symlink():
             raise ValueError(f"{skill_dir}: capability directories may not be symlinks")
-        if skill_dir.name in {"capabilities", "software-development", "research", "productivity", "creative", "autonomous-ai-agents", "web"}:
+        if skill_dir.name in {"capabilities", "software-development", "research", "productivity", "creative", "autonomous-ai-agents", "web", "workflows"}:
             # Supplemental catalog entries are published separately: the stable
             # role-owned capabilities/path contract must not change.
             for child in skill_dir.iterdir():

@@ -171,12 +171,12 @@ Every public profile is included. Supplemental skills are shipped on demand; all
 | council-travel-planner | grounded-citations, maps | none | kiwi, trivago |
 | council-communication-coach | retain only | none | none |
 | council-community-coach | maps | none | none |
-| immo-architecte | concept-diagrams, maps | none | none |
-| immo-associe | microsoft-office, maps | none | none |
-| immo-avocat | grounded-citations | none | none |
-| immo-bras-droit | document-to-action-items, meeting-action-items | none | none |
-| immo-comptable-be | grounded-citations, microsoft-office | none | none |
-| immo-comptable-fr | grounded-citations, microsoft-office | none | none |
-| immo-conducteur-travaux | microsoft-office | none | none |
-| immo-notaire | grounded-citations, document-to-action-items | none | none |
+| property-accountant-be | grounded-citations, microsoft-office | none | none |
+| property-accountant-fr | grounded-citations, microsoft-office | none | none |
+| property-architect | concept-diagrams, maps | none | none |
+| property-coordinator | document-to-action-items, meeting-action-items | none | none |
+| property-investment-partner | microsoft-office, maps | none | none |
+| property-lawyer | grounded-citations | none | none |
+| property-notary | grounded-citations, document-to-action-items | none | none |
+| property-works-estimator | microsoft-office | none | none |
 | hermes-wear | retain only | none | none |

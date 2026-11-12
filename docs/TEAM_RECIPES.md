@@ -85,9 +85,13 @@ It uses the same shared recipe engine as `install.py`; it does not maintain inde
 - `technical-study` — computer science, systems, quantitative foundations, research methods, and adjacent faculty.
 - `cybersecurity-learning` — defensive cybersecurity with prerequisite-aware computer science and systems teaching.
 
-### Hermes Immo
+### Hermes Property
 
 - `property-deal-review` — one property deal reviewed by an expert panel: strategy, works, tax, deed and lease, prepared for the real professionals.
+
+## Workflows
+
+A recipe may list, in `workflows`, the multi-profile workflows its team can run (see `docs/WORKFLOWS.md`). Every profile those workflows need is in the recipe's `expanded` tier; `scripts/sync_workflows.py --check` enforces it.
 
 ## Runtime boundary
 

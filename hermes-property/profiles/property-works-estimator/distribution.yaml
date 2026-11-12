@@ -1,0 +1,5 @@
+name: property-works-estimator
+version: 0.1.0
+description: "Works estimator: turns a listing, photos and certificates into cost items per level of intervention, as ranges, separating cost price from estimate."
+author: "Hermes Profile Packs contributors"
+license: "AGPL-3.0-only"

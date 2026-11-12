@@ -137,6 +137,14 @@ def main() -> int:
     if readme_count_check.returncode:
         errors.append("README profile counts are stale or could not be verified")
 
+    if (ROOT / "workflows").is_dir():
+        workflow_check = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "sync_workflows.py"), "--check"],
+            cwd=ROOT,
+        )
+        if workflow_check.returncode:
+            errors.append("a workflow definition is invalid or its rendering is stale (scripts/sync_workflows.py)")
+
     if (ROOT / "shared-skills" / "targets.json").is_file():
         shared_check = subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "sync_shared_skills.py"), "--check"],

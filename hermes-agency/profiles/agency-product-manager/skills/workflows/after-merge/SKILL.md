@@ -1,0 +1,73 @@
+---
+name: after-merge
+description: "Close the loop after a change merges"
+metadata:
+  hermes:
+    tags: [workflow, multi-profile]
+    config:
+      - {key: delivery.board, description: "Where the team claims work.", default: "none"}
+      - {key: delivery.code_host, description: "Where code and reviews live.", default: "detect"}
+      - {key: delivery.issue_tracker, description: "Where findings and work items go.", default: "detect"}
+      - {key: owner.channel, description: "Where questions and owner actions reach the owner.", default: "this conversation"}
+    prerequisites:
+      commands: [hermes]
+---
+# Workflow: after-merge
+
+Everything that must happen once a change has merged, done by the profile that owns each part: the developer's clean-up and counterpart, the knowledge base and shared skills, and closing the work item against its acceptance criteria.
+
+You coordinate this workflow. Each step belongs to one profile, which runs it with its own skills; never run another profile's step yourself. This file is generated from `workflows/after-merge.yaml` (the same definition is in `references/workflow.yaml`).
+
+## Trigger
+A pull or merge request that belongs to a work item has merged (for a multi-repo item: every PR of it).
+
+## Steps
+| # | Step | Actor | Loads | After | Produces |
+|---|---|---|---|---|---|
+| 1 | `followups` | `agency-backend-engineer` | `merge-followups` | — | the follow-up report with counterpart and docs PR links |
+| 2 | `knowledge` | `agency-knowledge-manager` | `post-merge-kb-update` | — | knowledge and skills PRs, or "nothing to update" with the reason |
+| 3 | `close` | `agency-product-manager` | `acceptance-criteria` | `followups`, `knowledge` | the work item closed, with every follow-up linked |
+
+Every profile step also loads `gated-delivery`.
+
+### 1. `followups` — `agency-backend-engineer`
+Clean up, record the downstream counterpart, update the repository docs and your memory, release the claim.
+
+### 2. `knowledge` — `agency-knowledge-manager`
+Update the knowledge base and shared skills from the merged diff.
+
+### 3. `close` — `agency-product-manager`
+Check the merged change against the acceptance criteria, link the follow-ups, and move the item to done.
+
+## Prerequisites
+| Needs | Why | Check |
+|---|---|---|
+| Profiles installed: `agency-backend-engineer`, `agency-knowledge-manager`, `agency-product-manager` | each step runs as its own profile | `hermes profile list` |
+| The `kanban` toolset, when `delivery.board` is `hermes-kanban` | one card per step | `kanban_list` answers |
+
+If a required prerequisite is missing, stop before step 1. Say which one, what it blocks, and the smallest access that would unblock it. A step whose profile is not installed is never run under another profile: report the workflow as blocked at that step. Never report a step done that its profile did not complete.
+
+## Configuration
+- `delivery.board` decides how the workflow runs (below).
+- `delivery.code_host`: Where code and reviews live. Decides the CLI (`gh`, `glab`, …) and the words (pull request vs merge request). Detect from `git remote get-url origin`.
+- `delivery.issue_tracker`: Where findings and work items go. `file`: a Markdown file named in `delivery.issue_file`. `none`: findings go in the report, never into a tracker.
+- `owner.channel`: Where questions and owner actions reach the owner.
+
+Current values appear in the `[Skill config]` block when this skill loads; an unset key shows its declared default. Persist a value with `hermes config set skills.config.<key> <value>` (per profile: `hermes -p <profile> config set …`); `hermes config migrate` prompts for keys still unset.
+
+## Run it
+### On a Hermes Kanban board (`delivery.board: hermes-kanban`)
+1. Create every card up front, in step order, with `kanban_create`: title `after-merge: <step> — <work item>`, `assignee` the step's profile, `skills` the step's skills (plus the ones every step loads, and any extra skill whose condition holds), `parents` the cards of its After steps, and a body with the step's instructions, what it must produce and a link to the work item. For a step with an "On failure" target, the body also says: on a problem, comment the findings and block the card instead of completing it. The dispatcher starts each card when its parents are done.
+2. A human step is a card assigned to you. When it starts, ask through `owner.channel` and block it with `kanban_block(kind="needs_input")`. On a go, comment the answer verbatim and complete the card; a human action (such as a merge) is complete only once you have verified it happened. On a no, comment it, leave the card blocked, and report the workflow stopped at that step.
+3. An optional step whose condition does not hold is completed with `skipped: <reason>`, so the steps after it proceed.
+4. A step with an "On failure" target that finds a problem comments its findings and blocks its card. Create a fix card for the target step's profile with the findings, make it a parent of the checking card (`kanban_link(parent_id=<fix>, child_id=<check>)`), and unblock the checking card (`kanban_unblock`): it waits until the fix is done, then runs again.
+
+### Without a board (`delivery.board: none` or `tracker`)
+Run the steps in dependency order. Hand each step to its profile, through the host's profile delegation or that profile's channel, with its skills, the work item and the outputs of its After steps; wait for the output and check it against "Produces". Loop back on failure as above. At a human step, ask through `owner.channel` and wait. With `tracker`, record each step's start, output and decision as comments on the work item.
+
+## Done when
+- The work item is done and links the merge, the counterpart and every knowledge update.
+- Every step is done, or skipped with the reason its condition did not hold; every human decision is recorded verbatim.
+
+## Report
+Each update names the workflow, the current step and its actor, links the cards or the work item, and says what is needed from whom, if anything.

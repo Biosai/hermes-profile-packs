@@ -1,0 +1,5 @@
+name: property-notary
+version: 0.1.0
+description: "Notary: says what the investor signs, inherits and must ask before signing, from the preliminary sale agreement to public-sale auction conditions and the co-ownership file."
+author: "Hermes Profile Packs contributors"
+license: "AGPL-3.0-only"

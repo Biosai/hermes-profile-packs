@@ -2,7 +2,7 @@
 
 A skill in this repository must work for a team it has never met. One team has a monorepo, another ten repositories. One tracks work in GitHub Issues, another in Jira, a third nowhere. One merges after review, another only on the owner's word. A skill that hard-codes any of this is wrong for most of its users.
 
-This convention applies to every skill added by this fork: the Agency and Council additions, `shared-skills/`, the two new Agency profiles and `hermes-immo`. Upstream skills are left as they are.
+This convention applies to every skill added by this fork: the Agency and Council additions, `shared-skills/`, the two new Agency profiles and `hermes-property`. Upstream skills are left as they are.
 
 ## 1. Settings, not assumptions
 
@@ -33,11 +33,11 @@ In the body, a `## Configuration` section says how each value changes the proced
 | Key | Values | Default | Meaning |
 |---|---|---|---|
 | `delivery.code_host` | github, gitlab, bitbucket, other, detect | detect | Where code and reviews live. Decides the CLI (`gh`, `glab`, …) and the words (pull request vs merge request). Detect from `git remote get-url origin`. |
-| `delivery.repo_layout` | single, monorepo, multi-repo, detect | detect | Monorepo: scope every change, test run and CI filter to the affected packages. Multi-repo: a change may span repos; link them. |
+| `delivery.repo_layout` | single, monorepo, multi-repo, detect | detect | How the code is split across repositories. Monorepo: scope every change, test run and CI filter to the affected packages. Multi-repo: a change may span repos; link them. |
 | `delivery.repos` | paths or URLs, comma-separated | (empty: current directory) | The working copies this profile may read or change. |
-| `delivery.default_branch` | a branch name, detect | detect | Detect with `git symbolic-ref --short refs/remotes/origin/HEAD`. Never assume `main`. |
+| `delivery.default_branch` | a branch name, detect | detect | The repository's default branch. Detect with `git symbolic-ref --short refs/remotes/origin/HEAD`; never assume `main`. |
 | `delivery.issue_tracker` | github, gitlab, jira, linear, file, none, detect | detect | Where findings and work items go. `file`: a Markdown file named in `delivery.issue_file`. `none`: findings go in the report, never into a tracker. |
-| `delivery.issue_file` | a path | (empty) | Used only when `delivery.issue_tracker` is `file`. |
+| `delivery.issue_file` | a path | (empty) | The Markdown file that holds work items. Used only when `delivery.issue_tracker` is `file`. |
 | `delivery.board` | hermes-kanban, tracker, none | none | Where the team claims work. `none`: skip board steps and say so. |
 | `delivery.merge_policy` | owner, reviewer, auto-when-green | owner | Who may merge. A profile never merges under `owner`. |
 | `delivery.iac_tool` | terraform, opentofu, pulumi, cloudformation, other, none, detect | detect | Infrastructure-as-code tool, when there is one. |
@@ -51,10 +51,10 @@ In the body, a `## Configuration` section says how each value changes the proced
 | `books.format` | beancount, hledger, ledger, spreadsheet, detect | detect | Bookkeeping file format. |
 | `books.location` | a path | (empty: ask) | Where the books live. |
 | `training.record` | memory, a file path, an app export | memory | Where the training log lives. |
-| `immo.fiche_investisseur` | memory, a path | memory | Where the investor's profile and own rules live. |
-| `immo.registre_questions` | memory, a path | memory | Where open questions and answers are recorded. |
-| `immo.juridictions` | e.g. `BE-WAL,BE-BRU,BE-VLA,FR`, detect | detect | Regions and countries in play. Detect from the property's address, then confirm. |
-| `immo.bibliotheque_ouvrages` | a path, none | none | The work-item cost library, when one exists. |
+| `property.investor_file` | memory, a path | memory | Where the investor's profile and own rules live. |
+| `property.question_register` | memory, a path | memory | Where open questions and answers are recorded. |
+| `property.jurisdictions` | e.g. `BE-WAL,BE-BRU,BE-VLA,FR`, detect | detect | Regions and countries in play. Detect from the property's address, then confirm. |
+| `property.cost_library` | a path, none | none | The work-item cost library, when one exists. |
 
 Add a key only when no row fits, and add it to this table in the same change.
 
