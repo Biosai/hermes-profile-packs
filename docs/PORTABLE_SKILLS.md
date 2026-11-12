@@ -39,6 +39,7 @@ In the body, a `## Configuration` section says how each value changes the proced
 | `delivery.issue_tracker` | github, gitlab, jira, linear, file, none, detect | detect | Where findings and work items go. `file`: a Markdown file named in `delivery.issue_file`. `none`: findings go in the report, never into a tracker. |
 | `delivery.issue_file` | a path | (empty) | The Markdown file that holds work items. Used only when `delivery.issue_tracker` is `file`. |
 | `delivery.board` | hermes-kanban, tracker, none | none | Where the team claims work. `none`: skip board steps and say so. |
+| `delivery.handoff` | profile-turn, channel, owner-relay | profile-turn | How a step reaches another profile when no board runs the workflow. `profile-turn`: one non-interactive turn of that profile, whose reply is the step's output. `channel`: a message in that profile's channel. `owner-relay`: the owner passes it on. |
 | `delivery.merge_policy` | owner, reviewer, auto-when-green | owner | Who may merge. A profile never merges under `owner`. |
 | `delivery.iac_tool` | terraform, opentofu, pulumi, cloudformation, other, none, detect | detect | Infrastructure-as-code tool, when there is one. |
 | `delivery.apply_policy` | human, pipeline-after-approval | human | Who applies infrastructure changes. A profile never applies under `human`. |

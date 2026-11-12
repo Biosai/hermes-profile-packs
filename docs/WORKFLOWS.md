@@ -69,9 +69,29 @@ Edit the definition, never the rendered `SKILL.md`: the check fails on a hand ed
 The rendered skill tells the coordinator, per `delivery.board`:
 
 - **`hermes-kanban`**: create one card per step with `kanban_create` (assignee = the step's profile, `skills` = its skills, `parents` = the cards of its `needs`). The dispatcher starts each card when its parents are done. A human step is a card assigned to the coordinator, blocked with `kanban_block(kind="needs_input")` until the human answers. A failed check blocks its card; the coordinator creates a fix card for the `on_fail` profile, links it as the check card's parent, and unblocks the check card, which reruns once the fix is done.
-- **`none` or `tracker`**: run the steps in dependency order, handing each to its profile through the host's delegation or the profile's channel, and stop at human steps.
+- **`none` or `tracker`**: run the steps in dependency order and stop at human steps. A step reaches its profile the way `delivery.handoff` says: `profile-turn` (one non-interactive turn of that profile, `hermes -p <profile> chat -Q -s <skills> --query-file <brief file>`, whose reply is the step's output), `channel` (a message in that profile's channel) or `owner-relay` (the owner passes the brief on).
 
 A step whose profile is not installed is never run by another profile: the workflow is reported blocked at that step.
+
+## Fewer profiles than roles
+
+A definition names one pack profile per role, and the rendering shipped here assumes each is installed. A smaller team renders its own copy with a **role assignment**: every role is given to one of the team's profiles, or to `self`, the profile that runs the workflow.
+
+```bash
+# one profile holds every role
+python scripts/sync_workflows.py --render issue-to-merge --solo > SKILL.md
+# the runner writes, a second profile reviews
+python scripts/sync_workflows.py --render contract-change \
+  --assign agency-onchain-engineer=self \
+  --assign agency-code-reviewer=reviewer --assign agency-security-reviewer=reviewer > SKILL.md
+```
+
+Put the result in the running profile's `skills/workflows/<name>/SKILL.md`, with the skills its steps load. The rendering changes with the assignment, and says what the team gives up:
+
+- **One profile holds every role.** The steps keep their order and each still produces its own output, but the skill states that no second profile checks the work, forbids reporting a step as independently reviewed, and makes the human step the only independent check. There is nothing to hand over, so `delivery.handoff` is not used.
+- **The runner holds some roles.** It runs the steps marked "you" and hands the others to the profiles named, on the board or through `delivery.handoff`.
+
+A `## Roles here` table at the end of the rendering records who holds each role. Give independent review to a profile that did not do the work whenever one exists: a workflow whose value is a second pair of eyes (`contract-change`, the `verify` step of `issue-to-merge`) loses that value when one profile holds every role, and the rendering says so rather than hiding it.
 
 ## Shipped workflows
 

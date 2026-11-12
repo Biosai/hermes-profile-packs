@@ -12,6 +12,14 @@ coordinating profile as a Hermes skill in the `workflows` category:
     python scripts/sync_workflows.py           # validate, then write every rendering
     python scripts/sync_workflows.py --check   # validate and report drift, write nothing
 
+A team with fewer profiles than a workflow has roles renders its own copy, with
+several roles (or all of them) held by one profile:
+
+    python scripts/sync_workflows.py --render issue-to-merge --solo
+    python scripts/sync_workflows.py --render contract-change \
+        --assign agency-onchain-engineer=self --assign agency-code-reviewer=reviewer \
+        --assign agency-security-reviewer=reviewer
+
 See docs/WORKFLOWS.md for the format and how a coordinator runs a workflow.
 """
 from __future__ import annotations
@@ -31,6 +39,9 @@ STEP_KEYS = {"id", "profile", "human", "skills", "extra_skills", "does", "output
              "on_fail", "optional_when", "decided_by", "asks", "who"}
 TOP_KEYS = {"name", "version", "description", "summary", "pack", "coordinator", "trigger",
             "uses_settings", "all_steps_load", "steps", "done_when", "then"}
+RUNNER = "self"            # in a role assignment: the profile that runs the workflow
+BOARD = "delivery.board"
+HANDOFF = "delivery.handoff"
 REGISTRY_ROW = re.compile(r"^\|\s*`([a-z_]+\.[a-z_]+)`\s*\|([^|]*)\|([^|]*)\|([^|]*)\|\s*$")
 
 
@@ -53,6 +64,9 @@ def load_registry(root: Path) -> dict[str, dict[str, str]]:
             registry[key] = {"values": values.replace("`", ""), "default": default, "meaning": meaning}
     if not registry:
         raise WorkflowError("no settings registry found in docs/PORTABLE_SKILLS.md")
+    for key in (BOARD, HANDOFF):
+        if key not in registry:
+            raise WorkflowError(f"the settings registry lacks {key}, which every workflow rendering uses")
     return registry
 
 
@@ -217,26 +231,82 @@ def first_sentence(text: str) -> str:
     return head if head.endswith((".", "!", "?")) else head + "."
 
 
-def actor(step: dict) -> str:
+def roles_of(wf: dict) -> list[str]:
+    """The pack profiles a definition names: one per profile step, plus the coordinator."""
+    return sorted({s["profile"] for s in wf["steps"] if not s.get("human")} | {wf["coordinator"]})
+
+
+def assignment_from(wf: dict, pairs: list[str], solo: bool) -> dict[str, str]:
+    """Role assignment from the command line: `--solo`, or one `--assign ROLE=WHO` per role."""
+    roles = roles_of(wf)
+    if solo:
+        if pairs:
+            raise WorkflowError("--solo and --assign are exclusive")
+        return {role: RUNNER for role in roles}
+    assignment = {}
+    for pair in pairs:
+        role, sep, who = pair.partition("=")
+        if not sep or role not in roles or not ID_RE.fullmatch(who):
+            raise WorkflowError(f"--assign {pair!r}: expected ROLE=WHO with ROLE one of {roles} and WHO a profile name or {RUNNER!r}")
+        assignment[role] = who
+    missing = sorted(set(roles) - set(assignment))
+    if missing:
+        raise WorkflowError(f"{wf['name']}: no --assign for {missing} (or use --solo)")
+    return assignment
+
+
+def actor(step: dict, assignment: dict[str, str] | None = None) -> str:
     if step.get("human"):
         if step.get("who"):
             return step["who"]
         return "the owner" if step["decided_by"] == "owner" else f"the human named by `{step['decided_by']}`"
-    return f"`{step['profile']}`"
+    who = step["profile"] if assignment is None else assignment[step["profile"]]
+    return "you" if who == RUNNER else f"`{who}`"
 
 
-def render_skill(wf: dict, registry: dict, coordinators: dict[str, str]) -> str:
+def render_skill(wf: dict, registry: dict, coordinators: dict[str, str],
+                 assignment: dict[str, str] | None = None) -> str:
+    """Render one definition as a Hermes skill.
+
+    `assignment` maps every pack profile the definition names to the profile that holds
+    that role in the reader's team, or to RUNNER for the profile running the workflow.
+    Without it each role is its own pack profile (the rendering shipped in this repo).
+    `coordinators` gives, per follow-on workflow, who coordinates it (a profile or RUNNER).
+    """
     name = wf["name"]
     steps = wf["steps"]
-    settings = list(dict.fromkeys(["delivery.board", *(wf.get("uses_settings") or [])]))
+    holders = [s["profile"] if assignment is None else assignment[s["profile"]]
+               for s in steps if not s.get("human")]
+    solo = all(h == RUNNER for h in holders)        # one profile holds every role
+    mixed = not solo and RUNNER in holders          # the runner holds some roles
+    others = sorted({h for h in holders if h != RUNNER})
+    settings = list(dict.fromkeys([BOARD, *([] if solo else [HANDOFF]), *(wf.get("uses_settings") or [])]))
     config = "\n".join(
         f"      - {{key: {key}, description: {json.dumps(first_sentence(registry[key]['meaning']), ensure_ascii=False)}, "
         f"default: {json.dumps(registry[key]['default'], ensure_ascii=False)}}}"
         for key in settings
     )
-    profiles = sorted({s["profile"] for s in steps if not s.get("human")})
     always = wf.get("all_steps_load") or []
     has_human = any(s.get("human") for s in steps)
+    if solo:
+        notice = ["> **One profile holds every role here.** The description below was written for a team of "
+                  "profiles. In this setup you run every step yourself, and no second profile checks the work.",
+                  ""]
+        mode = ("You run every step of this workflow yourself, loading each step's skills as you reach it. "
+                "Keep the steps separate and in order: each one still produces its own output. Never report a "
+                "step as independently reviewed or verified. "
+                + ("The human step is the only independent check, so give that person the evidence itself, "
+                   "not your summary of it. " if has_human else
+                   "Nobody else checks this work: say so in the report. "))
+    elif mixed:
+        notice = []
+        mode = ("You coordinate this workflow and run the steps marked \"you\" yourself, loading each step's "
+                "skills as you reach it. A step that names another profile belongs to that profile; never run "
+                "it yourself. ")
+    else:
+        notice = []
+        mode = ("You coordinate this workflow. Each step belongs to one profile, which runs it with its own "
+                "skills; never run another profile's step yourself. ")
 
     lines = [
         "---",
@@ -244,7 +314,7 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str]) -> str:
         f"description: {json.dumps(wf['description'])}",
         "metadata:",
         "  hermes:",
-        "    tags: [workflow, multi-profile]",
+        f"    tags: [workflow, {'single-profile' if solo else 'multi-profile'}]",
         "    config:",
         config,
         "    prerequisites:",
@@ -252,10 +322,10 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str]) -> str:
         "---",
         f"# Workflow: {name}",
         "",
+        *notice,
         wf["summary"].strip(),
         "",
-        "You coordinate this workflow. Each step belongs to one profile, which runs it with its own "
-        "skills; never run another profile's step yourself. This file is generated from "
+        f"{mode}This file is generated from "
         f"`workflows/{name}.yaml` (the same definition is in `references/workflow.yaml`).",
         "",
         "## Trigger",
@@ -267,11 +337,11 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str]) -> str:
     ]
     for i, s in enumerate(steps, 1):
         loads = _code((s.get("skills") or []))
-        lines.append(f"| {i} | `{s['id']}` | {actor(s)} | {loads} | {_code(s.get('needs') or [])} | {s['output'].strip()} |")
+        lines.append(f"| {i} | `{s['id']}` | {actor(s, assignment)} | {loads} | {_code(s.get('needs') or [])} | {s['output'].strip()} |")
     if always:
         lines += ["", f"Every profile step also loads {_code(always)}."]
     for i, s in enumerate(steps, 1):
-        lines += ["", f"### {i}. `{s['id']}` — {actor(s)}", s["does"].strip()]
+        lines += ["", f"### {i}. `{s['id']}` — {actor(s, assignment)}", s["does"].strip()]
         if s.get("human"):
             lines.append(f"- Asks: {s['asks'].strip()}")
             if s["decided_by"] != "owner":
@@ -288,25 +358,62 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str]) -> str:
         "## Prerequisites",
         "| Needs | Why | Check |",
         "|---|---|---|",
-        f"| Profiles installed: {_code(profiles)} | each step runs as its own profile | `hermes profile list` |",
-        "| The `kanban` toolset, when `delivery.board` is `hermes-kanban` | one card per step | `kanban_list` answers |",
     ]
+    if others:
+        lines.append(f"| Profiles installed: {_code(others)} | "
+                     f"{'their steps run as those profiles' if mixed else 'each step runs as its own profile'} | "
+                     "`hermes profile list` |")
+        lines.append("| A way to hand a step to another profile, when there is no board (`delivery.handoff`) | "
+                     "steps that are not yours | the profile answers a test brief |")
+    lines.append("| The `kanban` toolset, when `delivery.board` is `hermes-kanban` | one card per step | `kanban_list` answers |")
     if has_human:
         lines.append("| A way to reach the owner (`owner.channel`) | human steps | the owner answers there |")
     lines += [
         "",
         "If a required prerequisite is missing, stop before step 1. Say which one, what it blocks, and the "
-        "smallest access that would unblock it. A step whose profile is not installed is never run under "
-        "another profile: report the workflow as blocked at that step. Never report a step done that its "
-        "profile did not complete.",
+        "smallest access that would unblock it. "
+        + ("Never report a step done that you did not complete." if solo else
+           "A step whose profile is not installed is never run under another profile: report the workflow "
+           "as blocked at that step. Never report a step done that its profile did not complete."),
         "",
         "## Configuration",
         "- `delivery.board` decides how the workflow runs (below).",
     ]
-    for key in settings[1:]:
+    if not solo:
+        lines.append("- `delivery.handoff` decides how a step reaches another profile when no board runs the "
+                     "workflow (below).")
+    for key in [k for k in settings if k not in (BOARD, HANDOFF)]:
         deciders = [s["id"] for s in steps if s.get("decided_by") == key]
         note = f" Decides who acts at {_code(deciders)}." if deciders else ""
         lines.append(f"- `{key}`: {registry[key]['meaning']}{note}")
+    assignee = ("your own profile" if solo else
+                "the step's profile (your own for a step marked \"you\")" if mixed else "the step's profile")
+    fixer = "the target step" if solo else "the target step's profile"
+    tracker_note = ("With `tracker`, record each step's start, output and decision as comments on the "
+                    "work item.")
+    if solo:
+        without_board = [
+            "Work through the steps in dependency order, loading each step's skills as you reach it, and "
+            "check each output against \"Produces\" before the next step. On a failed check, go back to the "
+            "step named under \"On failure\" with the findings, then run the check again. At a human step, "
+            f"ask through `owner.channel` and wait. {tracker_note}",
+        ]
+    else:
+        without_board = [
+            "Run the steps in dependency order. "
+            + ("Do the steps marked \"you\" yourself. Hand every other step " if mixed else "Hand each step ")
+            + "to its profile the way `delivery.handoff` says:",
+            "- `profile-turn`: one non-interactive turn of that profile, for example "
+            "`hermes -p <profile> chat -Q -s <skills> --query-file <brief file>`. Its final reply is the "
+            "step's output. Never add a flag that skips approvals.",
+            "- `channel`: post the brief in that profile's channel and wait for its answer there.",
+            "- `owner-relay`: give the brief to the owner through `owner.channel` and ask them to pass it on.",
+            "",
+            "The brief carries the step's instructions, its skills, the work item and the outputs of its "
+            "After steps. Wait for the output and check it against \"Produces\"; an answer that does not "
+            "produce it is not a completed step. Loop back on failure as above. At a human step, ask "
+            f"through `owner.channel` and wait. {tracker_note}",
+        ]
     lines += [
         "",
         "Current values appear in the `[Skill config]` block when this skill loads; an unset key shows its "
@@ -316,7 +423,7 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str]) -> str:
         "## Run it",
         "### On a Hermes Kanban board (`delivery.board: hermes-kanban`)",
         f"1. Create every card up front, in step order, with `kanban_create`: title `{name}: <step> — <work item>`, "
-        "`assignee` the step's profile, `skills` the step's skills (plus the ones every step loads, and any "
+        f"`assignee` {assignee}, `skills` the step's skills (plus the ones every step loads, and any "
         "extra skill whose condition holds), `parents` the cards of its After steps, and a body with the "
         "step's instructions, what it must produce and a link to the work item. For a step with an \"On "
         "failure\" target, the body also says: on a problem, comment the findings and block the card "
@@ -328,16 +435,12 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str]) -> str:
         "3. An optional step whose condition does not hold is completed with `skipped: <reason>`, so the "
         "steps after it proceed.",
         "4. A step with an \"On failure\" target that finds a problem comments its findings and blocks its "
-        "card. Create a fix card for the target step's profile with the findings, make it a parent of the "
+        f"card. Create a fix card for {fixer} with the findings, make it a parent of the "
         "checking card (`kanban_link(parent_id=<fix>, child_id=<check>)`), and unblock the checking card "
         "(`kanban_unblock`): it waits until the fix is done, then runs again.",
         "",
         "### Without a board (`delivery.board: none` or `tracker`)",
-        "Run the steps in dependency order. Hand each step to its profile, through the host's profile "
-        "delegation or that profile's channel, with its skills, the work item and the outputs of its After "
-        "steps; wait for the output and check it against \"Produces\". Loop back on failure as above. At a "
-        "human step, ask through `owner.channel` and wait. With `tracker`, record each step's start, output "
-        "and decision as comments on the work item.",
+        *without_board,
         "",
         "## Done when",
         *[f"- {item.strip()}" for item in wf["done_when"]],
@@ -347,14 +450,28 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str]) -> str:
     if wf.get("then"):
         lines += ["", "## Then"]
         for follow in wf["then"]:
-            lines.append(f"- Start `{follow}`, coordinated by `{coordinators[follow]}`.")
+            if coordinators[follow] == RUNNER:
+                lines.append(f"- Start `{follow}` yourself.")
+            else:
+                lines.append(f"- Start `{follow}`, coordinated by `{coordinators[follow]}`.")
     lines += [
         "",
         "## Report",
         "Each update names the workflow, the current step and its actor, links the cards or the work "
-        "item, and says what is needed from whom, if anything.",
+        "item, and says what is needed from whom, if anything."
+        + (" It also says that one profile ran every step." if solo else ""),
         "",
     ]
+    if assignment is not None:
+        lines += [
+            "## Roles here",
+            "| Role in the definition | Held by |",
+            "|---|---|",
+            *[f"| `{role}` | {'you' if who == RUNNER else f'`{who}`'} |" for role, who in sorted(assignment.items())],
+            "",
+            "The definition, with its original roles, is in `references/workflow.yaml`.",
+            "",
+        ]
     return "\n".join(lines)
 
 
@@ -422,11 +539,36 @@ def sync(root: Path = ROOT) -> int:
     return written
 
 
+def render_for(root: Path, name: str, pairs: list[str], solo: bool) -> str:
+    """One valid definition rendered for a team's own role assignment."""
+    _, errors = build(root)
+    if errors:
+        raise WorkflowError("\n".join(errors))
+    workflows = {wf["name"]: wf for _, wf in definitions(root)}
+    if name not in workflows:
+        raise WorkflowError(f"unknown workflow {name!r}; defined: {sorted(workflows)}")
+    wf = workflows[name]
+    assignment = assignment_from(wf, pairs, solo)
+    # A follow-on workflow is coordinated by whoever holds its coordinator's role here;
+    # a role this assignment does not cover keeps its pack profile.
+    coordinators = {n: assignment.get(w["coordinator"], w["coordinator"]) for n, w in workflows.items()}
+    return render_skill(wf, load_registry(root), coordinators, assignment)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--check", action="store_true", help="validate and report drift without writing")
+    parser.add_argument("--render", metavar="NAME", help="print one workflow rendered for a role assignment")
+    parser.add_argument("--solo", action="store_true", help="with --render: one profile holds every role")
+    parser.add_argument("--assign", action="append", default=[], metavar="ROLE=WHO",
+                        help=f"with --render: who holds a role, a profile name or {RUNNER!r} (repeat per role)")
     args = parser.parse_args()
     try:
+        if args.render:
+            sys.stdout.write(render_for(ROOT, args.render, args.assign, args.solo))
+            return 0
+        if args.solo or args.assign:
+            parser.error("--solo and --assign need --render NAME")
         if args.check:
             problems = drift()
             for problem in problems:

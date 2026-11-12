@@ -47,6 +47,9 @@ class WorkflowRepoTests(unittest.TestCase):
             self.assertIn("workflow", front["metadata"]["hermes"]["tags"])
             keys = [c["key"] for c in front["metadata"]["hermes"]["config"]]
             self.assertIn("delivery.board", keys)
+            # each role is its own profile here, so every rendering says how a step is handed over
+            self.assertIn("delivery.handoff", keys)
+            self.assertIn("multi-profile", front["metadata"]["hermes"]["tags"])
 
     def test_single_profile_workflows_have_trigger_steps_and_done(self):
         for skill in ROOT.glob("hermes-*/profiles/*/skills/workflows/*/SKILL.md"):
@@ -63,6 +66,7 @@ class WorkflowValidationTests(unittest.TestCase):
         (root / "docs" / "PORTABLE_SKILLS.md").write_text(
             "| Key | Values | Default | Meaning |\n|---|---|---|---|\n"
             "| `delivery.board` | hermes-kanban, none | none | Where the team claims work. |\n"
+            "| `delivery.handoff` | profile-turn, channel | profile-turn | How a step reaches another profile. |\n"
             "| `delivery.merge_policy` | owner, reviewer | owner | Who may merge. |\n"
             "| `owner.channel` | free text | this conversation | Where the owner is reached. |\n",
             encoding="utf-8",
@@ -131,6 +135,74 @@ class WorkflowValidationTests(unittest.TestCase):
         done_when: [Done.]
         """
         self.assertTrue(any("two actors" in e for e in self.errors(single)))
+
+
+class RoleAssignmentTests(unittest.TestCase):
+    """A team with fewer profiles than roles renders its own copy; the text must stay true."""
+
+    def front(self, text: str) -> dict:
+        return yaml.safe_load(text.split("---")[1])
+
+    def test_one_profile_holding_every_role_is_told_so(self):
+        text = sync_workflows.render_for(ROOT, "issue-to-merge", [], solo=True)
+        front = self.front(text)
+        self.assertEqual(["workflow", "single-profile"], front["metadata"]["hermes"]["tags"])
+        self.assertNotIn("delivery.handoff", [c["key"] for c in front["metadata"]["hermes"]["config"]])
+        self.assertIn("One profile holds every role here", text)
+        self.assertIn("Never report a step as independently reviewed or verified", text)
+        self.assertIn("Start `after-merge` yourself.", text)
+        # nothing may tell a lone profile to hand work to someone, or to stay out of its own steps
+        for false_claim in ("never run another profile's step yourself", "Profiles installed",
+                            "delivery.handoff", "profile-turn"):
+            self.assertNotIn(false_claim, text, false_claim)
+        steps = [line for line in text.splitlines() if line.startswith("| ") and "| you |" in line]
+        self.assertEqual(10, len(steps))   # 6 profile steps in the table + 4 roles held
+        self.assertIn("the human named by `delivery.merge_policy`", text)
+
+    def test_a_runner_with_a_separate_reviewer_hands_over_only_the_review(self):
+        text = sync_workflows.render_for(
+            ROOT, "contract-change",
+            ["agency-onchain-engineer=self", "agency-code-reviewer=reviewer", "agency-security-reviewer=reviewer"],
+            solo=False)
+        front = self.front(text)
+        self.assertEqual(["workflow", "multi-profile"], front["metadata"]["hermes"]["tags"])
+        self.assertIn("delivery.handoff", [c["key"] for c in front["metadata"]["hermes"]["config"]])
+        self.assertIn("| 1 | `change` | you |", text)
+        self.assertIn("| 2 | `review` | `reviewer` |", text)
+        self.assertIn("Profiles installed: `reviewer`", text)
+        self.assertIn("Do the steps marked \"you\" yourself. Hand every other step", text)
+        self.assertIn("hermes -p <profile> chat -Q -s <skills> --query-file <brief file>", text)
+        self.assertIn("Never add a flag that skips approvals", text)
+        self.assertNotIn("One profile holds every role here", text)
+
+    def test_every_role_must_be_assigned(self):
+        with self.assertRaises(sync_workflows.WorkflowError) as missing:
+            sync_workflows.render_for(ROOT, "contract-change", ["agency-onchain-engineer=self"], solo=False)
+        self.assertIn("agency-code-reviewer", str(missing.exception))
+        for bad in (["agency-nobody=self"], ["agency-onchain-engineer"], ["agency-onchain-engineer=Not A Name"]):
+            with self.subTest(bad), self.assertRaises(sync_workflows.WorkflowError):
+                sync_workflows.render_for(ROOT, "contract-change", bad, solo=False)
+        with self.assertRaises(sync_workflows.WorkflowError):
+            sync_workflows.render_for(ROOT, "contract-change", ["agency-onchain-engineer=self"], solo=True)
+        with self.assertRaises(sync_workflows.WorkflowError):
+            sync_workflows.render_for(ROOT, "no-such-workflow", [], solo=True)
+
+    def test_every_shipped_workflow_renders_solo_without_a_false_claim(self):
+        for path, wf in sync_workflows.definitions(ROOT):
+            with self.subTest(path.name):
+                text = sync_workflows.render_for(ROOT, wf["name"], [], solo=True)
+                self.assertNotIn("never run another profile's step", text)
+                self.assertNotIn("coordinated by `self`", text)
+                self.assertIn("## Roles here", text)
+
+    def test_a_registry_without_the_handoff_setting_is_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs").mkdir()
+            (root / "docs" / "PORTABLE_SKILLS.md").write_text(
+                "| `delivery.board` | hermes-kanban, none | none | Where the team claims work. |\n", encoding="utf-8")
+            with self.assertRaises(sync_workflows.WorkflowError):
+                sync_workflows.load_registry(root)
 
 
 if __name__ == "__main__":

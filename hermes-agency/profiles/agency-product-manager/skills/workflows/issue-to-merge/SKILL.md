@@ -6,6 +6,7 @@ metadata:
     tags: [workflow, multi-profile]
     config:
       - {key: delivery.board, description: "Where the team claims work.", default: "none"}
+      - {key: delivery.handoff, description: "How a step reaches another profile when no board runs the workflow.", default: "profile-turn"}
       - {key: delivery.code_host, description: "Where code and reviews live.", default: "detect"}
       - {key: delivery.repo_layout, description: "How the code is split across repositories.", default: "detect"}
       - {key: delivery.issue_tracker, description: "Where findings and work items go.", default: "detect"}
@@ -68,6 +69,7 @@ The human or mechanism named by the merge policy merges the PR. You verify it is
 | Needs | Why | Check |
 |---|---|---|
 | Profiles installed: `agency-backend-engineer`, `agency-product-manager`, `agency-qa-tester`, `agency-software-architect` | each step runs as its own profile | `hermes profile list` |
+| A way to hand a step to another profile, when there is no board (`delivery.handoff`) | steps that are not yours | the profile answers a test brief |
 | The `kanban` toolset, when `delivery.board` is `hermes-kanban` | one card per step | `kanban_list` answers |
 | A way to reach the owner (`owner.channel`) | human steps | the owner answers there |
 
@@ -75,6 +77,7 @@ If a required prerequisite is missing, stop before step 1. Say which one, what i
 
 ## Configuration
 - `delivery.board` decides how the workflow runs (below).
+- `delivery.handoff` decides how a step reaches another profile when no board runs the workflow (below).
 - `delivery.code_host`: Where code and reviews live. Decides the CLI (`gh`, `glab`, …) and the words (pull request vs merge request). Detect from `git remote get-url origin`.
 - `delivery.repo_layout`: How the code is split across repositories. Monorepo: scope every change, test run and CI filter to the affected packages. Multi-repo: a change may span repos; link them.
 - `delivery.issue_tracker`: Where findings and work items go. `file`: a Markdown file named in `delivery.issue_file`. `none`: findings go in the report, never into a tracker.
@@ -91,7 +94,12 @@ Current values appear in the `[Skill config]` block when this skill loads; an un
 4. A step with an "On failure" target that finds a problem comments its findings and blocks its card. Create a fix card for the target step's profile with the findings, make it a parent of the checking card (`kanban_link(parent_id=<fix>, child_id=<check>)`), and unblock the checking card (`kanban_unblock`): it waits until the fix is done, then runs again.
 
 ### Without a board (`delivery.board: none` or `tracker`)
-Run the steps in dependency order. Hand each step to its profile, through the host's profile delegation or that profile's channel, with its skills, the work item and the outputs of its After steps; wait for the output and check it against "Produces". Loop back on failure as above. At a human step, ask through `owner.channel` and wait. With `tracker`, record each step's start, output and decision as comments on the work item.
+Run the steps in dependency order. Hand each step to its profile the way `delivery.handoff` says:
+- `profile-turn`: one non-interactive turn of that profile, for example `hermes -p <profile> chat -Q -s <skills> --query-file <brief file>`. Its final reply is the step's output. Never add a flag that skips approvals.
+- `channel`: post the brief in that profile's channel and wait for its answer there.
+- `owner-relay`: give the brief to the owner through `owner.channel` and ask them to pass it on.
+
+The brief carries the step's instructions, its skills, the work item and the outputs of its After steps. Wait for the output and check it against "Produces"; an answer that does not produce it is not a completed step. Loop back on failure as above. At a human step, ask through `owner.channel` and wait. With `tracker`, record each step's start, output and decision as comments on the work item.
 
 ## Done when
 - The merged change meets the work item's acceptance criteria.

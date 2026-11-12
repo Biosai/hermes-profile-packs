@@ -6,6 +6,7 @@ metadata:
     tags: [workflow, multi-profile]
     config:
       - {key: delivery.board, description: "Where the team claims work.", default: "none"}
+      - {key: delivery.handoff, description: "How a step reaches another profile when no board runs the workflow.", default: "profile-turn"}
       - {key: delivery.code_host, description: "Where code and reviews live.", default: "detect"}
       - {key: delivery.merge_policy, description: "Who may merge.", default: "owner"}
       - {key: owner.channel, description: "Where questions and owner actions reach the owner.", default: "this conversation"}
@@ -54,6 +55,7 @@ The owner decides on mainnet and signs. Each mainnet action is an owner action.
 | Needs | Why | Check |
 |---|---|---|
 | Profiles installed: `agency-code-reviewer`, `agency-onchain-engineer`, `agency-security-reviewer` | each step runs as its own profile | `hermes profile list` |
+| A way to hand a step to another profile, when there is no board (`delivery.handoff`) | steps that are not yours | the profile answers a test brief |
 | The `kanban` toolset, when `delivery.board` is `hermes-kanban` | one card per step | `kanban_list` answers |
 | A way to reach the owner (`owner.channel`) | human steps | the owner answers there |
 
@@ -61,6 +63,7 @@ If a required prerequisite is missing, stop before step 1. Say which one, what i
 
 ## Configuration
 - `delivery.board` decides how the workflow runs (below).
+- `delivery.handoff` decides how a step reaches another profile when no board runs the workflow (below).
 - `delivery.code_host`: Where code and reviews live. Decides the CLI (`gh`, `glab`, …) and the words (pull request vs merge request). Detect from `git remote get-url origin`.
 - `delivery.merge_policy`: Who may merge. A profile never merges under `owner`.
 - `owner.channel`: Where questions and owner actions reach the owner.
@@ -76,7 +79,12 @@ Current values appear in the `[Skill config]` block when this skill loads; an un
 4. A step with an "On failure" target that finds a problem comments its findings and blocks its card. Create a fix card for the target step's profile with the findings, make it a parent of the checking card (`kanban_link(parent_id=<fix>, child_id=<check>)`), and unblock the checking card (`kanban_unblock`): it waits until the fix is done, then runs again.
 
 ### Without a board (`delivery.board: none` or `tracker`)
-Run the steps in dependency order. Hand each step to its profile, through the host's profile delegation or that profile's channel, with its skills, the work item and the outputs of its After steps; wait for the output and check it against "Produces". Loop back on failure as above. At a human step, ask through `owner.channel` and wait. With `tracker`, record each step's start, output and decision as comments on the work item.
+Run the steps in dependency order. Hand each step to its profile the way `delivery.handoff` says:
+- `profile-turn`: one non-interactive turn of that profile, for example `hermes -p <profile> chat -Q -s <skills> --query-file <brief file>`. Its final reply is the step's output. Never add a flag that skips approvals.
+- `channel`: post the brief in that profile's channel and wait for its answer there.
+- `owner-relay`: give the brief to the owner through `owner.channel` and ask them to pass it on.
+
+The brief carries the step's instructions, its skills, the work item and the outputs of its After steps. Wait for the output and check it against "Produces"; an answer that does not produce it is not a completed step. Loop back on failure as above. At a human step, ask through `owner.channel` and wait. With `tracker`, record each step's start, output and decision as comments on the work item.
 
 ## Done when
 - Mainnet changes only through an action the owner approved and signed.
