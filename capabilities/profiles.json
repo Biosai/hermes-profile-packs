@@ -95,7 +95,8 @@
         "dashboard-spec",
         "experiment-analysis",
         "funnel-analysis",
-        "measurement-plan"
+        "measurement-plan",
+        "onchain-metrics"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -241,7 +242,11 @@
         "backend-testing",
         "background-jobs",
         "domain-modeling",
-        "failure-debugging"
+        "failure-debugging",
+        "gated-delivery",
+        "go-backend-craft",
+        "issue-clarification",
+        "merge-followups"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -401,8 +406,10 @@
         "cross-functional-alignment",
         "decision-log",
         "executive-briefing",
+        "owner-question-protocol",
         "priority-triage",
-        "risk-escalation"
+        "risk-escalation",
+        "venture-scope-setup"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -485,7 +492,8 @@
         "community-program",
         "engagement-plan",
         "feedback-synthesis",
-        "moderation-playbook"
+        "moderation-playbook",
+        "token-community-copy"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -547,8 +555,10 @@
         "audit-evidence",
         "compliance-assessment",
         "data-handling-review",
+        "gated-delivery",
         "license-review",
-        "policy-control-mapping"
+        "policy-control-mapping",
+        "regulated-engineering-controls"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -807,6 +817,7 @@
         "backup-recovery",
         "concurrency-consistency",
         "indexing",
+        "migration-verification",
         "query-optimization",
         "schema-design",
         "schema-migration"
@@ -1165,6 +1176,7 @@
       "role": "You are the **Email Marketer** in Hermes Agency. Plans and writes lifecycle, launch, nurture, retention, and campaign email programs tied to measurable outcomes.",
       "existing_skills": [
         "academy-continuing-education",
+        "approval-gated-publishing",
         "deliverability-review",
         "email-campaign",
         "email-experiment",
@@ -1221,6 +1233,7 @@
         "academy-continuing-education",
         "budget-tracking",
         "cash-flow-forecast",
+        "double-entry-books",
         "expense-review",
         "financial-controls",
         "financial-operations-review",
@@ -1296,6 +1309,9 @@
         "deployment-readiness",
         "end-to-end-debugging",
         "fullstack-testing",
+        "gated-delivery",
+        "issue-clarification",
+        "merge-followups",
         "vertical-slice"
       ],
       "bundled_skills_opt_out": false,
@@ -1359,8 +1375,10 @@
         "academy-continuing-education",
         "branch-hygiene",
         "commit-curation",
+        "gated-delivery",
         "pr-preparation",
         "pr-ready",
+        "ready-to-merge-gate",
         "rebase-conflict-resolution",
         "repository-state-audit",
         "safe-git-integration",
@@ -1460,7 +1478,9 @@
         "activation-experiment",
         "channel-test",
         "growth-experiment",
-        "retention-analysis"
+        "retention-analysis",
+        "revenue-state-audit",
+        "value-proposition-diagnosis"
       ],
       "bundled_skills_opt_out": false,
       "skills": [],
@@ -1506,6 +1526,8 @@
         "academy-continuing-education",
         "capacity-planning",
         "disaster-recovery",
+        "gated-delivery",
+        "iac-change-safety",
         "infrastructure-change",
         "infrastructure-design",
         "networking",
@@ -1557,6 +1579,7 @@
         "integration-debugging",
         "oauth-integration",
         "retry-idempotency",
+        "vendor-integration-review",
         "webhook-design"
       ],
       "bundled_skills_opt_out": false,
@@ -1594,9 +1617,12 @@
       "existing_skills": [
         "academy-continuing-education",
         "content-lifecycle",
+        "gated-delivery",
+        "glossary-discipline",
         "knowledge-base-design",
         "knowledge-curation",
         "knowledge-gap-analysis",
+        "post-merge-kb-update",
         "source-of-truth-audit",
         "taxonomy"
       ],
@@ -2123,6 +2149,7 @@
         "coordination-pattern-selection",
         "dependency-planning",
         "escalation-routing",
+        "gated-delivery",
         "profile-routing",
         "result-synthesis",
         "validation-planning",
@@ -2399,6 +2426,8 @@
       "existing_skills": [
         "academy-continuing-education",
         "acceptance-criteria",
+        "gated-delivery",
+        "issue-authoring-standard",
         "prioritization",
         "product-discovery",
         "product-requirements",
@@ -2484,6 +2513,7 @@
       "role": "You are the **Product Strategist** in Hermes Agency. Develops product direction, portfolio choices, opportunity framing, differentiation, and longer-horizon product strategy.",
       "existing_skills": [
         "academy-continuing-education",
+        "binding-constraint-check",
         "moat-analysis",
         "opportunity-assessment",
         "portfolio-prioritization",
@@ -2679,8 +2709,11 @@
         "bug-reproduction",
         "e2e-validation",
         "exploratory-testing",
+        "gated-delivery",
+        "real-run-verification",
         "regression-testing",
-        "test-case-design"
+        "test-case-design",
+        "test-design-maxims"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -3061,6 +3094,7 @@
         "academy-continuing-education",
         "authorization-review",
         "dependency-review",
+        "infra-security-review",
         "secret-exposure-review",
         "security-regression",
         "security-review"
@@ -3206,6 +3240,7 @@
       "role": "You are the **Social Media Manager** in Hermes Agency. Plans and executes platform-native social content, demo narratives, post series, community interactions, and publishing cadence.",
       "existing_skills": [
         "academy-continuing-education",
+        "approval-gated-publishing",
         "community-reply",
         "content-repurposing",
         "demo-capture-plan",
@@ -3239,8 +3274,11 @@
         "architecture-review",
         "dependency-boundaries",
         "failure-mode-analysis",
+        "fresh-main-evidence",
+        "gated-delivery",
         "interface-design",
         "migration-design",
+        "readiness-review",
         "technical-research"
       ],
       "bundled_skills_opt_out": false,
@@ -3724,6 +3762,38 @@
         {
           "name": "creative-ideation",
           "reason": "Structured ideation methods complement craft-specific procedures without introducing external services."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "agency-onchain-engineer",
+      "pack": "agency",
+      "path": "hermes-agency/profiles/agency-onchain-engineer",
+      "category": "engineering",
+      "role": "You are the **Onchain Engineer** in Hermes Agency. Builds and changes smart contracts and their deployments testnet-first, with tests seen failing before passing, independent review, and every mainnet action prepared for the owner to sign.",
+      "existing_skills": [
+        "academy-continuing-education",
+        "contract-change-authoring",
+        "testnet-deployment"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "systematic-debugging",
+          "reason": "Root-cause contract and deployment failures on testnet before any retry."
+        },
+        {
+          "name": "test-driven-development",
+          "reason": "Contract changes start from a failing test; no change ships without one."
+        },
+        {
+          "name": "grounded-citations",
+          "reason": "Cite current chain, standard and regulatory sources instead of recalled facts."
         }
       ],
       "plugins": [],
@@ -4744,6 +4814,7 @@
       "category": "body",
       "role": "Plans and adapts training, movement, recovery, and practical fitness routines.",
       "existing_skills": [
+        "endurance-race-plan",
         "progress-review",
         "recovery-check",
         "workout-adaptation",
@@ -4867,6 +4938,7 @@
         "budget-review",
         "cashflow-plan",
         "debt-plan",
+        "double-entry-books",
         "purchase-decision"
       ],
       "bundled_skills_opt_out": true,
@@ -5243,6 +5315,244 @@
         {
           "name": "maps",
           "reason": "Location/route discovery uses public mapping services; disclose location queries, rate limits, and accessibility/freshness limits."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "property-accountant-be",
+      "pack": "property",
+      "path": "hermes-property/profiles/property-accountant-be",
+      "category": "tax",
+      "role": "The team's accounting reference: rule, text, effect as a range, conditions, and the exact question for the investor's accountant.",
+      "existing_skills": [
+        "accountant-question",
+        "corporate-tax-per-deal",
+        "deal-costs",
+        "panel-rules",
+        "registration-duties",
+        "vat-regimes"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "grounded-citations",
+          "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+        },
+        {
+          "name": "microsoft-office",
+          "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "property-accountant-fr",
+      "pack": "property",
+      "path": "hermes-property/profiles/property-accountant-fr",
+      "category": "tax",
+      "role": "Frames French tax on the texts to read, honest when no primary source was read, and prepares the question for a French chartered accountant.",
+      "existing_skills": [
+        "belgian-company-in-france",
+        "dealer-regime-france",
+        "french-accountant-question",
+        "french-rental-regimes",
+        "panel-rules"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "grounded-citations",
+          "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+        },
+        {
+          "name": "microsoft-office",
+          "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "property-architect",
+      "pack": "property",
+      "path": "hermes-property/profiles/property-architect",
+      "category": "technical",
+      "role": "Prepares the planning file and the question for the municipality; the permit stays with the real architect and the municipality.",
+      "existing_skills": [
+        "division-and-permits",
+        "panel-rules",
+        "planning-office-question",
+        "plans-and-takeoffs",
+        "recognized-dwellings"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "concept-diagrams",
+          "reason": "Sketch lot layouts and division options for the investor, never as a signed plan."
+        },
+        {
+          "name": "maps",
+          "reason": "Locate the property to establish its region and planning context."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "property-coordinator",
+      "pack": "property",
+      "path": "hermes-property/profiles/property-coordinator",
+      "category": "coordination",
+      "role": "Owns the relationship with the investor, the investor's data and questions, and puts the experts to work without speaking for them.",
+      "existing_skills": [
+        "consult-expert",
+        "expert-debate",
+        "investor-data-capture",
+        "open-questions",
+        "panel-rules",
+        "request-tracking"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "document-to-action-items",
+          "reason": "Turn a listing, a deed draft or an expert report into the investor's open questions and next actions."
+        },
+        {
+          "name": "meeting-action-items",
+          "reason": "Capture decisions and figures from a call or voice note with their source."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "property-investment-partner",
+      "pack": "property",
+      "path": "hermes-property/profiles/property-investment-partner",
+      "category": "strategy",
+      "role": "Weighs a deal before the offer: strategies, three scenarios, ceiling price, market value, and a challenge of external analyses.",
+      "existing_skills": [
+        "deal-strategies",
+        "external-analysis-challenge",
+        "market-value-comparables",
+        "panel-rules",
+        "rental-yield",
+        "three-scenarios"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "microsoft-office",
+          "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+        },
+        {
+          "name": "maps",
+          "reason": "Place named comparables and the property on a map to test that they share a neighbourhood."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "property-lawyer",
+      "pack": "property",
+      "path": "hermes-property/profiles/property-lawyer",
+      "category": "legal",
+      "role": "Says what the text says and prepares the file and the question for the real lawyer, without predicting outcomes or citing unread decisions.",
+      "existing_skills": [
+        "adversarial-review",
+        "clause-analysis",
+        "dispute-file",
+        "lease-and-tenant",
+        "panel-rules",
+        "primary-law-sources"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "grounded-citations",
+          "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "property-notary",
+      "pack": "property",
+      "path": "hermes-property/profiles/property-notary",
+      "category": "conveyancing",
+      "role": "Prepares the list of documents and the questions for the notary handling the deed; the deed stays with the real notary.",
+      "existing_skills": [
+        "auction-conditions",
+        "co-ownership-file",
+        "documents-to-request",
+        "panel-rules",
+        "pre-signing-checklist",
+        "sale-agreement-and-option"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "grounded-citations",
+          "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+        },
+        {
+          "name": "document-to-action-items",
+          "reason": "Turn a sale agreement or auction conditions into the list of documents to request and questions to ask."
+        }
+      ],
+      "plugins": [],
+      "mcps": [],
+      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+      "config_seed": false,
+      "seed_shadows": []
+    },
+    {
+      "profile": "property-works-estimator",
+      "pack": "property",
+      "path": "hermes-property/profiles/property-works-estimator",
+      "category": "works",
+      "role": "Costs works on sourced and dated bases, names what must be checked at a viewing, and never places an order.",
+      "existing_skills": [
+        "cost-library",
+        "listing-photo-review",
+        "materials-quantities-prices",
+        "panel-rules",
+        "renovation-obligations-and-aid",
+        "works-estimate"
+      ],
+      "bundled_skills_opt_out": false,
+      "skills": [
+        {
+          "name": "microsoft-office",
+          "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
         }
       ],
       "plugins": [],

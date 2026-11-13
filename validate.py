@@ -137,6 +137,30 @@ def main() -> int:
     if readme_count_check.returncode:
         errors.append("README profile counts are stale or could not be verified")
 
+    if (ROOT / "workflows").is_dir():
+        workflow_check = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "sync_workflows.py"), "--check"],
+            cwd=ROOT,
+        )
+        if workflow_check.returncode:
+            errors.append("a workflow definition is invalid or its rendering is stale (scripts/sync_workflows.py)")
+
+    if (ROOT / "shared-skills" / "targets.json").is_file():
+        shared_check = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "sync_shared_skills.py"), "--check"],
+            cwd=ROOT,
+        )
+        if shared_check.returncode:
+            errors.append("a shared skill copy differs from its canonical source in shared-skills/")
+
+    if (ROOT / "scripts" / "check_skill_shape.py").is_file():
+        shape_check = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "check_skill_shape.py")],
+            cwd=ROOT,
+        )
+        if shape_check.returncode:
+            errors.append("a skill added beside the baseline does not have the upstream skill shape (scripts/check_skill_shape.py)")
+
     for path in ROOT.rglob("*"):
         if not path.is_file() or ".git" in path.parts or "__pycache__" in path.parts or path.suffix == ".pyc":
             continue

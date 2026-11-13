@@ -33,6 +33,7 @@ class Recipe:
     workflow: tuple[str, ...]
     success_criteria: tuple[str, ...]
     optional_routines: tuple[str, ...]
+    workflows: tuple[str, ...] = ()
 
     def as_dict(self) -> dict:
         return {
@@ -46,6 +47,7 @@ class Recipe:
             "workflow": list(self.workflow),
             "success_criteria": list(self.success_criteria),
             "optional_routines": list(self.optional_routines),
+            "workflows": list(self.workflows),
         }
 
     def searchable_text(self) -> str:
@@ -91,6 +93,7 @@ def load_recipes(root: Path) -> dict[str, Recipe]:
             workflow=tuple(str(value) for value in item.get("workflow", [])),
             success_criteria=tuple(str(value) for value in item.get("success_criteria", [])),
             optional_routines=tuple(str(value) for value in item.get("optional_routines", [])),
+            workflows=tuple(str(value) for value in item.get("workflows", [])),
         )
     return recipes
 

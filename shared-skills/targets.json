@@ -1,0 +1,42 @@
+{
+  "skills": {
+    "gated-delivery": [
+      "hermes-agency/profiles/agency-backend-engineer",
+      "hermes-agency/profiles/agency-qa-tester",
+      "hermes-agency/profiles/agency-product-manager",
+      "hermes-agency/profiles/agency-software-architect",
+      "hermes-agency/profiles/agency-infrastructure-engineer",
+      "hermes-agency/profiles/agency-compliance-reviewer",
+      "hermes-agency/profiles/agency-knowledge-manager",
+      "hermes-agency/profiles/agency-orchestrator",
+      "hermes-agency/profiles/agency-fullstack-engineer",
+      "hermes-agency/profiles/agency-git-steward"
+    ],
+    "approval-gated-publishing": [
+      "hermes-agency/profiles/agency-social-media-manager",
+      "hermes-agency/profiles/agency-email-marketer"
+    ],
+    "double-entry-books": [
+      "hermes-agency/profiles/agency-finance-ops",
+      "hermes-council/profiles/council-finance-coach"
+    ],
+    "issue-clarification": [
+      "hermes-agency/profiles/agency-fullstack-engineer",
+      "hermes-agency/profiles/agency-backend-engineer"
+    ],
+    "merge-followups": [
+      "hermes-agency/profiles/agency-fullstack-engineer",
+      "hermes-agency/profiles/agency-backend-engineer"
+    ],
+    "panel-rules": [
+      "hermes-property/profiles/property-coordinator",
+      "hermes-property/profiles/property-architect",
+      "hermes-property/profiles/property-investment-partner",
+      "hermes-property/profiles/property-lawyer",
+      "hermes-property/profiles/property-accountant-be",
+      "hermes-property/profiles/property-accountant-fr",
+      "hermes-property/profiles/property-notary",
+      "hermes-property/profiles/property-works-estimator"
+    ]
+  }
+}

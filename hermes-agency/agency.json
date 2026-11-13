@@ -36,11 +36,11 @@
     "agency-software-architect",
     "agency-technical-lead"
   ],
-  "profile_count": 113,
+  "profile_count": 114,
   "categories": {
     "content": 10,
     "design": 19,
-    "engineering": 29,
+    "engineering": 30,
     "leadership": 10,
     "marketing": 12,
     "product": 14,
@@ -110,6 +110,7 @@
     {"name":"agency-music-producer","display_name":"AI Music Producer","category":"design"},
     {"name":"agency-narrative-designer","display_name":"Narrative Designer","category":"design"},
     {"name":"agency-onboarding-specialist","display_name":"Onboarding Specialist","category":"product"},
+    {"name":"agency-onchain-engineer","display_name":"Onchain Engineer","category":"engineering"},
     {"name":"agency-open-source-maintainer","display_name":"Open Source Maintainer","category":"engineering"},
     {"name":"agency-operations-manager","display_name":"Operations Manager","category":"leadership"},
     {"name":"agency-orchestrator","display_name":"Agency Orchestrator","category":"leadership"},

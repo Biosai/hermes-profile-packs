@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "name": "hermes-property",
+  "version": "0.1.0",
+  "description": "An expert panel of Hermes Agent profiles for a property investor acting in their own name or through a company, in Belgium first and France second: a coordinator and seven specialists who prepare the work of real professionals.",
+  "orchestrator": "property-coordinator",
+  "distribution": {
+    "format": "hermes-profile-distribution",
+    "profile_identity_field": "name",
+    "profile_root": "profiles",
+    "profile_path_template": "profiles/{name}"
+  },
+  "routing": {
+    "profile_metadata_template": "profiles/{name}/distribution.yaml",
+    "selection_order": ["law-to-property-lawyer", "domain-owner", "primary-source"],
+    "missing_specialist_behavior": "property-coordinator-handoff"
+  },
+  "backbone_profiles": [
+    "property-coordinator",
+    "property-investment-partner",
+    "property-accountant-be",
+    "property-notary",
+    "property-works-estimator"
+  ],
+  "profile_count": 8,
+  "categories": {
+    "coordination": 1,
+    "technical": 1,
+    "strategy": 1,
+    "legal": 1,
+    "tax": 2,
+    "conveyancing": 1,
+    "works": 1
+  },
+  "profiles": [
+    {"name":"property-coordinator","display_name":"Coordinator","category":"coordination","description":"The team's main profile: delivers what the investor asks for, asks one question at a time, keeps the investor file and answers with their source, consults the experts and delivers the synthesis.","role":"Owns the relationship with the investor, the investor's data and questions, and puts the experts to work without speaking for them.","jobs":["open-questions","investor-data-capture","request-tracking","consult-expert","expert-debate"]},
+    {"name":"property-architect","display_name":"Architect and Surveyor","category":"technical","description":"Establishes how many dwellings are legally recognized and what it takes to create one more; reads plans, does takeoffs and drafts the exact question for the planning office.","role":"Prepares the planning file and the question for the municipality; the permit stays with the real architect and the municipality.","jobs":["recognized-dwellings","division-and-permits","plans-and-takeoffs","planning-office-question"]},
+    {"name":"property-investment-partner","display_name":"Investment Partner","category":"strategy","description":"The skeptical partner of an investment committee: costs every way to make a property pay, as ranges, and says which one holds in the worst reasonable case.","role":"Weighs a deal before the offer: strategies, three scenarios, ceiling price, market value, and a challenge of external analyses.","jobs":["deal-strategies","three-scenarios","market-value-comparables","rental-yield","external-analysis-challenge"]},
+    {"name":"property-lawyer","display_name":"Lawyer","category":"legal","description":"The reference for every legal question: leases, landlord, buyer and building disputes, clauses, public sales, on the primary text, reviewed adversarially.","role":"Says what the text says and prepares the file and the question for the real lawyer, without predicting outcomes or citing unread decisions.","jobs":["adversarial-review","primary-law-sources","lease-and-tenant","clause-analysis","dispute-file"]},
+    {"name":"property-accountant-be","display_name":"Belgian Accountant and Tax Adviser","category":"tax","description":"Registration duties by region, construction and renovation VAT, corporate income tax and deal costs, as options until the investor's accountant confirms in writing.","role":"The team's accounting reference: rule, text, effect as a range, conditions, and the exact question for the investor's accountant.","jobs":["registration-duties","vat-regimes","corporate-tax-per-deal","deal-costs","accountant-question"]},
+    {"name":"property-accountant-fr","display_name":"French Accountant and Tax Adviser","category":"tax","description":"French tax of a Belgian company investing in France: the French tax, the Belgian half flagged, and the exact question for a French chartered accountant.","role":"Frames French tax on the texts to read, honest when no primary source was read, and prepares the question for a French chartered accountant.","jobs":["belgian-company-in-france","dealer-regime-france","french-rental-regimes","french-accountant-question"]},
+    {"name":"property-notary","display_name":"Notary","category":"conveyancing","description":"Says what the investor signs, inherits and must ask before signing: preliminary sale agreement, option, auction conditions of a public sale, co-ownership file, documents to request.","role":"Prepares the list of documents and the questions for the notary handling the deed; the deed stays with the real notary.","jobs":["sale-agreement-and-option","auction-conditions","co-ownership-file","documents-to-request","pre-signing-checklist"]},
+    {"name":"property-works-estimator","display_name":"Works Estimator","category":"works","description":"Turns a listing, photos and certificates into cost items per level of intervention, as ranges, from a cost library, separating cost price from estimate.","role":"Costs works on sourced and dated bases, names what must be checked at a viewing, and never places an order.","jobs":["listing-photo-review","cost-library","works-estimate","materials-quantities-prices","renovation-obligations-and-aid"]}
+  ]
+}

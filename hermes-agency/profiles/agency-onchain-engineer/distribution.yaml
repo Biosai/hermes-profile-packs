@@ -1,0 +1,7 @@
+name: agency-onchain-engineer
+version: 0.2.0
+description: "Builds and changes smart contracts and their deployments testnet-first, with tests seen failing before passing, independent review, and every mainnet action prepared for the owner to sign."
+author: "Hermes Profile Packs contributors"
+license: "AGPL-3.0-only"
+preload_skills:
+  - academy-continuing-education

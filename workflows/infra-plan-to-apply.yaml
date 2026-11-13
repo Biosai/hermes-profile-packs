@@ -1,0 +1,60 @@
+name: infra-plan-to-apply
+version: 0.2.0
+description: "Take an infrastructure change from plan to verified apply"
+summary: >-
+  An infrastructure-as-code change from request to verified apply. The infrastructure engineer
+  plans it in a pull or merge request, the security reviewer reviews it independently, the git
+  steward checks the merge gate, and the merge and the apply stay with the humans the settings name.
+pack: agency
+coordinator: agency-orchestrator
+trigger: >-
+  An infrastructure change is requested: a work item, an incident follow-up, or drift found in a plan.
+uses_settings: [delivery.iac_tool, delivery.merge_policy, delivery.apply_policy, owner.channel]
+max_fix_rounds: 3
+steps:
+  - id: plan
+    profile: agency-infrastructure-engineer
+    skills: [infrastructure-change, iac-change-safety, gated-delivery]
+    does: Write the smallest change, read its plan for every environment, explain every replace and destroy, report drift.
+    output: a request with plan evidence and the exact apply inputs
+  - id: security
+    profile: agency-security-reviewer
+    skills: [infra-security-review]
+    needs: [plan]
+    optional_when: the change touches identity, secrets, network exposure, a firewall, CI or host bootstrap
+    on_fail: plan
+    does: Review the change for privilege, exposure and secret handling.
+    output: findings resolved, or the blocking ones, on the head reviewed
+  - id: integrate
+    profile: agency-git-steward
+    skills: [pr-ready, ready-to-merge-gate, gated-delivery]
+    needs: [security]
+    on_fail: plan
+    does: Bring the request to merge-ready and check every line of the merge gate on the current head.
+    output: a gate report where every line holds, or the failing lines
+  - id: merge
+    human: true
+    decided_by: delivery.merge_policy
+    needs: [integrate]
+    on_reject: plan
+    asks: merge the infrastructure request, or say what to change
+    does: The human or mechanism named by the merge policy merges the request. You verify it is merged.
+    output: the merge commit on the default branch
+  - id: apply
+    human: true
+    decided_by: delivery.apply_policy
+    needs: [merge]
+    asks: apply the merged change with the inputs in the request, then share the apply output
+    does: The human or approved pipeline named by the apply policy applies. No profile applies.
+    output: the apply output
+  - id: verify
+    profile: agency-infrastructure-engineer
+    skills: [iac-change-safety]
+    needs: [apply]
+    on_fail: plan
+    does: >-
+      Read the apply output and confirm that a fresh plan shows no changes. A failed or partial
+      apply goes back to plan as a new change (roll back or fix forward), never a retried apply.
+    output: an empty fresh plan, or the failing resources with their errors
+done_when:
+  - A fresh plan after the apply shows no changes.

@@ -117,6 +117,7 @@ Every public profile is included. Supplemental skills are shipped on demand; all
 | agency-user-researcher | excalidraw | none | none |
 | agency-video-producer | creative-ideation | none | none |
 | agency-worldbuilder | creative-ideation | none | none |
+| agency-onchain-engineer | systematic-debugging, test-driven-development, grounded-citations | none | none |
 | academy-dean | retain only | none | none |
 | academy-mathematics-professor | arxiv, concept-diagrams, grounded-citations | none | wolfram |
 | academy-writing-rhetoric-professor | grounded-citations | none | none |
@@ -169,4 +170,12 @@ Every public profile is included. Supplemental skills are shipped on demand; all
 | council-travel-planner | grounded-citations, maps | none | kiwi, trivago |
 | council-communication-coach | retain only | none | none |
 | council-community-coach | maps | none | none |
+| property-accountant-be | grounded-citations, microsoft-office | none | none |
+| property-accountant-fr | grounded-citations, microsoft-office | none | none |
+| property-architect | concept-diagrams, maps | none | none |
+| property-coordinator | document-to-action-items, meeting-action-items | none | none |
+| property-investment-partner | microsoft-office, maps | none | none |
+| property-lawyer | grounded-citations | none | none |
+| property-notary | grounded-citations, document-to-action-items | none | none |
+| property-works-estimator | microsoft-office | none | none |
 | hermes-wear | retain only | none | none |

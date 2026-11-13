@@ -4,6 +4,23 @@ All notable changes to Hermes Profile Packs will be documented here.
 
 ## Unreleased
 
+### Added (fork)
+
+- Distilled three Hermes teams running in production into public, generalized content, adding to upstream profiles wherever one already owned the job:
+  - **Role-owned skills on existing Agency and Council profiles**, each in the profile whose role owns the job and in the same shape as its neighbours (Use when, Procedure, Decision rules, Quality gate, at most 650 words, detail in `references/`). Examples: `go-backend-craft` (backend engineer), `real-run-verification` and `test-design-maxims` (QA), `ready-to-merge-gate` (git steward, building on `pr-ready`), `migration-verification` (database engineer), `iac-change-safety` (infrastructure), `infra-security-review` (security reviewer), `approval-gated-publishing` (social and email), `double-entry-books` (finance ops and the Council finance coach), `endurance-race-plan` (Council fitness coach). No baselined file is edited.
+  - **Hermes Property** (`property-*`), a new pack: an expert panel for a property investor in Belgium and France. Its eight profiles have the six-section SOUL of the other packs; the panel's shared rules are the shared skill `panel-rules`, which every profile ships and preloads. Written in English; profiles reply in the investor's language.
+  - **`agency-onchain-engineer`**, a smart-contract specialist: no upstream profile owned contracts and their deployments.
+  - Recipes `gated-repo-delivery`, `solo-founder-portfolio` and `property-deal-review`.
+- **Portable settings** (`docs/PORTABLE_SKILLS.md`): what differs between teams (code host, repository layout, issue tracker, board, merge and apply policy, analytics and payments sources, books format, how the owner is reached) is a Hermes setting from one shared registry, declared in each skill's frontmatter. Each added skill lists its prerequisites and stops cleanly when access is missing. `scripts/check_skill_shape.py` enforces the shape and the registry and runs in `validate.py`.
+- **Workflows, separate from skills** (`docs/WORKFLOWS.md`): the runnable form of a recipe's step list, with the same owners.
+  - Seven are defined in `workflows/*.yaml` and rendered by `scripts/sync_workflows.py`, which checks every step's profile and skills, dependencies, human deciders and settings. A workflow of two or more profiles is coordinated by the pack's orchestrator. `issue-to-merge` is the `software-delivery` recipe step for step, and that recipe now names it.
+  - A failed check or a human's change request sends the work back; every dependent step then reruns on the new head, and the number of rounds is bounded (`max_fix_rounds`, `on_reject`).
+  - Twelve more are run by one profile and live under `skills/workflows/`.
+  - On a Hermes Kanban board a workflow runs as one card per step, and the card assigned to a profile is its claim. Without a board, `delivery.handoff` says how a step reaches another profile.
+  - A team with fewer profiles than a workflow has roles renders its own copy (`--render <name> --solo`, or `--assign ROLE=WHO`). When one profile holds every role, the rendering says that no second profile checks the work.
+- Skills shipped by several profiles have one canonical source in `shared-skills/`; `scripts/sync_shared_skills.py` writes the copies and validation holds them byte-identical.
+- The root installer and README count generator read packs from `packs.json` instead of a fixed list of three; a pack may declare its own `display_name` and recommendation `hints` there.
+
 ### Profile quality
 
 - Clarified Council interaction modes so listening and direct answers can complete a conversation without mandatory files, actions or ending questions. Corrected assumed user biography, stale collaborator references and malformed SOUL Markdown.

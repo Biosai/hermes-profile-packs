@@ -294,7 +294,7 @@ def validate(root: Path) -> tuple[list[str], dict[str, int]]:
             skill_dirs = [path for path in skills_dir.iterdir() if path.is_dir()]
             # Hermes supports category containers. Supplemental roots have the
             # same identity/procedure checks as every original role-owned skill.
-            for category_name in ("capabilities", "software-development", "research", "productivity", "creative", "autonomous-ai-agents", "web"):
+            for category_name in ("capabilities", "software-development", "research", "productivity", "creative", "autonomous-ai-agents", "web", "workflows"):
                 category = skills_dir / category_name
                 if category.is_dir():
                     skill_dirs.remove(category)

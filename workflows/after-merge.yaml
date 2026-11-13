@@ -1,0 +1,32 @@
+name: after-merge
+version: 0.2.0
+description: "Close the loop after a change merges"
+summary: >-
+  Everything that must happen once a change has merged, done by the profile that owns each part:
+  the implementation owner's clean-up and counterpart, the knowledge base and shared skills, and
+  closing the work item against its acceptance criteria.
+pack: agency
+coordinator: agency-orchestrator
+trigger: >-
+  A pull or merge request that belongs to a work item has merged (for a multi-repo item: every request of it).
+uses_settings: [delivery.code_host, delivery.issue_tracker, owner.channel]
+steps:
+  - id: followups
+    profile: agency-fullstack-engineer
+    skills: [merge-followups]
+    does: Clean up, record the downstream counterpart, update the repository docs, release the work item.
+    output: the follow-up report with counterpart and docs request links
+  - id: knowledge
+    profile: agency-knowledge-manager
+    skills: [post-merge-kb-update]
+    does: Update the knowledge base and shared skills from the merged diff.
+    output: knowledge and skills requests, or "nothing to update" with the reason
+  - id: close
+    profile: agency-product-manager
+    skills: [acceptance-criteria]
+    needs: [followups, knowledge]
+    on_fail: followups
+    does: Check the merged change against the acceptance criteria, link the follow-ups, and move the item to done.
+    output: the work item closed with every follow-up linked, or the criterion the merged change misses
+done_when:
+  - The work item is done and links the merge, the counterpart and every knowledge update.

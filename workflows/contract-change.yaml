@@ -1,0 +1,58 @@
+name: contract-change
+version: 0.2.0
+description: "Change a smart contract through review and testnet"
+summary: >-
+  A smart-contract change goes from failing-first tests to an owner-approved mainnet action, with
+  review by profiles that did not write it and a testnet deployment in between.
+pack: agency
+coordinator: agency-orchestrator
+trigger: >-
+  Any change to contract source, deployment or upgrade scripts, access control, fees, supply,
+  allowances, or configuration a deployed contract reads.
+uses_settings: [delivery.code_host, delivery.merge_policy, onchain.record, owner.channel, owner.action_tracker]
+max_fix_rounds: 3
+steps:
+  - id: change
+    profile: agency-onchain-engineer
+    skills: [contract-change-authoring]
+    does: Write the intent and invariants, the failing-first tests, then the change, in a draft request.
+    output: a draft request with intent, invariants and test evidence
+  - id: review
+    profile: agency-code-reviewer
+    skills: [code-review, test-adequacy-review]
+    needs: [change]
+    on_fail: change
+    does: Review the change and whether its tests would catch a broken invariant.
+    output: findings resolved, or the blocking ones
+  - id: security
+    profile: agency-security-reviewer
+    skills: [security-review, authorization-review]
+    needs: [change]
+    optional_when: the change touches funds, access control, upgradeability or external calls
+    on_fail: change
+    does: Review the change for loss of funds, privilege and upgrade risks.
+    output: findings resolved, or the blocking ones
+  - id: testnet
+    profile: agency-onchain-engineer
+    skills: [testnet-deployment]
+    needs: [review, security]
+    on_fail: change
+    does: Deploy the reviewed head to a testnet and verify the behaviour on-chain.
+    output: testnet addresses, transactions and verification, recorded where `onchain.record` says
+  - id: merge
+    human: true
+    decided_by: delivery.merge_policy
+    needs: [testnet]
+    on_reject: change
+    asks: merge the request whose head was reviewed and deployed to testnet, or say what to change
+    does: The human or mechanism named by the merge policy merges the request. You verify it is merged.
+    output: the merge commit on the default branch
+  - id: mainnet
+    human: true
+    decided_by: owner
+    needs: [merge]
+    asks: approve and sign the prepared mainnet action, or say what blocks it
+    does: The owner decides on mainnet and signs. Each mainnet action is an owner action.
+    output: the owner's decision and, if approved, the mainnet transaction
+done_when:
+  - Mainnet changes only through an action the owner approved and signed.

@@ -258,6 +258,75 @@ class InstallerTests(unittest.TestCase):
             )
             self.assertEqual([p.name for p in selected], ["agency-backend-engineer"])
 
+    def test_packs_beyond_the_original_three_are_first_class(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.make_repo(root)
+            registry = json.loads((root / "packs.json").read_text(encoding="utf-8"))
+            registry["packs"].append(
+                {
+                    "name": "hermes-garden",
+                    "path": "hermes-garden",
+                    "namespace": "garden-*",
+                    "manifest": "hermes-garden/garden.json",
+                    "display_name": "Hermes Garden",
+                    "purpose": "Gardening.",
+                    "hints": ["garden", "plants"],
+                }
+            )
+            (root / "packs.json").write_text(json.dumps(registry), encoding="utf-8")
+            pack_dir = root / "hermes-garden"
+            profile_dir = pack_dir / "profiles" / "garden-steward"
+            profile_dir.mkdir(parents=True)
+            (profile_dir / "distribution.yaml").write_text(
+                'name: garden-steward\ndescription: "Plans beds and seasonal plantings."\n', encoding="utf-8"
+            )
+            (profile_dir / "SOUL.md").write_text("test\n", encoding="utf-8")
+            (pack_dir / "install.py").write_text("print('ok')\n", encoding="utf-8")
+            (pack_dir / "garden.json").write_text(
+                json.dumps(
+                    {
+                        "name": "hermes-garden",
+                        "version": "1",
+                        "orchestrator": "garden-steward",
+                        "profiles": [
+                            {"name": "garden-steward", "display_name": "Garden Steward", "category": "outdoors"}
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            packs, profiles = installer.load_catalog(root)
+            self.assertEqual(list(packs), ["agency", "council", "academy", "garden"])
+            self.assertEqual(installer.PACK_DISPLAY["garden"], "Hermes Garden")
+            self.assertEqual(installer.normalize_pack("hermes-garden"), "garden")
+
+            ranked = installer.recommend_profiles(profiles, "plan my garden plants", limit=3)
+            self.assertEqual(ranked[0][0].name, "garden-steward")
+            self.assertIn("Hermes Garden intent", ranked[0][2])
+
+            selected = installer.resolve_selection(
+                profiles, explicit_names=None, category_specs=["garden:outdoors"], select_all=False, pack_filter=None
+            )
+            self.assertEqual([p.name for p in selected], ["garden-steward"])
+            code, results = installer.install_selected(selected, packs, force=False, json_mode=True)
+            self.assertEqual(code, 0)
+            self.assertEqual([r["pack"] for r in results], ["garden"])
+
+    def test_registered_packs_are_listed_in_registry_order(self):
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "install.py"), "--list-packs", "--json"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        listed = [p["name"] for p in json.loads(result.stdout)["packs"]]
+        registry = [p["name"] for p in json.loads((ROOT / "packs.json").read_text(encoding="utf-8"))["packs"]]
+        self.assertEqual(listed, registry)
+
     def test_index_parser_supports_ranges(self):
         self.assertEqual(installer._parse_indices("1,3-4", 5), [0, 2, 3])
         self.assertEqual(installer._parse_indices("", 3, blank_means_all=True), [0, 1, 2])

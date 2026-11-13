@@ -71,6 +71,8 @@ It uses the same shared recipe engine as `install.py`; it does not maintain inde
 - `product-launch` — product intent, launch sequencing, positioning, content, channels, analytics, and customer follow-through.
 - `game-development` — game design, Godot implementation, levels/worlds, creative production, QA, and release.
 - `research-analysis` — research, market/competitive evidence, data/business analysis, and decision-ready synthesis.
+- `gated-repo-delivery` — one repository delivered end to end under the `gated-delivery` skill: issues, implementation, adversarial QA, a ready-to-merge gate, and human merge and apply.
+- `solo-founder-portfolio` — one founder running several ventures: a chief of staff, one scoped venture operator per venture, revenue work, approval-gated publishing and books.
 
 ### Hermes Council
 
@@ -82,6 +84,16 @@ It uses the same shared recipe engine as `install.py`; it does not maintain inde
 
 - `technical-study` — computer science, systems, quantitative foundations, research methods, and adjacent faculty.
 - `cybersecurity-learning` — defensive cybersecurity with prerequisite-aware computer science and systems teaching.
+
+### Hermes Property
+
+- `property-deal-review` — one property deal reviewed by an expert panel: strategy, works, tax, deed and lease, prepared for the real professionals.
+
+## Workflows
+
+A recipe's `workflow` is its step list in words. `workflows` names the definitions that make those steps runnable (see `docs/WORKFLOWS.md`): the same owners, with the skills each step loads, where a failed check sends the work back, and where a human decides. Every profile that holds a step is in the recipe's `expanded` tier; `scripts/sync_workflows.py --check` enforces it. The pack's orchestrator, which coordinates a workflow of several profiles, is installed beside the team.
+
+`software-delivery` runs as `issue-to-merge`. `gated-repo-delivery` adds `after-merge` and `infra-plan-to-apply`.
 
 ## Runtime boundary
 

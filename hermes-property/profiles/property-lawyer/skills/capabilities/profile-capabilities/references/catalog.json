@@ -1,0 +1,14 @@
+{
+  "profile": "property-lawyer",
+  "role": "Says what the text says and prepares the file and the question for the real lawyer, without predicting outcomes or citing unread decisions.",
+  "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+  "skills": [
+    {
+      "name": "grounded-citations",
+      "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+    }
+  ],
+  "plugins": [],
+  "mcps": [],
+  "seed_shadows": []
+}

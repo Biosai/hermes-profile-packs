@@ -1,0 +1,18 @@
+{
+  "profile": "property-accountant-be",
+  "role": "The team's accounting reference: rule, text, effect as a range, conditions, and the exact question for the investor's accountant.",
+  "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
+  "skills": [
+    {
+      "name": "grounded-citations",
+      "reason": "Current primary-source verification for figures, rules and dates the role must cite; never a substitute for the professional who signs."
+    },
+    {
+      "name": "microsoft-office",
+      "reason": "Local workbooks for cost lines, scenarios and ranges; no bank, brokerage or payment connection."
+    }
+  ],
+  "plugins": [],
+  "mcps": [],
+  "seed_shadows": []
+}

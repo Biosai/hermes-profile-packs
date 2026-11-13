@@ -1,0 +1,85 @@
+name: property-deal-review
+version: 0.1.0
+description: "Review one property deal with the expert panel"
+summary: >-
+  One property deal in Belgium or France reviewed by the panel, each expert on its own part:
+  works costs, strategies and scenarios, tax, the deed, the dwellings that legally exist, and the
+  law where a clause or a lease shapes the deal. The coordinator turns their outputs into one
+  synthesis with its weak assumptions named; the investor decides.
+pack: property
+coordinator: property-coordinator
+trigger: >-
+  The investor sends a property to assess: a listing, a public sale, an option, or a building to divide.
+uses_settings: [property.investor_file, property.jurisdictions, owner.channel]
+steps:
+  - id: capture
+    profile: property-coordinator
+    skills: [investor-data-capture, open-questions]
+    does: Record the deal and its documents with their sources, establish the region, and ask the investor the one question that blocks the most.
+    output: the deal file with region, documents, the investor's rules that apply, and open questions
+  - id: works
+    profile: property-works-estimator
+    skills: [listing-photo-review, works-estimate]
+    needs: [capture]
+    does: Turn the listing, photos and certificates into cost lines with ranges and their basis.
+    output: works cost lines as ranges, each with its basis and date
+  - id: dwellings
+    profile: property-architect
+    skills: [recognized-dwellings]
+    needs: [capture]
+    optional_when: the deal counts on more dwellings than the documents prove, a division, or a change of use
+    does: Establish, unit by unit, which dwellings are legally recognized and what proves it.
+    output: each unit marked recognized, not recognized or unknown, with its proof
+  - id: notary
+    profile: property-notary
+    skills: [sale-agreement-and-option, documents-to-request]
+    extra_skills:
+      - {skill: auction-conditions, when: "the property is sold at a public sale"}
+      - {skill: co-ownership-file, when: "the property is in a co-ownership"}
+    needs: [capture]
+    does: Say what the investor would sign, what they inherit, and what to ask before signing.
+    output: the risks in the deed, and the documents and questions for the real notary
+  - id: tax-be
+    profile: property-accountant-be
+    skills: [registration-duties, deal-costs]
+    needs: [capture]
+    optional_when: the property is in Belgium or a Belgian company buys it
+    does: Set out the Belgian tax regimes and costs as scenarios, with their conditions.
+    output: duties and costs per possible regime, marked to confirm with the investor's accountant
+  - id: tax-fr
+    profile: property-accountant-fr
+    skills: [belgian-company-in-france]
+    needs: [capture]
+    optional_when: the property is in France
+    does: Set out the French tax treatment and flag the Belgian side to the Belgian accountant.
+    output: French tax per scenario, and the exact question for a French accountant
+  - id: strategy
+    profile: property-investment-partner
+    skills: [deal-strategies, three-scenarios, market-value-comparables]
+    needs: [works, dwellings, notary, tax-be, tax-fr]
+    does: Test every way to make the property pay, across optimistic, realistic and worst cases.
+    output: the strategies ranked, each with three scenarios and the comparables behind the value
+  - id: law
+    profile: property-lawyer
+    skills: [clause-analysis, primary-law-sources]
+    needs: [notary]
+    optional_when: a clause, a lease or a dispute shapes the deal
+    does: Answer the legal questions the deal raises, on the primary text with its version date.
+    output: each legal question answered with its source, or marked TO VERIFY
+  - id: synthesis
+    profile: property-coordinator
+    skills: [expert-debate, consult-expert]
+    needs: [strategy, law]
+    does: Run the expert debate where experts disagree, then write one synthesis that names its weak assumptions.
+    output: one synthesis with ranges, sources, disagreements resolved or stated, and the weak assumptions
+  - id: decide
+    human: true
+    who: the investor
+    decided_by: owner
+    needs: [synthesis]
+    asks: make an offer, pass, or ask for more on a named point
+    does: The investor decides. Nothing is sent to an agency, notary, co-ownership manager or seller without the investor's approval.
+    output: the investor's decision, recorded verbatim
+done_when:
+  - Every figure in the synthesis is a range with its basis and the date it was read.
+  - Missing data is named as missing, never estimated to move forward.

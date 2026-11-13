@@ -11,12 +11,14 @@ from pathlib import Path
 START_MARKER = "<!-- profile-counts:start -->"
 END_MARKER = "<!-- profile-counts:end -->"
 TOTAL_PATTERN = re.compile(r"You rarely need all \d+ profiles\.")
+BUILT_IN_PACKS = ("agency", "council", "academy")
 
 
 @dataclass(frozen=True)
 class PackCounts:
     profiles: int
     skills: int
+    display_name: str = ""
 
 
 def plural(count: int, singular: str, plural_form: str | None = None) -> str:
@@ -34,7 +36,7 @@ def load_counts(root: Path) -> dict[str, PackCounts]:
         profiles = manifest.get("profiles", [])
         profile_count = len(profiles)
         skill_count = sum(len(profile.get("jobs", [])) for profile in profiles)
-        counts[key] = PackCounts(profile_count, skill_count)
+        counts[key] = PackCounts(profile_count, skill_count, str(pack.get("display_name") or ""))
     return counts
 
 
@@ -50,6 +52,12 @@ def generated_summary(counts: dict[str, PackCounts]) -> str:
             f"{plural(council.skills, 'purpose-built personal-life skill')}. "
             f"Hermes Academy contains {plural(academy.profiles, 'faculty profile')} and "
             f"{plural(academy.skills, 'purpose-built teaching skill')}.",
+            *[
+                f"{pack.display_name or 'Hermes ' + key.title()} contains "
+                f"{plural(pack.profiles, 'profile')} and {plural(pack.skills, 'role-owned skill')}."
+                for key, pack in counts.items()
+                if key not in BUILT_IN_PACKS
+            ],
             END_MARKER,
         ]
     )

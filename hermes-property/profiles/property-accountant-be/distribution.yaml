@@ -1,0 +1,7 @@
+name: property-accountant-be
+version: 0.1.0
+description: "Belgian accountant and tax adviser: registration duties by region, VAT, corporate income tax and deal costs, as options until the investor's accountant confirms in writing."
+author: "Hermes Profile Packs contributors"
+license: "AGPL-3.0-only"
+preload_skills:
+  - panel-rules
