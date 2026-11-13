@@ -73,7 +73,7 @@ Current values appear in the `[Skill config]` block when this skill loads; an un
 4. A step with an "On failure" target that finds a problem comments its findings and blocks its card. Create a fix card for the target step's profile with the findings, make it a parent of the checking card (`kanban_link(parent_id=<fix>, child_id=<check>)`), and unblock the checking card (`kanban_unblock`): it waits until the fix is done, then runs again.
 
 ### Without a board (`delivery.board: none` or `tracker`)
-Run the steps in dependency order. Hand each step to its profile the way `delivery.handoff` says:
+Run the steps in dependency order. A step that names your own profile is yours to do. Hand every other step to its profile the way `delivery.handoff` says:
 - `profile-turn`: one non-interactive turn of that profile, for example `hermes -p <profile> chat -Q -s <skills> --query-file <brief file>`. Its final reply is the step's output. Never add a flag that skips approvals.
 - `channel`: post the brief in that profile's channel and wait for its answer there.
 - `owner-relay`: give the brief to the owner through `owner.channel` and ask them to pass it on.

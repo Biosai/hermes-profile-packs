@@ -401,8 +401,9 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str],
     else:
         without_board = [
             "Run the steps in dependency order. "
-            + ("Do the steps marked \"you\" yourself. Hand every other step " if mixed else "Hand each step ")
-            + "to its profile the way `delivery.handoff` says:",
+            + ("Do the steps marked \"you\" yourself. " if mixed else
+               "A step that names your own profile is yours to do. ")
+            + "Hand every other step to its profile the way `delivery.handoff` says:",
             "- `profile-turn`: one non-interactive turn of that profile, for example "
             "`hermes -p <profile> chat -Q -s <skills> --query-file <brief file>`. Its final reply is the "
             "step's output. Never add a flag that skips approvals.",
