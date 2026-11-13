@@ -10,11 +10,7 @@ metadata:
 ---
 # Primary law sources
 
-## When to use
-
-For every rule you are about to cite, and for any profile on the team that
-must cite a text (the accountant for a tax code, the notary for co-ownership,
-the architect for a planning code).
+Use when you are about to cite a rule, or another profile on the team must cite a text (the accountant for a tax code, the notary for co-ownership, the architect for a planning code).
 
 ## Prerequisites
 
@@ -40,27 +36,14 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Where to read
+## Procedure
 
-- **Belgium, federal and regional**: the Moniteur belge (the official
-  gazette, authoritative) and Justel (the consolidated legislation database
-  of the Federal Public Service Justice: an unofficial consolidation, handy
-  for reading the current version).
-- **Wallonia**: Wallex. **Flanders**: Vlaamse Codex — the text exists only in
-  Dutch: quote the Dutch, your translation is a "working translation".
-  **Brussels**: Moniteur belge and Justel, in French or Dutch.
-- **Belgian case law**: Juportal (Court of Cassation, a selection of appeal
-  and first-instance decisions). Decisions of the justice of the peace (*juge
-  de paix*, the lease judge) are rare there.
-- **France**: Légifrance (codes, statutes, decrees, published case law);
-  BOFiP for tax doctrine.
-
-## Steps
-
-1. **Establish the region and the date** of the facts: they designate the
-   text and its version.
-2. **Open the consolidated text** and note the consolidation update date and
-   the acts that amended the article.
+1. **Establish the region and the date** of the facts: they designate the text
+   and its version. The domains covered:
+   [references/legal-domains.md](references/legal-domains.md).
+2. **Open the consolidated text** on the official source
+   ([references/official-sources.md](references/official-sources.md)) and note
+   the consolidation update date and the acts that amended the article.
 3. **An article can have several versions** (one per region, or before and
    after a reform): cite the one that applies, naming it.
 4. **An article missing from a page is not the absence of a rule**: a large
@@ -70,16 +53,20 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    points to.
 6. **Cite**: text, article, word-for-word quotation, version date read.
 
-## Output
+## Decision rules
 
-For each rule: text, article, exact quotation, source consulted, version
-date, and if needed the regional version named.
+- A lawyer's, notary's or trade association's website, a brochure or the press
+  help you find the article; they prove nothing.
+- A summary, even an internal one, tells you where to look; only the text says
+  what applies.
+- Never cite a court decision you have not read: no court, date or number from
+  memory. If the answer depends on case law, write "case law not consulted".
+- Quote a Flemish text in Dutch: your translation is a "working translation",
+  never the text.
 
-## Pitfalls
+## Quality gate
 
-- A lawyer's, notary's or trade association's website, a brochure or the
-  press help you find the article; they prove nothing.
-- An internal summary note tells you where to look; one has been wrong
-  before.
-- Citing a court decision you have not read: forbidden.
-- Translating a Flemish text and quoting the translation as the text.
+The citation is done when the text was opened in this conversation and the
+quotation compared with it word for word. The deliverable gives, for each
+rule: text, article, exact quotation, source consulted, version date, and if
+needed the regional version named.

@@ -91,7 +91,9 @@ It uses the same shared recipe engine as `install.py`; it does not maintain inde
 
 ## Workflows
 
-A recipe may list, in `workflows`, the multi-profile workflows its team can run (see `docs/WORKFLOWS.md`). Every profile those workflows need is in the recipe's `expanded` tier; `scripts/sync_workflows.py --check` enforces it.
+A recipe's `workflow` is its step list in words. `workflows` names the definitions that make those steps runnable (see `docs/WORKFLOWS.md`): the same owners, with the skills each step loads, where a failed check sends the work back, and where a human decides. Every profile that holds a step is in the recipe's `expanded` tier; `scripts/sync_workflows.py --check` enforces it. The pack's orchestrator, which coordinates a workflow of several profiles, is installed beside the team.
+
+`software-delivery` runs as `issue-to-merge`. `gated-repo-delivery` adds `after-merge` and `infra-plan-to-apply`.
 
 ## Runtime boundary
 

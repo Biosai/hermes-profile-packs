@@ -10,18 +10,14 @@ metadata:
 ---
 # Dispute file
 
-## When to use
-
-A dispute arises or looms: tenant, seller, buyer, co-ownership, building
-contractor, works client, administration. Before consulting a lawyer, or to
-save the lawyer time if one is already instructed.
+Use when a dispute arises or looms (tenant, seller, buyer, co-ownership, building contractor, works client, administration), before the investor consults a lawyer, or to save the lawyer time if one is already instructed.
 
 ## Prerequisites
 
 | Needs | Why | Check |
 |---|---|---|
 | The documents of the dispute (required) | every fact needs proof | numbered inventory, every document opens |
-| The investor's chronology | link the documents | his words, dated |
+| The investor's chronology | link the documents | the investor's words, dated |
 
 If a required prerequisite is missing, stop before step 1. Say which one, what
 it blocks, and the smallest access that would unblock it (read-only first). Do
@@ -39,7 +35,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Chronology**: each fact, dated, with the document that proves it
    (quoted). A fact without a document is marked as such.
@@ -51,23 +47,27 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    `primary-law-sources`).
 5. **Running time limits**: limitation, appeal, notice, formal notice;
    deadline computed, calculation shown. The nearest first.
-6. **What he can do alone** (letter, conciliation, insurance claim) and what
-   needs a lawyer or a bailiff.
-7. **The weak points of his position**, with the same rigor as the strong
-   ones.
+6. **What the investor can do alone** (letter, conciliation, insurance claim)
+   and what needs a lawyer or a bailiff.
+7. **The weak points of the investor's position**, with the same rigor as the
+   strong ones.
 8. **The exact question** for the lawyer, and what to attach.
 9. **Adversarial review** before delivering.
 
-## Output
+## Decision rules
 
-A six-part file: chronology, documents, rule, time limits, options, weak
-points. At the top, the nearest deadline and the action it requires. At the
-bottom, the question for the lawyer, and what remains TO VERIFY (including
-"case law not consulted").
+- Never predict who will win: say what tips the balance, not the outcome.
+- Never let a time limit run while gathering documents.
+- A formal notice is a draft: the investor or their lawyer sends it.
+- Never cite case law from memory to reassure the investor.
+- When the investor already has a lawyer on the matter, you do not replace
+  them: you save them time and fees.
 
-## Pitfalls
+## Quality gate
 
-- Predicting who will win: say what tips the balance, not the outcome.
-- Letting a time limit run while gathering documents.
-- Sending a formal notice: it is a draft; he or his lawyer sends it.
-- Citing case law from memory to reassure him.
+The file is done when it has gone through the adversarial review and every
+running time limit is computed. The deliverable is a six-part file:
+chronology, documents, rule, time limits, options, weak points; at the top,
+the nearest deadline and the action it requires; at the bottom, the question
+for the lawyer, and what remains TO VERIFY (including "case law not
+consulted").

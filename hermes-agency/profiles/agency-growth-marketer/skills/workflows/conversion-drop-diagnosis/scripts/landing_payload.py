@@ -1,16 +1,20 @@
 #!/usr/bin/env python3
-"""Measure what a paid mobile visitor must download before seeing anything.
+"""Measure what a visitor must download before seeing anything.
 
 This is the step that gets skipped and is often the whole answer: if the landing
 page is a client-rendered SPA that needs ~300KB of blocking JS, and the median
-session from GA4 is a few seconds, visitors leave around the moment the page
-finishes rendering. No targeting or copy change fixes that.
+session in the analytics source is a few seconds, visitors leave around the moment
+the page finishes rendering. No targeting or copy change fixes that.
+
+The user agent is required: probe as the traffic you are diagnosing really arrives.
+Use a preset with --ua, or pass any other user agent in full with --ua-string
+(copy it from the analytics source or the server logs).
 
 Usage:
-  python landing_payload.py https://example.com
-  python landing_payload.py https://example.com --ua instagram
-  python landing_payload.py https://example.com --ua facebook --mbps 1.5
-  python landing_payload.py https://example.com --path /login
+  python landing_payload.py https://example.com --ua android
+  python landing_payload.py https://example.com --ua iphone --mbps 1.5
+  python landing_payload.py https://example.com --ua desktop --path /login
+  python landing_payload.py https://example.com --ua-string "Mozilla/5.0 (...) SomeApp/1.0"
 """
 import argparse
 import re
@@ -54,18 +58,23 @@ def fetch(url, ua):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("base")
-    p.add_argument("--ua", default="instagram", choices=sorted(UAS))
+    who = p.add_mutually_exclusive_group(required=True)
+    who.add_argument("--ua", choices=sorted(UAS),
+                     help="preset user agent of the traffic being diagnosed")
+    who.add_argument("--ua-string", metavar="USER_AGENT",
+                     help="any other user agent, in full")
     p.add_argument("--path", default="/")
     p.add_argument("--mbps", type=float, default=1.5,
                    help="effective mobile throughput for the time estimate")
     a = p.parse_args()
 
     base = a.base.rstrip("/")
-    ua = UAS[a.ua]
+    ua = UAS[a.ua] if a.ua else a.ua_string
+    label = a.ua or f"custom ({ua[:60]})"
 
     n, ms, st, enc, body = fetch(base + a.path, ua)
     html = body.decode("utf-8", "replace")
-    print(f"UA: {a.ua}")
+    print(f"UA: {label}")
     print(f"HTML{'':<52}{n:>9,} B  {ms:6.0f} ms  {st}  enc={enc}")
 
     # Only head-referenced assets block first paint.
@@ -88,9 +97,9 @@ def main():
           f"(JS {js_total / 1024:.0f} KB, CSS {css_total / 1024:.0f} KB)")
     secs = total * 8 / (a.mbps * 1_000_000)
     print(f"Download alone at {a.mbps} Mbps: ~{secs:.1f}s, BEFORE parse/exec.")
-    print(">>> Compare this to averageSessionDuration from ga4_funnel.py. If they are")
-    print(">>> the same order of magnitude, rendering is the bottleneck and it GATES")
-    print(">>> every targeting/copy/pricing change.")
+    print(">>> Compare this with the median session duration of that traffic in the")
+    print(">>> analytics source. If they are the same order of magnitude, rendering may")
+    print(">>> be the bottleneck: prove it with a before/after before ranking it first.")
 
     # Server-rendered text: what a crawler, a link preview, or a slow phone sees.
     body_html = html.split("<body", 1)[1] if "<body" in html else ""

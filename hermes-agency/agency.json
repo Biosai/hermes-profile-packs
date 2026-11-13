@@ -36,14 +36,14 @@
     "agency-software-architect",
     "agency-technical-lead"
   ],
-  "profile_count": 115,
+  "profile_count": 114,
   "categories": {
     "content": 10,
     "design": 19,
     "engineering": 30,
     "leadership": 10,
     "marketing": 12,
-    "product": 15,
+    "product": 14,
     "qa": 9,
     "support": 10
   },
@@ -160,7 +160,6 @@
     {"name":"agency-training-specialist","display_name":"Training Specialist","category":"support"},
     {"name":"agency-ui-ux-designer","display_name":"UI/UX Designer","category":"design"},
     {"name":"agency-user-researcher","display_name":"User Researcher","category":"product"},
-    {"name":"agency-venture-operator","display_name":"Venture Operator","category":"product"},
     {"name":"agency-video-producer","display_name":"Video Producer","category":"design"},
     {"name":"agency-worldbuilder","display_name":"Worldbuilder","category":"design"}
   ]

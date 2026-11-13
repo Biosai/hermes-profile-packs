@@ -153,6 +153,14 @@ def main() -> int:
         if shared_check.returncode:
             errors.append("a shared skill copy differs from its canonical source in shared-skills/")
 
+    if (ROOT / "scripts" / "check_skill_shape.py").is_file():
+        shape_check = subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "check_skill_shape.py")],
+            cwd=ROOT,
+        )
+        if shape_check.returncode:
+            errors.append("a skill added beside the baseline does not have the upstream skill shape (scripts/check_skill_shape.py)")
+
     for path in ROOT.rglob("*"):
         if not path.is_file() or ".git" in path.parts or "__pycache__" in path.parts or path.suffix == ".pyc":
             continue

@@ -24,93 +24,43 @@ required_environment_variables:
 ---
 # Revenue State Audit
 
-Use when a product has traffic or users but little or no revenue, when someone asks "how are
-the numbers?" or proposes buying traffic or a feature to grow, or before any message quotes a
-business number. Measured state comes first. Zero or falling conversions: then run the
-`conversion-drop-diagnosis` workflow.
+Use when a product has traffic or users but little or no revenue, when someone asks how the numbers are or proposes buying traffic or a feature, or before a business number is quoted. Zero or falling conversions continue with the `conversion-drop-diagnosis` workflow.
 
 ## Prerequisites
 | Needs | Why | Check |
 |---|---|---|
-| Read access to the analytics source, when `growth.analytics_source` is not `none` (e.g. GA4 Viewer) | sessions, channels, funnel steps | a one-day report returns rows |
-| Read access to the payments source, when `growth.payments_source` is not `none` (e.g. a read-only Stripe key) | payments and revenue | listing the last payment succeeds |
-| Read-only access to the product's user store (optional) | signups and activation | one count query returns |
+| Analytics read access, unless `growth.analytics_source` is `none` | sessions, channels, funnel steps | a one-day report returns rows |
+| Payments read access, unless `growth.payments_source` is `none` | payments and revenue | the last payment lists |
+| The product's user store, read-only (optional) | signups and activation | one count query returns |
 
-If a required prerequisite is missing, stop before step 1. Say which one, what it blocks, and
-the smallest access that would unblock it (read-only first). With both sources `none`, there
-is nothing to measure: stop and say which setting and access would make the audit possible.
-With one source, audit that part only and label the other "not measured". Never replace data
-you could not read with an estimate, and never report "no revenue" when the lookup failed.
+No reader is bundled. Hermes can prompt for `GOOGLE_APPLICATION_CREDENTIALS` (`ga4`) and `STRIPE_API_KEY` (`stripe`) when no connector is set up. Any other source is read through its own connector, API or export, by hand, as [reading each source](references/sources.md) says.
+
+If one is missing, stop before step 1 and say which, what it blocks, and the smallest read-only access that unblocks it. Never estimate what you could not read, and never report "no revenue" when the lookup failed.
 
 ## Configuration
-- `growth.analytics_source` / `growth.payments_source` decide where the numbers come from.
-  `other`: ask which tool and how to read it, then say what you used. `none`: that half of
-  the funnel is "not measured".
-- Set values with `hermes config set skills.config.<key> <value>`; `hermes config migrate`
-  asks for unset ones.
+- `growth.analytics_source` and `growth.payments_source` name where the numbers come from. `other`: ask which tool, and how it is read.
+- `none` for analytics leaves arrival, channels, paid share and where visitors stop unknown. `none` for payments leaves revenue and who paid unknown. Label that half "not measured" and say what cannot be concluded. With both `none`, stop and say which setting and access would allow an audit.
+- Set values with `hermes config set skills.config.<key> <value>`.
 
 ## Procedure
-1. Pull each number from its source, read-only, and record the query, window and time run.
-   Analytics processing lags hours: end windows yesterday; today's row is context only.
-2. Re-verify before quoting: a number from a deck, a chat or an earlier audit is a dated
-   claim. State absences as "none in <window>, measured <date>", never "never".
-3. Build the funnel with the same windows every time (last 7 and 28 days, previous period,
-   and 90 days or the longest the source holds): sessions, intent step, signup, activation,
-   checkout start, payment, counted as people, not events. Below a few dozen, give counts.
-4. Cut before concluding: an aggregate never explains itself. Channel first, bucketed paid
-   vs unpaid, with session-to-signup per bucket; then device; then country with session
-   duration and whether people there can pay. When paid converts orders of magnitude worse
-   than unpaid, the constraint is who arrives: show both rates and paid rate x monthly paid
-   sessions = expected conversions per month.
-5. Rank sources by conversions, not sessions, over the longest window: which source has ever
-   converted, at what rate? Test it against the paid bucket before quoting a multiple. A good
-   source that went quiet usually lost a placement.
-6. State the paid share. Traffic that stops when spending stops is rented; the sessions left
-   after paid traffic stops are the real unpaid demand.
-7. Before calling a change a regression or a win, check the mechanism: tracking changes,
-   consent, bot waves, a deploy or campaign on that date. Check a reported event ("we paused
-   the ads") in the daily series and look for an earlier break: it explains only later days.
-8. Walk the pay path once in production up to the payment record and the entitlement. A
-   broken or unverified step is fixed before anyone recommends more traffic.
-9. Name the binding constraint: the step whose improvement most plausibly ends in a payment.
-   A defect on the critical path is not automatically the constraint; prove it with a
-   before/after on the metric it should move, or retract it.
-10. Rank the backlog by revenue proximity, cheapest first, marking the step that gates the
-   others, and say what is dropped. A small budget buys an answer, not a business. Give each
-   test a kill line (metric, threshold, read-out date). Offer to file one item per cause
-   with its numbers; do not file unasked.
+1. Pull each number from its source, read-only, recording how it was read, the window and the time. End windows yesterday: analytics processing lags by hours.
+2. Build the funnel with the stages of `acquisition-funnel`, counted as people, over the same windows every time: 7 and 28 days, the previous period, and 90 days or the longest the source holds.
+3. Cut before concluding, in the order of [the cuts](references/funnel-cuts.md): channel (paid against unpaid), device, country. Then rank sources by conversions and state the paid share.
+4. Before calling a change a regression or a win, check its mechanism: tracking, consent, bots, a deploy or a campaign that day.
+5. Walk the pay path once in production, up to the payment record and the entitlement.
+6. Apply [the measurement traps](references/measurement-traps.md) before quoting any count, the team's own test activity first.
+7. Name the binding constraint: the step whose improvement most plausibly ends in payment.
+8. Rank the backlog by closeness to revenue, cheapest first, marking the step that gates the others. Give each test a kill line: metric, threshold, read-out date.
+9. Report in [the report format](references/report-format.md), or its quick pulse for a same-day question. Offer to file one item per cause; never file unasked.
 
-## Quick pulse ("how are we doing today?")
-One read, a short answer in this order: revenue with the date of the last real payment;
-last 7 vs previous 7 days (sessions, paid share, funnel steps as people); 90-day funnel in
-counts; the last step an outside person reached; what changed the series and what it does
-not explain; one next step as a question, and what is dropped.
+## Decision rules
+- A number from a deck, a conversation or an earlier audit is a dated claim: re-verify it before quoting. An absence is "none in <window>, measured <date>", never "never".
+- Below a few dozen, give counts, not rates.
+- No conclusion before the cuts: an aggregate never explains itself.
+- A defect on the critical path is not automatically the constraint: prove it with a before and after on its metric, or retract it.
+- A broken or unverified step to payment is fixed before anyone recommends more traffic.
+- Contradict a stakeholder's framing when the evidence does.
+- A reported event explains only the days after it: look for an earlier break in the daily series.
 
-## Output standard
-```
-Revenue state as of <date> (sources: <analytics>, <payments>; pulled <time>)
-Awkward number first: <number and why it matters>
-Funnel: sessions <n> (paid <x>%) -> intent <n> -> signup <n> -> activated <n> -> paid <n>
-By channel: paid <rate> vs unpaid <rate>; best source ever: <source, rate, window>
-Revenue: <amount> | last completed payment: <date> | not measured: <...>
-Binding constraint: <step> (<evidence>)
-Next test: <change>. Kill line: <metric> >= <threshold> by <date>. Dropping: <...>
-```
-
-## Traps
-- An active subscription is not revenue: read its latest invoice's amount paid; fully
-  discounted plans stay active at zero. A success-page view is not a payment until matched
-  to a payment record.
-- Checkout sessions or one conversion counted before removing the team's own tests: group by
-  hashed address and domain (never print addresses); reserved test domains, the product's
-  own domain, direct-traffic hits on a day someone worked on the funnel and bursts from one
-  identity are internal. Zero outside checkouts means the funnel breaks before payment.
-- Survivors of a step mistaken for demand (cut the numerator too), or a zero on an event
-  that was never instrumented or is emitted under two names after a rename.
-- Two analytics properties tracking one site: use the one carrying the conversion events,
-  say which, never add them. A report capped at a row limit hides rare rows: filter for them.
-- Engaged or bounce rate on few-second sessions read as engagement; prefer duration and pages
-  per session, and never compare a duration across a change to the events that bound it.
-- More traffic while a step to payment is broken or unverified: past paid sessions x their
-  rate shows what more buys. Free funnel checks first, then one pre-sized paid burst.
-- Agreeing with a stakeholder's framing because it is theirs. Contradict it with evidence.
+## Quality gate
+Done when every number in the report was read today from its source, with its window and how it was read, each unmeasured half is named with what it leaves unknown, the binding constraint rests on a measurement, and the next test has a kill line and names what is dropped.

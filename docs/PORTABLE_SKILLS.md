@@ -38,14 +38,15 @@ In the body, a `## Configuration` section says how each value changes the proced
 | `delivery.default_branch` | a branch name, detect | detect | The repository's default branch. Detect with `git symbolic-ref --short refs/remotes/origin/HEAD`; never assume `main`. |
 | `delivery.issue_tracker` | github, gitlab, jira, linear, file, none, detect | detect | Where findings and work items go. `file`: a Markdown file named in `delivery.issue_file`. `none`: findings go in the report, never into a tracker. |
 | `delivery.issue_file` | a path | (empty) | The Markdown file that holds work items. Used only when `delivery.issue_tracker` is `file`. |
-| `delivery.board` | hermes-kanban, tracker, none | none | Where the team claims work. `none`: skip board steps and say so. |
+| `delivery.board` | hermes-kanban, tracker, none | none | Where the team claims work. `hermes-kanban`: the card assigned to a profile is its claim; never a second, parked card. `tracker`: the assignment or a dated comment on the work item. `none`: skip board steps and say so. |
 | `delivery.handoff` | profile-turn, channel, owner-relay | profile-turn | How a step reaches another profile when no board runs the workflow. `profile-turn`: one non-interactive turn of that profile, whose reply is the step's output. `channel`: a message in that profile's channel. `owner-relay`: the owner passes it on. |
 | `delivery.merge_policy` | owner, reviewer, auto-when-green | owner | Who may merge. A profile never merges under `owner`. |
 | `delivery.iac_tool` | terraform, opentofu, pulumi, cloudformation, other, none, detect | detect | Infrastructure-as-code tool, when there is one. |
 | `delivery.apply_policy` | human, pipeline-after-approval | human | Who applies infrastructure changes. A profile never applies under `human`. |
 | `owner.channel` | free text | this conversation | Where questions and owner actions reach the owner. |
 | `owner.action_tracker` | issue-tracker, file, conversation | conversation | Where an owner action is recorded while it waits. |
-| `venture.brief` | a path or URL | (empty: ask) | The venture's brief: customer, voice, constraints, autonomy. |
+| `project.brief` | a path or URL | (empty: ask) | The brief of the product, client or brand the profile works for: customer, voice, constraints, autonomy. |
+| `onchain.record` | a path or URL | (empty: ask) | Where networks, deployed addresses, transactions and signers are recorded. |
 | `growth.analytics_source` | ga4, plausible, posthog, matomo, other, none | none | Where traffic and funnel numbers come from. |
 | `growth.payments_source` | stripe, paddle, lemonsqueezy, other, none | none | Where revenue numbers come from. |
 | `publishing.approval` | hermes-approval, explicit-message | explicit-message | How the owner's approval of an outward action is captured. |
@@ -59,6 +60,8 @@ In the body, a `## Configuration` section says how each value changes the proced
 | `property.cost_library` | a path, none | none | The work-item cost library, when one exists. |
 
 Add a key only when no row fits, and add it to this table in the same change.
+
+A value does not promise a tool-specific procedure. Skills give commands as examples for the common values (`gh` for github, `glab` for gitlab) and, for any other value, the generic step: use that tool's own CLI or web interface and say what was done by hand. A capability that exists for one tool only, such as a bundled script, is declared in the skill's Prerequisites with what to do otherwise.
 
 ## 2. Prerequisites, declared and checked
 
@@ -98,3 +101,27 @@ A prerequisite that depends on a setting is conditional: "GA4 access, when `grow
 - No paths, hosts, channels, repositories or product names from any real team.
 - `description` is at most 60 characters, quoted, and starts with what the skill does: Hermes clips longer descriptions in the skill index the agent chooses from.
 - Frontmatter must be valid YAML. Quote any value containing `: `.
+
+## 4. Shape
+
+An added skill looks like the upstream skills beside it, with the two portability sections first:
+
+```
+# Title
+
+Use when <one sentence>.
+
+## Prerequisites      what it needs, why, how to check; then the stop rule
+## Configuration      only when it reads settings: how each value changes the procedure
+## Procedure          numbered steps
+## Decision rules     the rules that settle the hard cases
+## Quality gate       when the work is done and what the deliverable contains
+```
+
+At most 650 words; longer detail (per-tool commands, per-format syntax, checklists) goes to `references/` in the skill folder and is linked from the step that needs it. A hand-written workflow uses `## Trigger`, `## Prerequisites`, `## Configuration`, `## Steps`, `## Decision rules`, `## Done when`, in at most 750 words.
+
+- One home per rule: name the skill that owns a rule instead of restating it, and start from an upstream skill of the same profile when one covers the basics.
+- Rules, not stories: no sentence about what once happened to one team.
+- Never assume another profile is installed: "the code reviewer profile when it is installed, otherwise a person other than the author".
+
+`python scripts/check_skill_shape.py` checks all of this for every skill that is not in the upstream baseline.

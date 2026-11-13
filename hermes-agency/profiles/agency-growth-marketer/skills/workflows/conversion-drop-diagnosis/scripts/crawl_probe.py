@@ -6,9 +6,15 @@ HTTP 200, so a plain status check "succeeds" on routes and files that were never
 deployed. This script always fetches a deliberately impossible path as a
 positive control, and discriminates robots/sitemap on content-type, not status.
 
+By default the probe identifies itself with a neutral crawler user agent. Name the
+search crawler that matters for the site with --crawler, or pass any other user
+agent in full with --ua-string: some hosts serve known crawlers a different page.
+
 Usage:
     python crawl_probe.py https://example.com
     python crawl_probe.py https://example.com --routes / /pricing /blog
+    python crawl_probe.py https://example.com --crawler googlebot
+    python crawl_probe.py https://example.com --ua-string "Mozilla/5.0 (compatible; SomeBot/1.0)"
 
 stdlib only.
 """
@@ -17,13 +23,17 @@ import gzip
 import re
 import urllib.request
 
-GOOGLEBOT = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+CRAWLERS = {
+    "neutral": "Mozilla/5.0 (compatible; crawl-probe/1.0)",
+    "googlebot": "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+    "bingbot": "Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)",
+}
 CONTROL_PATH = "/this-route-cannot-exist-9x7"
 
 DEFAULT_ROUTES = ["/", "/login", "/pricing", "/contact", "/blog"]
 
 
-def fetch(url, ua=GOOGLEBOT, timeout=25):
+def fetch(url, ua, timeout=25):
     req = urllib.request.Request(
         url, headers={"User-Agent": ua, "Accept-Encoding": "gzip",
                       "Accept-Language": "en-US,en;q=0.9"})
@@ -60,7 +70,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("base", help="site root, e.g. https://example.com")
     ap.add_argument("--routes", nargs="*", default=None)
+    who = ap.add_mutually_exclusive_group()
+    who.add_argument("--crawler", choices=sorted(CRAWLERS), default="neutral",
+                     help="crawler user agent to probe as (default: neutral)")
+    who.add_argument("--ua-string", metavar="USER_AGENT",
+                     help="any other user agent, in full")
     args = ap.parse_args()
+    ua = args.ua_string or CRAWLERS[args.crawler]
+    print(f"probing as: {args.ua_string or args.crawler}")
     base = args.base.rstrip("/")
     routes = list(args.routes or DEFAULT_ROUTES)
     if CONTROL_PATH not in routes:
@@ -68,9 +85,14 @@ def main():
 
     print("== crawler-facing files (judge on content-type, not status) ==")
     for path in ("/robots.txt", "/sitemap.xml", "/sitemap_index.xml"):
-        status, ctype, body = fetch(base + path)
+        status, ctype, body = fetch(base + path, ua)
         absent = "html" in ctype.lower()
-        verdict = "ABSENT (SPA fallback answered)" if absent else "present"
+        if absent:
+            verdict = "ABSENT (SPA fallback answered)"
+        elif status == 200:
+            verdict = "present"
+        else:
+            verdict = f"missing ({status})"
         print(f"  {path:<20} {status}  ct={ctype[:34]:<36} {verdict}")
         if not absent and "sitemap" in path and isinstance(status, int) and status == 200:
             print(f"       <loc> entries: {len(re.findall(r'<loc>', body))}")
@@ -78,7 +100,7 @@ def main():
     print("\n== per-route view ==")
     seen = {}
     for path in routes:
-        status, _ctype, html = fetch(base + path)
+        status, _ctype, html = fetch(base + path, ua)
         if not (isinstance(status, int) and status == 200):
             print(f"  {path:<34} {status}")
             continue

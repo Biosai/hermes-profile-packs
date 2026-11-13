@@ -95,7 +95,7 @@ def main() -> int:
     if manifest["orchestrator"] not in {item["name"] for item in requested}:
         print(
             f"note: {manifest['orchestrator']} was not installed; the specialists expect it to own "
-            "questions to the investor and his investor file."
+            "questions to the investor and the investor file."
         )
     return 0
 

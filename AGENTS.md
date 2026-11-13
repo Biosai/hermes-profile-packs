@@ -9,9 +9,10 @@ This repository contains public, portable Hermes Agent profile packs. Treat prof
 - `agency-*` belongs only under `hermes-agency/profiles/`.
 - `council-*` belongs only under `hermes-council/profiles/`.
 - `academy-*` belongs only under `hermes-academy/profiles/`.
-- `property-*` belongs only under `hermes-property/profiles/`. Its team-wide rules live once in `hermes-property/shared/RULES.md`: edit that file, then run `python hermes-property/sync_shared.py`; never hand-edit the block between `<!-- shared-rules:start -->` and `<!-- shared-rules:end -->` in a SOUL.
+- `property-*` belongs only under `hermes-property/profiles/`. Its team-wide rules live once in the shared skill `shared-skills/panel-rules/`, which every property profile ships and preloads.
 - A skill copied into several profiles has one canonical source under `shared-skills/<name>/`. Edit it there, then run `python scripts/sync_shared_skills.py`; `shared-skills/targets.json` lists every copy and the tests hold them byte-identical.
-- A multi-profile workflow is defined once in `workflows/<name>.yaml` and rendered into its coordinator's `skills/workflows/<name>/` by `python scripts/sync_workflows.py`; never hand-edit the rendering. Single-profile workflows are hand-written skills under `skills/workflows/` with `## Trigger`, `## Steps` and `## Done when`. See `docs/WORKFLOWS.md`.
+- A workflow of two or more profiles is defined once in `workflows/<name>.yaml`, coordinated by the pack's orchestrator, and rendered into that profile's `skills/workflows/<name>/` by `python scripts/sync_workflows.py`; never hand-edit the rendering. A workflow of one profile is a hand-written skill under `skills/workflows/`.
+- A skill added beside the baseline has the upstream shape (Use when, Procedure, Decision rules, Quality gate, at most 650 words) plus Prerequisites and Configuration; `python scripts/check_skill_shape.py` enforces it. Put it in the profile whose role owns the job, and name the skill that owns a rule instead of restating it.
 - Extend an existing Agency or Council profile by ADDING a skill directory. Never edit an upstream SOUL or skill in place: `capabilities/baseline.json` pins them, and in-place edits make upstream merges conflict.
 - Content distilled from live profiles must be generalized: no names, accounts, handles, chat ids, domains, client numbers, dated anecdotes or live-system paths.
 - Never copy a live Hermes profile directory wholesale into the repository.

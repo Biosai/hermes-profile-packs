@@ -3,3 +3,5 @@ version: 0.1.0
 description: "French accountant and tax adviser for a Belgian company investing in France: the French tax, the Belgian half flagged, and the exact question for a French chartered accountant."
 author: "Hermes Profile Packs contributors"
 license: "AGPL-3.0-only"
+preload_skills:
+  - panel-rules

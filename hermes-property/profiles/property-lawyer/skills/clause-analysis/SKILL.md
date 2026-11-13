@@ -10,11 +10,7 @@ metadata:
 ---
 # Clause analysis
 
-## When to use
-
-When a clause decides a risk or a cost: a condition precedent, a withdrawal
-clause, an excluded warranty, occupancy, works voted by the co-ownership, a
-payment deadline, a penalty, acceptance of works, a price revision.
+Use when a clause decides a risk or a cost: a condition precedent, a withdrawal clause, an excluded warranty, occupancy, works voted by the co-ownership, a payment deadline, a penalty, acceptance of works, a price revision.
 
 ## Prerequisites
 
@@ -39,7 +35,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Quote the clause word for word**, with its article and page, and the
    title of the document and its date.
@@ -59,16 +55,19 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 7. **For deed practice**, consult `property-notary`; for the tax effect, the
    accountant of that country.
 
-## Output
+## Decision rules
 
-The clause quoted, its legal rule (text, version), what it produces, its cost
-as a range, what could overturn it, and — in a private sale — a proposed
-wording as a draft. Then the question for the real lawyer or notary.
-
-## Pitfalls
-
-- Summarizing a clause instead of quoting it: the word that matters
+- Quote a clause, never summarize it: in a summary, the word that matters
   disappears.
-- Assuming a legal rule applies when the clause validly sets it aside.
-- Reading a clause cut off from its definitions.
-- Advising him to sign: you say what it commits him to; he decides.
+- Never assume a legal rule applies when the clause validly sets it aside.
+- Never read a clause cut off from its definitions.
+- Do not advise signing: say what the clause commits the investor to; the
+  investor decides.
+
+## Quality gate
+
+The analysis is done when the clause was read inside the whole document and
+held against the legal rule in force. The deliverable contains the clause
+quoted, its legal rule (text, version), what it produces, its cost as a range,
+what could overturn it, and, in a private sale, a proposed wording as a draft;
+then the question for the real lawyer or notary.

@@ -17,16 +17,16 @@ This repository is the public upstream home for reusable Hermes profile distribu
 
 This fork adds what three teams of Hermes profiles running in production learned, generalized for public use: names, accounts, numbers and history removed, and the rules each team learned the hard way kept. It adapts upstream profiles where one already owns the work and adds new profiles only where none does:
 
-- **Hermes Property** (`property-*`), a new pack: no upstream profile covers property investment under Belgian and French law. Its team-wide rules live once in `hermes-property/shared/RULES.md`; `sync_shared.py` copies them into every SOUL and the pack validator holds them byte-identical.
-- **Adapted Agency and Council profiles**: new role-owned skills added beside the upstream ones (see [Adaptations](#adaptations-in-this-fork)). Upstream SOUL and skill files are never edited in place, so `capabilities/baseline.json` still holds and upstream changes merge cleanly.
-- **Two new Agency profiles** for work no upstream profile owned: `agency-venture-operator` and `agency-onchain-engineer`.
-- **Workflows**, kept apart from skills: seven multi-profile workflows defined in `workflows/` (such as `issue-to-merge`, `after-merge`, `infra-change`, `property-deal-review`) and twelve single-profile ones. See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md).
-- **Team Recipes** that assemble them and list the workflows each team can run: `gated-repo-delivery`, `solo-founder-portfolio` and `property-deal-review`.
+- **Hermes Property** (`property-*`), a new pack: no upstream profile covers property investment under Belgian and French law. Its profiles have the same six-section SOUL as the other packs; the panel's shared rules are one skill, `panel-rules`, which every property profile ships and preloads.
+- **Adapted Agency and Council profiles**: new role-owned skills added beside the upstream ones, each in the profile whose role owns the job and in the same shape as its neighbours (see [Adaptations](#adaptations-in-this-fork)). Upstream SOUL and skill files are never edited in place, so `capabilities/baseline.json` still holds and upstream changes merge cleanly.
+- **One new Agency profile** for work no upstream profile owned: `agency-onchain-engineer`, a smart-contract specialist.
+- **Workflows**, kept apart from skills: the runnable form of a recipe's step list. Seven are defined in `workflows/` (such as `issue-to-merge`, `after-merge`, `infra-plan-to-apply`, `property-deal-review`), with the owners the recipes already name and the pack's orchestrator coordinating; twelve more are run by a single profile. See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md).
+- **Team Recipes**: the upstream `software-delivery` recipe now names its runnable workflow, and three recipes are added: `gated-repo-delivery`, `solo-founder-portfolio` and `property-deal-review`.
 
 The packs deliberately separate durable context domains. Agency executes professional work, Council supports the person, and Academy teaches. A work profile should not need private life context, a personal profile should not inherit repository state merely because both run on Hermes, and a teaching profile should not silently become a production executor.
 
 <!-- profile-counts:start -->
-Hermes Agency contains 115 professional specialists. Hermes Council contains 22 focused profiles and 90 purpose-built personal-life skills. Hermes Academy contains 30 faculty profiles and 120 purpose-built teaching skills.
+Hermes Agency contains 114 professional specialists. Hermes Council contains 22 focused profiles and 90 purpose-built personal-life skills. Hermes Academy contains 30 faculty profiles and 120 purpose-built teaching skills.
 Hermes Property contains 8 profiles and 38 role-owned skills.
 <!-- profile-counts:end -->
 
@@ -44,17 +44,26 @@ Where an upstream profile already owned the work, this fork adds role-owned skil
 
 | Profile | Added skills | Added workflows |
 | --- | --- | --- |
+| `agency-fullstack-engineer` | `issue-clarification`, `merge-followups`, `gated-delivery` | `bounded-task-delivery` |
 | `agency-backend-engineer` | `go-backend-craft`, `issue-clarification`, `merge-followups`, `gated-delivery` | |
 | `agency-qa-tester` | `real-run-verification`, `test-design-maxims`, `gated-delivery` | `mutation-proof` |
-| `agency-product-manager` | `issue-authoring-standard`, `ready-to-merge-gate`, `gated-delivery` | `issue-to-merge`, `after-merge`, `ready-queue`, `product-direction-review`, `open-pr-readiness-sweep` |
+| `agency-product-manager` | `issue-authoring-standard`, `gated-delivery` | `ready-queue`, `product-direction-review`, `remaining-work-to-issues` |
+| `agency-git-steward` | `ready-to-merge-gate`, `gated-delivery` | `open-pr-readiness-sweep` |
 | `agency-software-architect` | `fresh-main-evidence`, `readiness-review`, `gated-delivery` | |
-| `agency-infrastructure-engineer` | `iac-change-safety`, `infra-security-review`, `gated-delivery` | `infra-change` |
-| `agency-compliance-reviewer` | `regulated-engineering-controls`, `vendor-integration-review`, `migration-verification`, `gated-delivery` | |
+| `agency-technical-lead` | | `repo-audit-to-issues` |
+| `agency-infrastructure-engineer` | `iac-change-safety`, `gated-delivery` | |
+| `agency-security-reviewer` | `infra-security-review` | |
+| `agency-database-engineer` | `migration-verification` | |
+| `agency-integration-engineer` | `vendor-integration-review` | |
+| `agency-compliance-reviewer` | `regulated-engineering-controls`, `gated-delivery` | |
 | `agency-knowledge-manager` | `post-merge-kb-update`, `glossary-discipline`, `gated-delivery` | |
-| `agency-orchestrator` | `gated-delivery` | `coordination-board` |
-| `agency-chief-of-staff` | `owner-question-protocol` | `owner-action-handoff` |
+| `agency-orchestrator` | `gated-delivery` | `coordination-board`; coordinates `issue-to-merge`, `after-merge`, `infra-plan-to-apply`, `publish-with-approval`, `contract-change` |
+| `agency-chief-of-staff` | `owner-question-protocol`, `venture-scope-setup` | `owner-action-handoff` |
+| `agency-product-strategist` | `binding-constraint-check` | |
 | `agency-growth-marketer` | `revenue-state-audit`, `value-proposition-diagnosis` | `conversion-drop-diagnosis` |
-| `agency-social-media-manager` | `approval-gated-publishing` | `publish-with-approval` |
+| `agency-analytics-specialist` | `onchain-metrics` | |
+| `agency-community-manager` | `token-community-copy` | |
+| `agency-social-media-manager` | `approval-gated-publishing` | |
 | `agency-email-marketer` | `approval-gated-publishing` | `email-send-with-approval`, `one-to-one-email-send` |
 | `agency-finance-ops`, `council-finance-coach` | `double-entry-books` | |
 | `council-fitness-coach` | `endurance-race-plan` | `gear-shopping-list` |
@@ -63,8 +72,7 @@ New profiles, only where no upstream profile owned the work:
 
 | Profile | Role |
 | --- | --- |
-| `agency-venture-operator` | Works one venture only, from its brief and binding constraint. Install one copy per venture. Workflows `repo-audit-to-issues`, `remaining-work-to-issues` and `bounded-task-delivery`. |
-| `agency-onchain-engineer` | One token or protocol project, testnet first. Coordinates the `contract-change` workflow (independent code and security review, testnet, owner-approved mainnet). |
+| `agency-onchain-engineer` | Smart contracts and their deployments, testnet first (`contract-change-authoring`, `testnet-deployment`). The `contract-change` workflow adds independent code and security review and an owner-signed mainnet action. |
 | `property-*` (8 profiles) | Expert panel for a property investor in Belgium and France. The coordinator runs the `property-deal-review` workflow. See [`hermes-property/README.md`](hermes-property/README.md). |
 
 **Skills and workflows are separate.** A skill is know-how a role brings to any task; a workflow is an ordered process with a trigger, where each step names who acts, with which skills, and where a human decides. Workflows live in each profile's `skills/workflows/` (the Hermes `workflows` category). A workflow that hands work between profiles is defined once in `workflows/<name>.yaml` and rendered into its coordinating profile by `python scripts/sync_workflows.py`; on a Hermes Kanban board it runs as one card per step. See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md).
@@ -79,7 +87,7 @@ See the [complete profile matrix](docs/CAPABILITY_MATRIX.md), [capability guide 
 
 ## Start small with Team Recipes
 
-You rarely need all 175 profiles. Team Recipes are validated compositions of existing profiles for common outcomes, with `minimal`, `recommended`, and `expanded` tiers.
+You rarely need all 174 profiles. Team Recipes are validated compositions of existing profiles for common outcomes, with `minimal`, `recommended`, and `expanded` tiers.
 
 The main installer understands them directly:
 

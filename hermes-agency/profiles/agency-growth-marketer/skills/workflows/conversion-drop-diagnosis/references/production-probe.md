@@ -44,8 +44,10 @@ blocks map every error to 500. That is a separate observability bug, not the con
 ## 4. Continue to the payment provider
 
 With the same token: list the product the paywall sells, create a checkout, assert the
-session is live (for Stripe `cs_live_`, not `cs_test_`, which means test keys in production),
-and GET the checkout URL with a browser user agent to see it load. An unpaid checkout
+session is a live one and not a test one (a test session means test keys in production; how
+to tell depends on `growth.payments_source`: with `stripe` the session id starts with
+`cs_live_`, not `cs_test_`; with any other provider, use its own live or test marker and say
+which), and GET the checkout URL with a browser user agent to see it load. An unpaid checkout
 session expires on its own. Without this step, "signup works" says nothing about revenue.
 
 ## 5. Clean up, always, in the same script

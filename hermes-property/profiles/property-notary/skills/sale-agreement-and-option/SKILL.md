@@ -10,10 +10,7 @@ metadata:
 ---
 # Preliminary sale agreement, promise and purchase option
 
-## When to use
-
-Before signing any preliminary contract; when a seller or an agency sends a
-draft; when an option approaches its expiry.
+Use when a preliminary contract is about to be signed, a seller or an agency sends a draft, or an option approaches its expiry.
 
 ## Prerequisites
 
@@ -39,11 +36,13 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Identify the document**: preliminary sale agreement (*compromis*, a sale
    complete subject to conditions), unilateral promise, purchase option,
-   accepted offer. Its nature decides who is bound to what.
+   accepted offer. Its nature decides who is bound to what. What this profile
+   reads, in Belgium and in France:
+   [references/conveyancing-scope.md](references/conveyancing-scope.md).
 2. **Pick out the essential terms**, quoted word for word: parties, property
    (description, land registry, units), price, down payment or deposit with a
    withdrawal right (*arrhes*), deed date, occupancy, charges.
@@ -61,18 +60,21 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 7. **What is missing**: list of documents (skill `documents-to-request`).
 8. **The meaning and risk of a disputed clause** → `property-lawyer`.
 
-## Output
+## Decision rules
 
-A table of the clauses that matter (quoted, with their article), what binds
-him, what releases him and by which date, the changes to request (as a draft),
-and the question for the notary handling the deed.
+- Never let an agency's "standard" agreement be signed with no planning
+  condition precedent when the strategy depends on a permit.
+- A deposit with a withdrawal right (*arrhes*) is not a down payment (a firm
+  sale): do not confuse them.
+- Note the date and form of exercise of an option: without them, it expires.
+- Never assume an option can be assigned: the clause says so, or it does not.
+- That the deed carries the statement that opens a duty regime is your part: a
+  missing statement is rarely fixed afterwards.
 
-## Pitfalls
+## Quality gate
 
-- Signing an agency's "standard" agreement with no planning condition
-  precedent when the strategy depends on a permit.
-- Confusing a deposit with a withdrawal right (*arrhes*) with a down payment
-  (a firm sale).
-- Letting an option expire because the date and form of exercise were not
-  noted.
-- Assuming an option can be assigned: the clause says so, or it does not.
+The reading is done when every clause that binds or releases the investor is
+quoted with its article and its date. The deliverable is a table of the
+clauses that matter (quoted, with their article), what binds the investor,
+what releases them and by which date, the changes to request (as a draft), and
+the question for the notary handling the deed.

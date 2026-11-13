@@ -120,6 +120,47 @@ class WorkflowValidationTests(unittest.TestCase):
             with self.subTest(label):
                 self.assertTrue(self.errors(definition), label)
 
+    def test_two_profiles_are_coordinated_by_the_pack_orchestrator(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.make_repo(root, GOOD)
+            manifest = root / "hermes-demo" / "demo.json"
+            data = json.loads(manifest.read_text(encoding="utf-8"))
+            data["profiles"].append({"name": "demo-router"})
+            data["orchestrator"] = "demo-router"
+            manifest.write_text(json.dumps(data), encoding="utf-8")
+            (root / "hermes-demo/profiles/demo-router/skills/route").mkdir(parents=True)
+            (root / "hermes-demo/profiles/demo-router/skills/route/SKILL.md").write_text("---\nname: route\ndescription: d\n---\n", encoding="utf-8")
+            errors = sync_workflows.build(root)[1]
+            self.assertTrue(any("coordinator must be demo-router" in e for e in errors), errors)
+            definition = root / "workflows" / "demo.yaml"
+            definition.write_text(definition.read_text(encoding="utf-8").replace("coordinator: demo-lead", "coordinator: demo-router"), encoding="utf-8")
+            self.assertEqual([], sync_workflows.build(root)[1])
+            self.assertEqual(2, sync_workflows.sync(root))
+            self.assertTrue((root / "hermes-demo/profiles/demo-router/skills/workflows/demo/SKILL.md").is_file())
+
+    def test_a_human_can_send_the_work_back_and_loops_are_bounded(self):
+        looped = GOOD.replace("needs: [check], asks: ship it", "needs: [check], on_reject: write, asks: ship it").replace(
+            "trigger: Something happens.", "trigger: Something happens.\nmax_fix_rounds: 2")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.make_repo(root, looped)
+            self.assertEqual([], sync_workflows.build(root)[1])
+            sync_workflows.sync(root)
+            text = (root / "hermes-demo/profiles/demo-lead/skills/workflows/demo/SKILL.md").read_text(encoding="utf-8")
+            self.assertIn("On a change request the work goes back to `write`", text)
+            self.assertIn("every step that depends on it then runs again", text)
+            self.assertIn("After 2 rounds on the same step, stop", text)
+            self.assertIn("a pass on an older head is void", text)
+        for label, bad in {
+            "on_reject on a profile step": GOOD.replace("needs: [write], on_fail: write", "needs: [write], on_fail: write, on_reject: write"),
+            "on_reject to a later step": GOOD.replace("needs: [check], asks: ship it", "needs: [check], on_reject: ship, asks: ship it"),
+            "rounds not a number": GOOD.replace("trigger: Something happens.", "trigger: Something happens.\nmax_fix_rounds: many"),
+            "decided by a setting that names no one": GOOD.replace("decided_by: delivery.merge_policy", "decided_by: owner.channel"),
+        }.items():
+            with self.subTest(label):
+                self.assertTrue(self.errors(bad), label)
+
     def test_a_single_actor_is_not_a_multi_profile_workflow(self):
         single = """
         name: demo
@@ -156,7 +197,8 @@ class RoleAssignmentTests(unittest.TestCase):
                             "delivery.handoff", "profile-turn"):
             self.assertNotIn(false_claim, text, false_claim)
         steps = [line for line in text.splitlines() if line.startswith("| ") and "| you |" in line]
-        self.assertEqual(10, len(steps))   # 6 profile steps in the table + 4 roles held
+        self.assertEqual(15, len(steps))   # 7 profile steps in the table + 8 roles held (coordinator included)
+        self.assertIn("After 3 rounds on the same step, stop and ask the owner", text)
         self.assertIn("the human named by `delivery.merge_policy`", text)
 
     def test_a_runner_with_a_separate_reviewer_hands_over_only_the_review(self):
@@ -170,6 +212,7 @@ class RoleAssignmentTests(unittest.TestCase):
         self.assertIn("| 1 | `change` | you |", text)
         self.assertIn("| 2 | `review` | `reviewer` |", text)
         self.assertIn("Profiles installed: `reviewer`", text)
+        self.assertIn("| `agency-orchestrator` | you |", text)   # coordinating defaults to the runner
         self.assertIn("Do the steps marked \"you\" yourself. Hand every other step", text)
         self.assertIn("hermes -p <profile> chat -Q -s <skills> --query-file <brief file>", text)
         self.assertIn("Never add a flag that skips approvals", text)

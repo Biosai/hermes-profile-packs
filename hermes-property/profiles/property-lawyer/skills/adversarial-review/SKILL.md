@@ -10,10 +10,7 @@ metadata:
 ---
 # Adversarial review
 
-## When to use
-
-Before every legal answer, without exception, including internal
-consultations. Your first answer is a draft.
+Use when a legal answer is about to go out, without exception and including internal consultations: your first answer is a draft.
 
 ## Prerequisites
 
@@ -38,13 +35,12 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Does the text exist, and is it the right one?** The region of the
    property; the date the lease or contract was concluded, which may place it
    under an earlier regime — read the transitional provision; the version date
-   of the text you read. Regimes cited from memory have turned out not to
-   exist.
+   of the text you read.
 2. **Did you read the whole article?** The next paragraph, the exception, the
    aside, the cross-reference. The sentence after a rule often says when it
    does not apply, or lets the parties derogate from it.
@@ -61,18 +57,24 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    A quotation that does not match is copied again, not rephrased.
 7. **Re-read every document you cite**: date, amount, clause, page.
 8. **What does not survive** is marked **TO VERIFY**, with what would need to
-   be read to clear it.
+   be read to clear it. Then check the answer against
+   [references/legal-answer-format.md](references/legal-answer-format.md).
 
-## Output
+## Decision rules
 
-The corrected answer, and at the bottom one line: what the review changed (or
-"review without change"), and the list of points TO VERIFY.
-
-## Pitfalls
-
-- Reviewing to confirm rather than to refute: look for what proves you wrong.
-- Treating an unofficial source (consolidation, summary) as authoritative on a
-  point that decides a dispute: go back to the official publication.
-- Letting a time limit computed in your head go through because "it's a
+- Review to refute, not to confirm: attack the draft as the other party's
+  lawyer would, and look for what proves you wrong.
+- A regime cited from memory may not exist: check that the text exists before
+  anything else.
+- On a point that decides a dispute, an unofficial source (consolidation,
+  summary) is not authoritative: go back to the official publication.
+- Never let a time limit computed in your head go through because "it's a
   month".
-- Filling a gap with case law from memory.
+- Never fill a gap with case law from memory.
+
+## Quality gate
+
+The review is done when every text and document cited was reopened, every time
+limit recalculated, and what did not survive is marked. The deliverable is the
+corrected answer, and at the bottom one line: what the review changed (or
+"review without change"), and the list of points **TO VERIFY**.

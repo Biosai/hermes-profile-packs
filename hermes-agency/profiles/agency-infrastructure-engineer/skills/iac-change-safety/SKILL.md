@@ -9,49 +9,47 @@ metadata:
       - {key: delivery.code_host, description: "Where code is reviewed: github, gitlab, bitbucket, other, or detect", default: "detect"}
       - {key: delivery.default_branch, description: "Default branch name, or detect", default: "detect"}
       - {key: delivery.merge_policy, description: "Who merges: owner, reviewer, or auto-when-green", default: "owner"}
-      - {key: delivery.issue_tracker, description: "Where work items go: github, gitlab, jira, linear, file, none, or detect", default: "detect"}
-      - {key: delivery.board, description: "Where work is claimed: hermes-kanban, tracker, or none", default: "none"}
     prerequisites:
       commands: [git, terraform, tofu, pulumi, gh, glab]
 ---
 # IaC Change Safety
 
-How to write an infrastructure-as-code change and prove, from its plan, that it does only what it should, then check the result after the apply. It is the `plan` and `verify` steps of the `infra-change` workflow, which orders the security review, the ready-to-merge gate, the merge and the apply. You never apply: who applies follows `delivery.apply_policy`. An urgent fix is still a PR (pull or merge request), plus a hand-apply runbook a human runs.
+Use when writing an infrastructure-as-code change: to prove from its plan that it does only what it should, and to check the result after its apply.
 
 ## Prerequisites
 | Needs | Why | Check |
 |---|---|---|
-| A clone of the IaC repository, with push access to branches | the PR | `git push --dry-run` on a scratch branch |
-| Read access to CI plan output, or read-only cloud credentials plus state read access to reproduce CI's plan exactly | plan evidence | open the latest plan job, or a read-only identity call |
-| The IaC tool at the version the repository pins, when planning locally (`terraform`, `tofu`, `pulumi`, …) | local plan | `<tool> version` against the pinned version |
+| A clone of the IaC repository, with push access to branches | the pull or merge request | `git push --dry-run` |
+| Read access to CI plan output, or read-only cloud and state access | plan evidence | open the latest plan job |
+| The IaC tool at the pinned version, when planning locally | a plan equal to CI's | `<tool> version` |
 
-If a required prerequisite is missing, stop before step 1. Say which one, what it blocks, and the smallest access that would unblock it (read-only first). Do the parts that do not need it only if they still make sense alone. Never replace data you could not read with an estimate, and never report "nothing found" when the lookup failed. This profile never needs apply or write credentials to the cloud; if it holds any under `delivery.apply_policy: human`, say so to the owner.
+If one is missing, stop before step 1: say which, what it blocks, and the smallest access that unblocks it (read-only first). Never estimate data you could not read, and never report "nothing found" when the lookup failed.
 
 ## Configuration
-- `delivery.iac_tool`: the plan command and its vocabulary (`terraform plan` / `tofu plan`, `pulumi preview`, a change set for cloudformation). `none`: there is no IaC; say so and stop. Detect from files (`*.tf`, `Pulumi.yaml`, templates) and say what you found.
-- `delivery.apply_policy`: `human` (default): a human applies after merge; you hand over exact inputs. `pipeline-after-approval`: the pipeline applies after a recorded approval; you never trigger it from a session and never bypass the approval.
-- `delivery.merge_policy`: who receives the ready PR (default: the owner, on an explicit go).
-- `delivery.code_host`, `delivery.default_branch`: PR and CI commands, and the base ref `origin/<default>`.
-- `delivery.issue_tracker`, `delivery.board`: where the item lives and whether you claim it (`none`: skip and say so).
-Current values appear in the `[Skill config]` block when the skill loads; an unset key shows its declared default. Persist a detected value with `hermes config set skills.config.<key> <value>` (per profile: `hermes -p <profile> config set …`); `hermes config migrate` prompts for keys still unset.
+- `delivery.iac_tool`: the plan command. terraform: `terraform plan`; opentofu: `tofu plan`; pulumi: `pulumi preview`; cloudformation: a change set; other: its dry run. `none`: there is no IaC; say so and stop. Detect from files (`*.tf`, `Pulumi.yaml`, templates) and say what you found.
+- `delivery.apply_policy`: `human`: a person applies after the merge, from your exact inputs. `pipeline-after-approval`: a pipeline applies after a recorded approval, which you never trigger or bypass.
+- `delivery.merge_policy`: who receives the ready request.
+- `delivery.code_host`, `delivery.default_branch`: the CLI for the request and CI (github: `gh`; gitlab: `glab`; other: its own) and the base ref.
 
 ## Procedure
-1. **Start from a work item** (or, with tracker `none`, the request); claim per `delivery.board`.
-2. **Work in your own worktree** from a fresh `origin/<default>`. Never stash in a shared checkout.
-3. **Make the smallest change** that closes the item; one concern per PR.
-4. **Read the plan, not the diff**, for every environment it reaches; from CI, or reproduced exactly (same variables, backend, tool version).
-5. **Count actions**: add, change, replace, destroy. Each replace: the forcing attribute, and whether an in-place path exists. Each destroy: nothing references it, and its data is empty, migrated, or accepted as lost by the owner. Renames need explicit moves, or they plan as destroy plus create.
-6. **Drift** (changes you did not make) means a hand change; stop and report before your PR overwrites it.
-7. **Open the PR** with the plan evidence (action counts, every replace and destroy explained, drift report) and the exact apply inputs. The security review, the gate, the merge and the apply follow in the `infra-change` workflow; without it, run `infra-security-review` yourself for IAM, secrets, network, WAF, CI or bootstrap changes and hand off: `WAITING ON YOU — review <PR URL>, then apply with <inputs>`.
-8. **After the apply** (the `verify` step), read its output and confirm a fresh plan is empty. A failed apply is reported with resource and error, never retried by you.
+1. Run `infrastructure-change` first for the design: current state, blast radius, sequencing, recovery.
+2. Work from a work item, in your own worktree, on a freshly fetched default branch.
+3. Make the smallest change that closes it: one concern per request.
+4. Read the plan for every environment the change reaches, from CI or reproduced exactly (same variables, backend and tool version).
+5. Count the adds, changes, replaces and destroys. For each replace: the attribute that forces it, and whether an in-place path exists. For each destroy: nothing references it, and its data is empty, migrated, or accepted as lost by the owner.
+6. Look for drift: planned changes you did not write.
+7. Open the request with the plan evidence (action counts, every replace and destroy explained, the drift report), the exact apply inputs and their order across environments, and the rollback.
+8. Hand over. In the `infra-plan-to-apply` workflow the security review, the gate, the merge and the apply follow as their own steps. Without it, a change to identity, secrets, network exposure, a firewall, CI or host bootstrap first gets an independent review: the security reviewer profile when it is installed, otherwise a person other than the author.
+9. After the apply, read its output and confirm a fresh plan shows no changes.
 
-## Urgent: hand-apply runbook (in the PR)
-Incident (what, since when, evidence) · Preconditions (identity, tools and versions, environment, a read-only command confirming the broken state) · Steps (numbered; exact command, every value filled except secrets, expected output, stop condition) · Verification · Rollback · Reconciliation (merge, then a plan that shows no changes).
-
-## Output standard
-PR description: item link; why; changes per environment; plan counts with every replace and destroy justified; security review result; exact apply inputs and order across environments; rollback; what you could not check, marked skipped. Every number from a command you ran, dated in UTC.
-
-## Traps
+## Decision rules
+- You never apply and never need write credentials to the cloud: tell the owner if you hold any. An urgent fix is still a request, plus a runbook a person runs: [references/hand-apply-runbook.md](references/hand-apply-runbook.md).
+- Read the plan's resource list, not the diff: a replace can hide in a module or provider version bump.
 - A local plan with different variables is a different plan.
-- A replace hidden in a module or provider version bump; read the resource list.
+- A rename needs an explicit move, or it plans as destroy plus create.
+- Drift means a resource was changed by hand: stop and report before your request overwrites it.
+- A failed apply is reported with the resource and the error, never retried by you.
 - An admin override around a required approval is never acceptable.
+
+## Quality gate
+The change is ready when the request links the work item and gives the changes per environment, the plan counts with every replace and destroy justified, the security review result when one was required, the exact apply inputs and order, the rollback, and what could not be checked. It is done when a fresh plan after the apply is empty.

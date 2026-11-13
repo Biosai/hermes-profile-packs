@@ -10,10 +10,7 @@ metadata:
 ---
 # Co-ownership file
 
-## When to use
-
-For every flat or unit in a co-ownership; for every building the investor
-wants to resell unit by unit; before any bid on a unit.
+Use when a flat or a unit in a co-ownership is considered, the investor wants to resell a building unit by unit, or a bid on a unit is being prepared.
 
 ## Prerequisites
 
@@ -40,7 +37,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Is there a basic deed and a co-ownership manager?** The basic deed (*acte
    de base*, the master deed of the co-ownership) and the manager (*syndic*)
@@ -65,18 +62,20 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 7. **Cost** the unit's share of the voted works, the annual charges and the
    reserve fund, and pass them to `property-investment-partner`.
 
-## Output
+## Decision rules
 
-Whether a basic deed and a manager exist; a table of the unit's commitments
+- No ceiling price on a flat without the manager's file: it comes out without
+  one, and the reason is stated.
+- A flat is not costed like a house: charges, common works and regulations
+  change everything.
+- Never ignore a use restriction that rules out the intended rental strategy.
+- Never presume the legal split when a clause sets it aside.
+
+## Quality gate
+
+The reading is done when the manager's file and the basic deed were read, or
+their absence is stated with what it blocks. The deliverable says whether a
+basic deed and a manager exist, and contains a table of the unit's commitments
 (works voted, calls for funds, charges, reserve fund) with their source; the
 clause that splits expenses between seller and buyer, quoted; the use
-restrictions; the missing documents.
-
-## Pitfalls
-
-- Giving a ceiling price on a flat without the manager's file: forbidden. It
-  comes out without a ceiling price, and the reason is stated.
-- Costing a flat like a house: charges, common works and regulations change
-  everything.
-- Ignoring a use restriction that rules out the intended rental strategy.
-- Presuming the legal split when a clause sets it aside.
+restrictions; and the missing documents.

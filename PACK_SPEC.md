@@ -7,6 +7,7 @@ A pack owns a stable prefix. Every profile directory and `distribution.yaml` nam
 - Hermes Agency: `agency-*`
 - Hermes Council: `council-*`
 - Hermes Academy: `academy-*`
+- Hermes Property: `property-*`
 
 Names use lowercase kebab-case and are treated as public API once released.
 
@@ -52,13 +53,14 @@ Every recipe must contain:
 
 - stable lowercase kebab-case `id`;
 - `display_name`;
-- one owning `pack` (`agency`, `council`, or `academy`);
+- one owning `pack`, a pack registered in `packs.json`;
 - `description` and `when_to_use`;
 - non-empty search `keywords`;
 - `minimal`, `recommended`, and `expanded` tiers;
 - a non-empty `workflow`;
 - non-empty observable `success_criteria`;
-- optional runtime routine suggestions.
+- optional runtime routine suggestions;
+- optional `workflows`: the names of the workflow definitions that make the recipe's `workflow` steps runnable (see below).
 
 Tier rules:
 
@@ -69,6 +71,26 @@ Tier rules:
 - larger tiers should add distinct expertise, independent review, or useful parallelism rather than status or duplication.
 
 Recipe installation must reuse the normal Profile Packs/Hermes distribution path. Recipes may suggest runtime routines, but must never create cron jobs, memory, sessions, groups, Kanban state, credentials, or other live state during installation.
+
+## Skills added beside the upstream ones
+
+A profile is extended by adding a skill folder, never by editing a baselined file. An added skill has the shape of the skills around it, so a reader cannot tell which came later:
+
+- a title, one line starting "Use when", then `## Procedure`, `## Decision rules` and `## Quality gate`, in at most 650 words; detail goes to `references/` inside the skill folder;
+- `## Prerequisites`, and `## Configuration` when it reads settings, come before the procedure. They are this repository's portability convention (`docs/PORTABLE_SKILLS.md`): what differs between teams is a setting from one shared registry, and missing access stops the skill cleanly;
+- one skill per job and one home per rule: a skill names the skill that owns a rule instead of restating it, and lives in the profile whose role owns the job;
+- no story from one team's past, no tool, vendor, chat platform or country assumed without a setting or a stated prerequisite.
+
+`python scripts/check_skill_shape.py` enforces the shape and runs in `python validate.py`.
+
+## Workflows
+
+A skill is know-how; a workflow is an ordered process with a trigger (`docs/WORKFLOWS.md`).
+
+- A workflow that involves two or more profiles is defined once in `workflows/<name>.yaml` and coordinated by the pack's orchestrator, the profile its manifest names in `orchestrator`. Its steps are held by the profiles that own each job in the matching recipe; the orchestrator routes, it does not do their work.
+- A workflow of one profile, with or without a human decision, lives in that profile under `skills/workflows/<name>/`.
+- A checking step says where the work goes back on failure, a human step may send it back with a change request, and the number of fix rounds is bounded. A verdict belongs to the head it was given on.
+- Role-owned workflow folders are not supplemental payloads: they are outside `capabilities/skills.lock.json`.
 
 ## Separation of concerns
 

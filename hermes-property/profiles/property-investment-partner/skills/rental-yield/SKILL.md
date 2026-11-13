@@ -13,10 +13,7 @@ metadata:
 ---
 # Rental yield
 
-## When to use
-
-When a property or a unit is meant to be let, kept after a division, or when
-resale and letting must be compared.
+Use when a property or a unit is meant to be let or kept after a division, or when resale and letting must be compared.
 
 ## Prerequisites
 
@@ -44,7 +41,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Qualify the type of letting**: long-term, shared housing, short-term
    (furnished tourist let), furnished corporate lets (stays of a few months).
@@ -67,19 +64,21 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    letting, furniture and its replacement for furnished lets.
 5. **Compute** as ranges: annual rent, costs, cash flow before tax, gross and
    net yield on the total cost price.
-6. **Compare** with the threshold in his investor file for a kept unit.
+6. **Compare** with the threshold in the investor file for a kept unit.
 
-## Output
+## Decision rules
 
-Per type of letting: rent (source, date), costs, cash flow **before tax** (the
-label is mandatory), gross and net yields, as ranges, with the vacancy and
-occupancy assumptions marked as scenarios.
+- The rent quoted by the seller, or the running lease, is a data point, not a
+  comparable: never take it as a market rent.
+- An "average" short-term occupancy rate found online is at best a scenario.
+- Without the accountant's opinion on the investor's taxation, the figure
+  stays before tax, and says so.
+- Never dress a rental deal up as a resale ceiling price.
 
-## Pitfalls
+## Quality gate
 
-- Taking the rent quoted by the seller, or the running lease, as a market
-  rent: it is a data point, not a comparable.
-- An "average" short-term occupancy rate found online: at best a scenario.
-- Forgetting the investor's taxation: without the accountant's opinion, the
-  figure stays before tax, and says so.
-- Dressing a rental deal up as a resale ceiling price.
+The work is done when every rent has a dated source and every assumption
+without one is marked as a scenario. The deliverable gives, per type of
+letting: rent (source, date), costs, cash flow **before tax** (the label is
+mandatory), gross and net yields, as ranges, with the vacancy and occupancy
+assumptions marked as scenarios.

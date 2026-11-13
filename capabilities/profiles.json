@@ -95,7 +95,8 @@
         "dashboard-spec",
         "experiment-analysis",
         "funnel-analysis",
-        "measurement-plan"
+        "measurement-plan",
+        "onchain-metrics"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -407,7 +408,8 @@
         "executive-briefing",
         "owner-question-protocol",
         "priority-triage",
-        "risk-escalation"
+        "risk-escalation",
+        "venture-scope-setup"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -490,7 +492,8 @@
         "community-program",
         "engagement-plan",
         "feedback-synthesis",
-        "moderation-playbook"
+        "moderation-playbook",
+        "token-community-copy"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -554,10 +557,8 @@
         "data-handling-review",
         "gated-delivery",
         "license-review",
-        "migration-verification",
         "policy-control-mapping",
-        "regulated-engineering-controls",
-        "vendor-integration-review"
+        "regulated-engineering-controls"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -816,6 +817,7 @@
         "backup-recovery",
         "concurrency-consistency",
         "indexing",
+        "migration-verification",
         "query-optimization",
         "schema-design",
         "schema-migration"
@@ -1307,6 +1309,9 @@
         "deployment-readiness",
         "end-to-end-debugging",
         "fullstack-testing",
+        "gated-delivery",
+        "issue-clarification",
+        "merge-followups",
         "vertical-slice"
       ],
       "bundled_skills_opt_out": false,
@@ -1370,8 +1375,10 @@
         "academy-continuing-education",
         "branch-hygiene",
         "commit-curation",
+        "gated-delivery",
         "pr-preparation",
         "pr-ready",
+        "ready-to-merge-gate",
         "rebase-conflict-resolution",
         "repository-state-audit",
         "safe-git-integration",
@@ -1521,7 +1528,6 @@
         "disaster-recovery",
         "gated-delivery",
         "iac-change-safety",
-        "infra-security-review",
         "infrastructure-change",
         "infrastructure-design",
         "networking",
@@ -1573,6 +1579,7 @@
         "integration-debugging",
         "oauth-integration",
         "retry-idempotency",
+        "vendor-integration-review",
         "webhook-design"
       ],
       "bundled_skills_opt_out": false,
@@ -2424,7 +2431,6 @@
         "prioritization",
         "product-discovery",
         "product-requirements",
-        "ready-to-merge-gate",
         "release-scope",
         "roadmap-decision"
       ],
@@ -2507,6 +2513,7 @@
       "role": "You are the **Product Strategist** in Hermes Agency. Develops product direction, portfolio choices, opportunity framing, differentiation, and longer-horizon product strategy.",
       "existing_skills": [
         "academy-continuing-education",
+        "binding-constraint-check",
         "moat-analysis",
         "opportunity-assessment",
         "portfolio-prioritization",
@@ -3087,6 +3094,7 @@
         "academy-continuing-education",
         "authorization-review",
         "dependency-review",
+        "infra-security-review",
         "secret-exposure-review",
         "security-regression",
         "security-review"
@@ -3767,13 +3775,11 @@
       "pack": "agency",
       "path": "hermes-agency/profiles/agency-onchain-engineer",
       "category": "engineering",
-      "role": "You are the **Onchain Engineer** in Hermes Agency. Builds and operates one token or protocol project testnet-first, with contract changes gated by tests, independent review and owner approval, and community copy free of price talk or promised returns.",
+      "role": "You are the **Onchain Engineer** in Hermes Agency. Builds and changes smart contracts and their deployments testnet-first, with tests seen failing before passing, independent review, and every mainnet action prepared for the owner to sign.",
       "existing_skills": [
         "academy-continuing-education",
         "contract-change-authoring",
-        "onchain-metrics",
-        "testnet-deployment",
-        "token-community-copy"
+        "testnet-deployment"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -3788,34 +3794,6 @@
         {
           "name": "grounded-citations",
           "reason": "Cite current chain, standard and regulatory sources instead of recalled facts."
-        }
-      ],
-      "plugins": [],
-      "mcps": [],
-      "reason": "Retain specialist workflows; supplemental skills add a distinct evidence, artifact or integration capability without replacing role-owned jobs.",
-      "config_seed": false,
-      "seed_shadows": []
-    },
-    {
-      "profile": "agency-venture-operator",
-      "pack": "agency",
-      "path": "hermes-agency/profiles/agency-venture-operator",
-      "category": "product",
-      "role": "You are the **Venture Operator** in Hermes Agency. Operates one venture only, from its brief and binding constraint, proving work by execution, recording findings where the team tracks work, and delivering reviewable changes under the configured merge policy.",
-      "existing_skills": [
-        "academy-continuing-education",
-        "binding-constraint-check",
-        "venture-scope-setup"
-      ],
-      "bundled_skills_opt_out": false,
-      "skills": [
-        {
-          "name": "dogfood",
-          "reason": "Walk the venture's real product paths before claiming a flow works."
-        },
-        {
-          "name": "systematic-debugging",
-          "reason": "Root-cause a failing venture flow before proposing a fix."
         }
       ],
       "plugins": [],
@@ -5355,6 +5333,7 @@
         "accountant-question",
         "corporate-tax-per-deal",
         "deal-costs",
+        "panel-rules",
         "registration-duties",
         "vat-regimes"
       ],
@@ -5385,7 +5364,8 @@
         "belgian-company-in-france",
         "dealer-regime-france",
         "french-accountant-question",
-        "french-rental-regimes"
+        "french-rental-regimes",
+        "panel-rules"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -5412,6 +5392,7 @@
       "role": "Prepares the planning file and the question for the municipality; the permit stays with the real architect and the municipality.",
       "existing_skills": [
         "division-and-permits",
+        "panel-rules",
         "planning-office-question",
         "plans-and-takeoffs",
         "recognized-dwellings"
@@ -5438,12 +5419,13 @@
       "pack": "property",
       "path": "hermes-property/profiles/property-coordinator",
       "category": "coordination",
-      "role": "Owns the relationship with the investor, his data and his questions, and puts the experts to work without speaking for them.",
+      "role": "Owns the relationship with the investor, the investor's data and questions, and puts the experts to work without speaking for them.",
       "existing_skills": [
         "consult-expert",
         "expert-debate",
         "investor-data-capture",
         "open-questions",
+        "panel-rules",
         "request-tracking"
       ],
       "bundled_skills_opt_out": false,
@@ -5473,6 +5455,7 @@
         "deal-strategies",
         "external-analysis-challenge",
         "market-value-comparables",
+        "panel-rules",
         "rental-yield",
         "three-scenarios"
       ],
@@ -5504,6 +5487,7 @@
         "clause-analysis",
         "dispute-file",
         "lease-and-tenant",
+        "panel-rules",
         "primary-law-sources"
       ],
       "bundled_skills_opt_out": false,
@@ -5529,6 +5513,7 @@
         "auction-conditions",
         "co-ownership-file",
         "documents-to-request",
+        "panel-rules",
         "pre-signing-checklist",
         "sale-agreement-and-option"
       ],
@@ -5559,6 +5544,7 @@
         "cost-library",
         "listing-photo-review",
         "materials-quantities-prices",
+        "panel-rules",
         "renovation-obligations-and-aid",
         "works-estimate"
       ],

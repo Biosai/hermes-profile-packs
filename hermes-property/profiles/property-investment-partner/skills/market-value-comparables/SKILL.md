@@ -10,10 +10,7 @@ metadata:
 ---
 # Market value from comparables
 
-## When to use
-
-For every exit price (resale), every value of a kept unit, every market rent,
-and to check a value put forward by a seller or an agency.
+Use when an exit price (resale), the value of a kept unit or a market rent is needed, or a value put forward by a seller or an agency must be checked.
 
 ## Prerequisites
 
@@ -39,7 +36,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Define the target property**: type, floor area (source), floor level,
    condition, outdoor space, parking, precise neighborhood. These are your
@@ -61,17 +58,22 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    why; an unjustified adjustment is not made.
 7. **Give the range** (low, median, high) and the sample size.
 
-## Output
-
-A table of the comparables kept (source, location, area, price, €/m², date,
-asking or realized, adjustment), the excluded ones with their reason, and the
-range with its sample size.
-
-## Pitfalls
+## Decision rules
 
 - A municipality's median €/m² sorts listings; it does not value a property,
   which neighborhood and condition distort.
-- A listing that stayed online for a long time is a price that did not
-  happen.
+- A listing is an asking price, not a realized price; one that stayed online
+  for a long time is a price that did not happen.
 - A comparable without a capture date is a potentially wrong comparable.
-- Comparing a flat with houses, or a let property with vacant ones.
+- Compare like with like: never a flat with houses, or a let property with
+  vacant ones.
+- Explain a discount: if the property is below market, say why. If it is
+  because of works the investor does at cost price, that is the investor's
+  ground; otherwise, look for what the market knows and you do not.
+
+## Quality gate
+
+The valuation is done when it rests on named, dated comparables and states how
+many. The deliverable is a table of the comparables kept (source, location,
+area, price, €/m², date, asking or realized, adjustment), the excluded ones
+with their reason, and the range with its sample size.

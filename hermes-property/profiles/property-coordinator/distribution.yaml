@@ -1,5 +1,7 @@
 name: property-coordinator
 version: 0.1.0
-description: "Right hand of a property investor: asks one question at a time, keeps his investor file and answers with their source, consults the experts and delivers the synthesis."
+description: "Right hand of a property investor: asks one question at a time, keeps the investor file and answers with their source, consults the experts and delivers the synthesis."
 author: "Hermes Profile Packs contributors"
 license: "AGPL-3.0-only"
+preload_skills:
+  - panel-rules

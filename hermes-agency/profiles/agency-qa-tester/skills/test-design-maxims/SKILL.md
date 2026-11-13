@@ -8,64 +8,33 @@ metadata:
 ---
 # Test Design Maxims
 
-A test that cannot fail is worse than no test: it buys confidence it has not earned. Each maxim names a defect class that shipped somewhere before.
+Use when writing or reviewing a test, to find the ways it can pass while the behavior is wrong.
 
 ## Prerequisites
 | Needs | Why | Check |
 |---|---|---|
 | Read access to the tests and the code under test | review against the maxims | open the files |
-| Ability to run the tests locally, only for the revert check | prove a test fails without the change | the suite's own setup check |
+| A way to run the tests locally, only to prove a test fails without the change | step 4 | the suite's own setup check |
 
-If a required prerequisite is missing, stop before step 1. Say which one, what it blocks, and the smallest access that would unblock it (read-only first). Do the parts that do not need it only if they still make sense alone. Never replace data you could not read with an estimate, and never report "nothing found" when the lookup failed.
+If one is missing, stop before step 1: say which, what it blocks, and the smallest access that unblocks it (read-only first). Never estimate data you could not read, and never report "nothing found" when the lookup failed.
 
-## Configuration
-This skill reads no settings: the maxims hold for any language, framework, repository layout or tracker. Where a maxim needs a team-specific fact (a fixture helper, a cleanup hook), use the repository's own convention and name it in your review.
+## Procedure
+1. For each new or changed test, name what it claims to prove and the defect that should make it fail.
+2. Walk the maxims, family by family; each is stated in full in [references/maxims.md](references/maxims.md):
+   - **Fixtures and state (1-4)**: a fixture comes from the product path; it seeds a reachable state; a restore undoes every side effect; a shared table has other writers.
+   - **Concurrency (5-7)**: a race test manufactures its race; a parallel test's cleanups outlive it; closing a test server can reset process-wide state.
+   - **Faults and fixes (8-9)**: a fault test faults inside the unit; deflaking must not assert less.
+   - **What the code must be tested for (10-22)**: every door of an invariant; fields valid alone but nonsense together; served values round-trip; every enumeration of a vocabulary; a refusal names its real cause; a 4xx is not a refusal; a missing relation does not read as "no data"; recovery leaves a trace; a shared flight has no caller; per-call errors need a private collector; a loop needs an independent bound; a fixed budget is a data-size ceiling; a vendor assertion is a dated fact.
+3. Where a maxim applies and the test does not satisfy it, fix the test before relying on its result; in a review, write the finding.
+4. Prove that the test bites, that it fails when the change is undone, with the `mutation-proof` workflow. That workflow owns the proof and its rules: assert the value the change moves, fail by name, treat an empty collection as a finding, quote the denominator, test the collector apart from the judge.
+5. Report.
 
-## How to apply
-1. For each new or changed test, ask the question each maxim raises.
-2. If a maxim applies and the test does not satisfy it, fix the test before relying on its result.
-3. In a review, name the maxim, the test, and the concrete way it can pass falsely.
+## Decision rules
+- A test that cannot fail is worse than no test: it buys confidence nobody earned.
+- The maxims hold for any language, framework or repository layout. Where one needs a team-specific fact (a fixture helper, a cleanup hook), use the repository's convention and name it.
+- Removing an assertion, widening a tolerance or retrying until green is not a fix. Find the cause, or quarantine the test visibly, with a recorded work item or a line in your report.
+- A finding names the maxim, the test and the concrete way it passes falsely; "weak test" is not a finding.
+- The list is not exhaustive: when a new false green teaches a maxim, propose it.
 
-## Fixtures and state
-1. **A fixture comes from the product path.** Create test data through the product's own API or service layer, not raw inserts. Hand-made rows encode states the product never produces and miss fields it always writes.
-2. **A fixture must seed a reachable state.** If no sequence of real operations could produce it, the test proves behavior on an impossible world.
-3. **A restore must undo every side effect.** A test or rollback that changes environment variables, configuration, clocks, flags, files or rows restores all of them, not only the one it remembers; otherwise the next test inherits it.
-4. **A shared-table pass is another writer.** When tests share a table, a test that scans or counts the whole table sees others' rows. Scope assertions to the rows this test created.
-
-## Concurrency and parallel runs
-5. **A race test must manufacture its race.** Force the interleaving with barriers or many actors released at once, and assert the contention happened. A test that passes because the race never occurred proves nothing.
-6. **A parallel test's cleanups outlive it.** Cleanup runs on the framework's schedule, not when the function returns. Register teardown with the cleanup hook; never tear down what a sibling still uses.
-7. **A test server's close can be process-wide.** Shutting down a test dependency may reset shared state such as default HTTP clients and their connection pools, breaking parallel tests that never touched it. Give each test its own client.
-
-## Faults and fixes
-8. **A fault test must fault inside the unit.** Inject the failure where the unit calls its dependency, and assert the fault was hit. A test whose setup fails before reaching the unit exercises the harness.
-9. **Deflaking must not assert less.** Removing an assertion, widening a tolerance or retrying until green turns a flaky test into a dead one. Find the cause, or quarantine it visibly, with a recorded work item or, when the team has no tracker, a line in your report.
-
-## What the code under test must be tested for
-10. **An invariant needs every door.** A rule enforced in the API but not in the batch job, admin path, webhook handler or migration is a suggestion. Test each door.
-11. **Fields valid alone can be nonsense together.** Test combinations: a start after its end, a unit that does not match its amount, a status contradicting a timestamp.
-12. **Served values must round-trip.** Whatever the API returns must be accepted back by the API that consumes it (format, precision, casing, time zone). Send a served value back.
-13. **A vocabulary has many enumerations.** A status set lives in the schema, constraints, code, API spec, client and docs. A new value is tested against every list.
-14. **Refusals must not misattribute.** An error must name its real cause; blaming the caller's input when a dependency failed misleads users and debuggers.
-15. **A 4xx is not a refusal.** A dependency's 4xx can mean malformed request, expired credentials, rate limit or missing resource. Only a documented business refusal is a refusal.
-16. **Relations must not fail silently.** A required lookup that returns empty when the related record is missing makes a broken reference look like "no data".
-17. **Recovery must not hide the problem.** A retry, fallback or default that swallows a failure must leave a trace (log, metric, alert). Assert the trace.
-18. **A shared flight has no caller.** When concurrent requests are coalesced, one caller cancelling must not fail the others, and one caller's identity must not leak into the shared result.
-19. **Per-call error collection needs a private collector.** A shared collector mixes other calls' errors into yours.
-20. **A loop must not be bounded only by its own predicate.** A poll or retry that exits only when its condition becomes true never exits when it does not. Test the independent bound.
-21. **A fixed budget is a data-size ceiling.** A fixed timeout, page size or memory budget caps the volume the code can handle. Test near the ceiling.
-22. **Vendor assertions are dated facts.** "The vendor does X" holds as of a date and a source; tests that encode it say both.
-
-## What a check must assert
-23. **Assert the value your change moves.** A verdict string that another threshold can also produce, or a sign where an exact value is known, survives the change being reverted.
-24. **A check fails by name, never by crashing.** A bare index, key lookup or parse inside an assertion or its setup aborts the run under a fault and hides which guard broke.
-25. **An empty collection is a finding.** A section wrapped in "if there are items" reports "collected nothing" exactly like "nothing wrong". Test the empty case.
-26. **A pass rate needs its denominator.** Count the candidates independently of the items the checker processed; a checker whose pattern skipped some still prints 100%.
-27. **Testing the judge does not test the collector.** A checker split into collecting and judging facts needs a test that runs the collector whole.
-
-## Output standard
-In a review: `Maxim 5 — <test name> — passes without contention: actors start sequentially`. In your own work: the maxims checked for each new test file.
-
-## Traps
-- A test that passes with the change reverted is not testing the change. Prove it with the `mutation-proof` workflow: one mutation per way the change can be undone.
-- This list is not exhaustive. Add a maxim when a new false green teaches one.
+## Quality gate
+The check is complete when every new or changed test was read against each family; each unmet maxim is fixed, or reported as `Maxim <n> — <test name> — <how it passes falsely>`; and your own work lists the maxims checked per test file.

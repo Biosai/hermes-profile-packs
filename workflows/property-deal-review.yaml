@@ -37,7 +37,7 @@ steps:
       - {skill: auction-conditions, when: "the property is sold at a public sale"}
       - {skill: co-ownership-file, when: "the property is in a co-ownership"}
     needs: [capture]
-    does: Say what the investor would sign, what he inherits, and what to ask before signing.
+    does: Say what the investor would sign, what they inherit, and what to ask before signing.
     output: the risks in the deed, and the documents and questions for the real notary
   - id: tax-be
     profile: property-accountant-be
@@ -78,7 +78,7 @@ steps:
     decided_by: owner
     needs: [synthesis]
     asks: make an offer, pass, or ask for more on a named point
-    does: The investor decides. Nothing is sent to an agency, notary, co-ownership manager or seller without his approval.
+    does: The investor decides. Nothing is sent to an agency, notary, co-ownership manager or seller without the investor's approval.
     output: the investor's decision, recorded verbatim
 done_when:
   - Every figure in the synthesis is a range with its basis and the date it was read.

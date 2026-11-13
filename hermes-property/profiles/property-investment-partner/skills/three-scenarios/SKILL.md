@@ -10,10 +10,7 @@ metadata:
 ---
 # Three scenarios and the ceiling price
 
-## When to use
-
-For every costed strategy before an offer, a bid or exercising an option;
-when the investor asks "how high can I go?".
+Use when a costed strategy is about to support an offer, a bid or the exercise of an option, or the investor asks "how high can I go?".
 
 ## Prerequisites
 
@@ -39,9 +36,9 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
-1. **Take the parameters from his investor file**: resale discount, works
+1. **Take the parameters from the investor file**: resale discount, works
    overrun, duration of each scenario, minimum margin per type of deal. If
    they are not there, propose some, say which ones you used, and have them
    confirmed through the coordinator.
@@ -58,19 +55,26 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 7. **Name the assumption that tips everything**: how far must it move for the
    safety scenario to fall below the threshold?
 
-## Output
+## Decision rules
 
-For each strategy: a three-column table (optimistic, realistic, safety) —
-exit price, works, holding, costs, profit, margin, duration —, the ceiling
-price, the backwards check, and the sensitive assumption with its tipping
-point. Verdict: holds or does not hold in the safety scenario.
+- Give a ceiling price with its three assumptions (works, comparables, tax
+  regime): without them it cannot be audited.
+- Costs follow the price: never compute duties on the asking price, then bid
+  above it.
+- A safety scenario must be able to happen, not merely disappoint: it is not a
+  slightly worse realistic one.
+- Never promise the optimistic scenario: it is a bound, not a forecast.
+- Keep an entry discount on the asking price and a resale premium apart: they
+  apply to two different bases, and mixing them distorts the ceiling price
+  both ways.
+- When the investor acts through a company, judge before or after tax as the
+  investor file says; without it, cost before tax and say so.
 
-## Pitfalls
+## Quality gate
 
-- A ceiling price without its three assumptions (works, comparables, tax
-  regime) cannot be audited.
-- Computing duties on the asking price, then bidding above it: costs follow
-  the price.
-- A safety scenario that is just a slightly worse realistic one: it must be
-  able to happen, not merely disappoint.
-- Promising the optimistic scenario: it is a bound, not a forecast.
+The work is done when the backwards check finds the margin again from the
+ceiling price. The deliverable gives, for each strategy: a three-column table
+(optimistic, realistic, safety) with exit price, works, holding, costs,
+profit, margin and duration; the ceiling price; the backwards check; the
+sensitive assumption with its tipping point; and the verdict: holds or does
+not hold in the safety scenario.

@@ -13,11 +13,7 @@ metadata:
 ---
 # Expert debate
 
-## When to use
-
-Before an offer or a bid; when two opinions diverge; when the investor asks
-"what do they all think?"; for a periodic review of open deals, if a scheduled
-task carries it.
+Use when an offer or a bid is about to be made, two opinions diverge, the investor asks "what do they all think?", or a scheduled task carries a periodic review of open deals.
 
 ## Prerequisites
 
@@ -43,7 +39,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **State the file once, for everyone**: property, region, price, intended
    deal structure, useful investor-file data, available documents and their
@@ -63,19 +59,25 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    redo it backwards.
 6. **Synthesize** without adding your own position.
 
-## Output
+## Decision rules
 
-- What the experts agree on, with figures as ranges.
-- What diverges: both positions quoted, their reasons, and the data or
-  document that would decide between them.
-- What makes a strategy impossible (not merely risky), if anything.
-- The weakest assumption of the deal.
-- The next action, its owner, and at most one question for him.
+- Ask every expert the same question: a debate where each answers a different
+  one settles nothing.
+- Never average the disagreement away: two opposite opinions do not make a
+  lukewarm one.
+- Do not decide: the trade-off is the investor's. A debate ends with the
+  positions, their reasons and what would decide between them, never with your
+  opinion.
+- Do not reopen the debate on a trade-off the investor has already made: it
+  applies.
 
-## Pitfalls
+## Quality gate
 
-- A debate where each expert answers a different question: ask the same one.
-- A synthesis that averages the disagreement away: two opposite opinions do
-  not make a lukewarm one.
-- Deciding yourself: the trade-off is his.
-- Reopening the debate on a trade-off he has already made: it applies.
+The debate is done when every expert answered the same question, each position
+went through the adversarial round, and what had to be recalculated was. The
+deliverable is a synthesis without your own position: what the experts agree
+on, with figures as ranges; what diverges, with both positions quoted, their
+reasons, and the data or document that would decide between them; what makes a
+strategy impossible (not merely risky), if anything; the weakest assumption of
+the deal; the next action, its owner, and at most one question for the
+investor.

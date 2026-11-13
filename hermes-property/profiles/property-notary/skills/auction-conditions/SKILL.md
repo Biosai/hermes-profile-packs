@@ -10,11 +10,7 @@ metadata:
 ---
 # Auction conditions of a public sale
 
-## When to use
-
-Before any bid, on the notaries' public sale platform (Biddit in Belgium) or
-in the room; as soon as the auction conditions (*cahier des charges*) are
-available.
+Use when a bid is considered, on the notaries' public sale platform (Biddit in Belgium) or in the room, as soon as the auction conditions (*cahier des charges*) are available.
 
 ## Prerequisites
 
@@ -39,7 +35,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Get the full auction conditions** and their annexes (planning
    information, certificates, co-ownership file, leases). Note their date and
@@ -61,17 +57,24 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 8. **Cost** everything the conditions put on the winning bidder and pass it to
    `property-investment-partner` for the ceiling price.
 
-## Output
+## Decision rules
 
-The clauses that matter, quoted with their article; a table of the costs borne
-by the winning bidder (item, base, range); occupancy and its consequences;
-missing documents; the question for the notary's office before the sale.
-
-## Pitfalls
-
-- Bidding on a ceiling price computed without the auction fees, which rise
+- Never bid on a ceiling price computed without the auction fees, which rise
   with the bid.
-- Presuming the legal rule on co-ownership charges: the clause in the
+- Never presume the legal rule on co-ownership charges: the clause in the
   conditions can set it aside.
-- Ignoring the payment deadline: late financing costs interest, or the sale.
-- Believing a public-sale clause can be negotiated: it is costed.
+- Compare the payment deadline with the financing: late financing costs
+  interest, or the sale.
+- A public-sale clause is not negotiated, it is costed: everything the
+  conditions put on the winning bidder goes into the cost price.
+- Read "no guarantee" literally: the notary generally guarantees neither the
+  number of dwellings, nor the condition, nor compliance; what the conditions
+  exclude, the buyer bears.
+
+## Quality gate
+
+The reading is done when everything the conditions put on the winning bidder
+is costed and passed on for the ceiling price. The deliverable contains the
+clauses that matter, quoted with their article; a table of the costs borne by
+the winning bidder (item, base, range); occupancy and its consequences;
+missing documents; and the question for the notary's office before the sale.

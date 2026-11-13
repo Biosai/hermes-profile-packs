@@ -36,9 +36,13 @@ ROOT = Path(__file__).resolve().parents[1]
 ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 MAX_DESCRIPTION = 60
 STEP_KEYS = {"id", "profile", "human", "skills", "extra_skills", "does", "output", "needs",
-             "on_fail", "optional_when", "decided_by", "asks", "who"}
+             "on_fail", "on_reject", "optional_when", "decided_by", "asks", "who"}
 TOP_KEYS = {"name", "version", "description", "summary", "pack", "coordinator", "trigger",
-            "uses_settings", "all_steps_load", "steps", "done_when", "then"}
+            "uses_settings", "all_steps_load", "steps", "done_when", "then", "max_fix_rounds"}
+# A human step is decided by the owner, or by whoever one of these settings names. Other
+# settings say how something is done (how an approval is captured), not who decides.
+DECIDER_SETTINGS = {"delivery.merge_policy", "delivery.apply_policy"}
+DEFAULT_FIX_ROUNDS = 3
 RUNNER = "self"            # in a role assignment: the profile that runs the workflow
 BOARD = "delivery.board"
 HANDOFF = "delivery.handoff"
@@ -81,6 +85,16 @@ def load_profiles(root: Path) -> dict[str, tuple[str, Path]]:
     return profiles
 
 
+def load_orchestrators(root: Path) -> dict[str, str]:
+    """pack key -> the profile its manifest names as `orchestrator` (the pack's coordinator of multi-role work)."""
+    out = {}
+    for pack in json.loads((root / "packs.json").read_text(encoding="utf-8"))["packs"]:
+        manifest = json.loads((root / pack["manifest"]).read_text(encoding="utf-8"))
+        if manifest.get("orchestrator"):
+            out[pack["name"].removeprefix("hermes-")] = manifest["orchestrator"]
+    return out
+
+
 def installed_skills(profile_dir: Path) -> set[str]:
     """Every skill a profile ships, at any depth (role-owned, workflows, supplemental)."""
     return {p.parent.name for p in (profile_dir / "skills").rglob("SKILL.md")}
@@ -101,7 +115,8 @@ def definitions(root: Path) -> list[tuple[Path, dict]]:
 
 # ---------------------------------------------------------------- validation
 
-def validate(path: Path, wf: dict, profiles: dict, registry: dict, names: set[str]) -> list[str]:
+def validate(path: Path, wf: dict, profiles: dict, registry: dict, names: set[str],
+             orchestrators: dict[str, str] | None = None) -> list[str]:
     errors: list[str] = []
     label = path.name
 
@@ -165,10 +180,13 @@ def validate(path: Path, wf: dict, profiles: dict, registry: dict, names: set[st
             if "profile" in step or step.get("skills") or step.get("extra_skills"):
                 err(f"{where}: a human step has no profile or skills")
             decided_by = step.get("decided_by")
-            if decided_by != "owner" and decided_by not in registry:
-                err(f"{where}: decided_by must be 'owner' or a registry setting")
+            if decided_by != "owner" and not (decided_by in DECIDER_SETTINGS and decided_by in registry):
+                err(f"{where}: decided_by must be 'owner' or a setting that names who acts {sorted(DECIDER_SETTINGS)}")
             if not str(step.get("asks", "")).strip():
                 err(f"{where}: a human step says what it asks")
+            on_reject = step.get("on_reject")
+            if on_reject is not None and (on_reject not in ancestors[sid] or on_reject in human_ids):
+                err(f"{where}: on_reject must name an earlier profile step this one depends on")
         else:
             profile = step.get("profile")
             if profile not in profiles:
@@ -194,9 +212,24 @@ def validate(path: Path, wf: dict, profiles: dict, registry: dict, names: set[st
         on_fail = step.get("on_fail")
         if on_fail is not None and (on_fail not in ancestors[sid] or on_fail in human_ids):
             err(f"{where}: on_fail must name an earlier profile step this one depends on")
+        if not step.get("human") and step.get("on_reject") is not None:
+            err(f"{where}: on_reject belongs to a human step; a profile step uses on_fail")
         seen.append(sid)
     if len(actors) < 2:
         err("a multi-profile workflow needs at least two actors (profiles or a human)")
+    rounds = wf.get("max_fix_rounds", DEFAULT_FIX_ROUNDS)
+    if not isinstance(rounds, int) or isinstance(rounds, bool) or not 1 <= rounds <= 9:
+        err("max_fix_rounds must be a whole number from 1 to 9")
+    # Who coordinates: the pack's orchestrator as soon as two profiles are involved (routing
+    # between specialists is its job); a workflow of one profile and a human is its own.
+    step_profiles = actors - {"human"}
+    if coordinator in profiles and orchestrators is not None:
+        if len(step_profiles) >= 2:
+            wanted = orchestrators.get(pack)
+            if wanted and coordinator != wanted:
+                err(f"coordinator must be {wanted}, the pack's orchestrator, because {len(step_profiles)} profiles hold steps")
+        elif step_profiles and coordinator not in step_profiles:
+            err(f"coordinator must be {sorted(step_profiles)[0]}, the only profile that holds a step")
     if human_ids and "owner.channel" not in (wf.get("uses_settings") or []):
         err("a workflow with human steps must use owner.channel")
     return errors
@@ -213,7 +246,7 @@ def validate_recipes(root: Path, workflows: dict[str, dict], profiles: dict) -> 
                 continue
             if wf["pack"] != recipe["pack"]:
                 errors.append(f"recipe {recipe['id']}: workflow {name} belongs to pack {wf['pack']}")
-            needed = {s["profile"] for s in wf["steps"] if not s.get("human")} | {wf["coordinator"]}
+            needed = {s["profile"] for s in wf["steps"] if not s.get("human")}
             missing = sorted(needed - expanded)
             if missing:
                 errors.append(f"recipe {recipe['id']}: workflow {name} needs {missing}, absent from the expanded tier")
@@ -249,6 +282,10 @@ def assignment_from(wf: dict, pairs: list[str], solo: bool) -> dict[str, str]:
         if not sep or role not in roles or not ID_RE.fullmatch(who):
             raise WorkflowError(f"--assign {pair!r}: expected ROLE=WHO with ROLE one of {roles} and WHO a profile name or {RUNNER!r}")
         assignment[role] = who
+    holders = {s["profile"] for s in wf["steps"] if not s.get("human")}
+    if wf["coordinator"] not in holders:
+        # Coordinating is what running the workflow means, unless said otherwise.
+        assignment.setdefault(wf["coordinator"], RUNNER)
     missing = sorted(set(roles) - set(assignment))
     if missing:
         raise WorkflowError(f"{wf['name']}: no --assign for {missing} (or use --solo)")
@@ -288,6 +325,9 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str],
     )
     always = wf.get("all_steps_load") or []
     has_human = any(s.get("human") for s in steps)
+    rounds = wf.get("max_fix_rounds", DEFAULT_FIX_ROUNDS)
+    has_loop = any(s.get("on_fail") or s.get("on_reject") for s in steps)
+    stop_to = "ask the owner through `owner.channel`" if has_human else "report to whoever started the workflow"
     if solo:
         notice = ["> **One profile holds every role here.** The description below was written for a team of "
                   "profiles. In this setup you run every step yourself, and no second profile checks the work.",
@@ -346,13 +386,29 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str],
             lines.append(f"- Asks: {s['asks'].strip()}")
             if s["decided_by"] != "owner":
                 lines.append(f"- Who acts follows `{s['decided_by']}`.")
+            if s.get("on_reject"):
+                lines.append(f"- On a change request the work goes back to `{s['on_reject']}` with the answer verbatim; "
+                             "the steps after it run again, then this question is asked again. A plain no stops the workflow.")
+            else:
+                lines.append("- A no stops the workflow at this step.")
         for extra in s.get("extra_skills", []) or []:
             lines.append(f"- Also loads `{extra['skill']}` when {extra['when'].strip()}.")
         if s.get("optional_when"):
             lines.append(f"- Runs only when {s['optional_when'].strip()}. Otherwise it is recorded as skipped, with that reason.")
         if s.get("on_fail"):
-            lines.append(f"- On failure the work goes back to `{s['on_fail']}` with the findings, then this step runs again.")
+            lines.append(f"- On failure the work goes back to `{s['on_fail']}` with the findings; "
+                         "every step that depends on it then runs again.")
 
+    if has_loop:
+        lines += [
+            "",
+            "### When a step sends the work back",
+            "A verdict belongs to the head it was given on. After a fix, every step that depends on the "
+            "fixed step runs again on the new head, including checks that had already passed: a pass on "
+            "an older head is void. Count the rounds per target step. After "
+            f"{rounds} round{'s' if rounds != 1 else ''} on the same step, stop and {stop_to}, with the "
+            "findings of every round, instead of starting another.",
+        ]
     lines += [
         "",
         "## Prerequisites",
@@ -394,8 +450,9 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str],
     if solo:
         without_board = [
             "Work through the steps in dependency order, loading each step's skills as you reach it, and "
-            "check each output against \"Produces\" before the next step. On a failed check, go back to the "
-            "step named under \"On failure\" with the findings, then run the check again. At a human step, "
+            "check each output against \"Produces\" before the next step. On a failed check or a change "
+            "request, go back to the step named with the findings, then run again every step that depends "
+            "on it. At a human step, "
             f"ask through `owner.channel` and wait. {tracker_note}",
         ]
     else:
@@ -412,7 +469,8 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str],
             "",
             "The brief carries the step's instructions, its skills, the work item and the outputs of its "
             "After steps. Wait for the output and check it against \"Produces\"; an answer that does not "
-            "produce it is not a completed step. Loop back on failure as above. At a human step, ask "
+            "produce it is not a completed step. On a failure or a change request, send the work back as "
+            "the step says and rerun what depends on it. At a human step, ask "
             f"through `owner.channel` and wait. {tracker_note}",
         ]
     lines += [
@@ -432,13 +490,16 @@ def render_skill(wf: dict, registry: dict, coordinators: dict[str, str],
         "2. A human step is a card assigned to you. When it starts, ask through `owner.channel` and block it "
         "with `kanban_block(kind=\"needs_input\")`. On a go, comment the answer verbatim and complete the "
         "card; a human action (such as a merge) is complete only once you have verified it happened. On a "
-        "no, comment it, leave the card blocked, and report the workflow stopped at that step.",
+        "change request, comment it verbatim and follow the step's \"On a change request\" line. On a "
+        "plain no, comment it, leave the card blocked, and report the workflow stopped at that step.",
         "3. An optional step whose condition does not hold is completed with `skipped: <reason>`, so the "
         "steps after it proceed.",
         "4. A step with an \"On failure\" target that finds a problem comments its findings and blocks its "
         f"card. Create a fix card for {fixer} with the findings, make it a parent of the "
         "checking card (`kanban_link(parent_id=<fix>, child_id=<check>)`), and unblock the checking card "
-        "(`kanban_unblock`): it waits until the fix is done, then runs again.",
+        "(`kanban_unblock`): it waits until the fix is done, then runs again. For every other step that "
+        "depends on the fixed step and already completed, create a new card (same title plus "
+        "`— round <n>`) with the fix card as parent, so it runs again on the new head.",
         "",
         "### Without a board (`delivery.board: none` or `tracker`)",
         *without_board,
@@ -484,8 +545,9 @@ def build(root: Path = ROOT) -> tuple[dict[Path, bytes], list[str]]:
     defs = definitions(root)
     names = {path.stem for path, _ in defs}
     errors: list[str] = []
+    orchestrators = load_orchestrators(root)
     for path, wf in defs:
-        errors += validate(path, wf, profiles, registry, names)
+        errors += validate(path, wf, profiles, registry, names, orchestrators)
     if errors:
         return {}, errors
     workflows = {wf["name"]: wf for _, wf in defs}

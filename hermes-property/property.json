@@ -2,7 +2,7 @@
   "schema_version": 2,
   "name": "hermes-property",
   "version": "0.1.0",
-  "description": "An expert panel of Hermes Agent profiles for a property investor who operates through his own company, in Belgium first and France second: a coordinator and seven specialists who prepare the work of real professionals.",
+  "description": "An expert panel of Hermes Agent profiles for a property investor acting in their own name or through a company, in Belgium first and France second: a coordinator and seven specialists who prepare the work of real professionals.",
   "orchestrator": "property-coordinator",
   "distribution": {
     "format": "hermes-profile-distribution",
@@ -33,7 +33,7 @@
     "works": 1
   },
   "profiles": [
-    {"name":"property-coordinator","display_name":"Coordinator","category":"coordination","description":"The team's main profile: delivers what the investor asks for, asks him one question at a time, keeps his investor file and answers with their source, consults the experts and delivers the synthesis.","role":"Owns the relationship with the investor, his data and his questions, and puts the experts to work without speaking for them.","jobs":["open-questions","investor-data-capture","request-tracking","consult-expert","expert-debate"]},
+    {"name":"property-coordinator","display_name":"Coordinator","category":"coordination","description":"The team's main profile: delivers what the investor asks for, asks one question at a time, keeps the investor file and answers with their source, consults the experts and delivers the synthesis.","role":"Owns the relationship with the investor, the investor's data and questions, and puts the experts to work without speaking for them.","jobs":["open-questions","investor-data-capture","request-tracking","consult-expert","expert-debate"]},
     {"name":"property-architect","display_name":"Architect and Surveyor","category":"technical","description":"Establishes how many dwellings are legally recognized and what it takes to create one more; reads plans, does takeoffs and drafts the exact question for the planning office.","role":"Prepares the planning file and the question for the municipality; the permit stays with the real architect and the municipality.","jobs":["recognized-dwellings","division-and-permits","plans-and-takeoffs","planning-office-question"]},
     {"name":"property-investment-partner","display_name":"Investment Partner","category":"strategy","description":"The skeptical partner of an investment committee: costs every way to make a property pay, as ranges, and says which one holds in the worst reasonable case.","role":"Weighs a deal before the offer: strategies, three scenarios, ceiling price, market value, and a challenge of external analyses.","jobs":["deal-strategies","three-scenarios","market-value-comparables","rental-yield","external-analysis-challenge"]},
     {"name":"property-lawyer","display_name":"Lawyer","category":"legal","description":"The reference for every legal question: leases, landlord, buyer and building disputes, clauses, public sales, on the primary text, reviewed adversarially.","role":"Says what the text says and prepares the file and the question for the real lawyer, without predicting outcomes or citing unread decisions.","jobs":["adversarial-review","primary-law-sources","lease-and-tenant","clause-analysis","dispute-file"]},

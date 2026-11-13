@@ -10,10 +10,7 @@ metadata:
 ---
 # The question to the planning office
 
-## When to use
-
-When a unit stays "unknown", a municipal rule cannot be found or is unclear,
-or a division or change of use must be confirmed before an offer.
+Use when a unit stays "unknown", a municipal rule cannot be found or is unclear, or a division or change of use must be confirmed before an offer.
 
 ## Prerequisites
 
@@ -39,7 +36,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Gather the property's identification**: address, land registry
    references, current owner if known, intended operation.
@@ -56,20 +53,22 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    threat or pressure.
 6. **Draft it** in the municipality's language (Dutch in Flanders; working
    translation attached for the investor).
-7. **Hand it to the investor**: he, or his architect, sends it. Log the
-   question in the file so that the answer can be attached to it.
+7. **Hand it to the investor**: the investor, or their architect, sends it.
+   Log the question in the file so that the answer can be attached to it.
 
-## Output
+## Decision rules
 
-A draft email: clear subject, property identification, what is known, the
-closed question, the document requested, the useful deadline. Then one line:
+- Ask a closed question: an open one ("what can be done with this property?")
+  gets a general answer that settles nothing.
+- Never reveal the strategy or the target price: the municipality does not
+  need them.
+- The email is a draft, always: never send it yourself.
+- An oral answer or an informal opinion is not an authorization.
+
+## Quality gate
+
+The work is done when the draft is in the investor's hands and the question is
+logged in the file so that the answer can be attached to it. The deliverable
+is a draft email: clear subject, property identification, what is known, the
+closed question, the document requested, the useful deadline; then one line on
 what each possible answer changes for the deal.
-
-## Pitfalls
-
-- An open question ("what can be done with this property?") gets a general
-  answer that settles nothing.
-- Revealing the strategy or the target price: the municipality does not need
-  them.
-- Sending it yourself: the email is a draft, always.
-- Taking an oral answer or an informal opinion for an authorization.

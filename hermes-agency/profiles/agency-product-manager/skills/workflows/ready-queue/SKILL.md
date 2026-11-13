@@ -8,55 +8,57 @@ metadata:
       - {key: delivery.issue_tracker, description: "Where work items go: github, gitlab, jira, linear, file, none, or detect", default: "detect"}
       - {key: delivery.issue_file, description: "Markdown file for work items when the tracker is file", default: ""}
       - {key: delivery.board, description: "Where work is claimed: hermes-kanban, tracker, or none", default: "none"}
+      - {key: delivery.handoff, description: "How a step reaches another profile without a board: profile-turn, channel, or owner-relay", default: "profile-turn"}
       - {key: owner.channel, description: "Where questions and owner actions reach the owner", default: "this conversation"}
     prerequisites:
       commands: [hermes, gh, glab]
 ---
 # Ready Queue
 
-Grooms an engineering backlog into a ranked Ready list where every item is startable with zero questions, and runs the stream of question sets that unblocks candidates. As many items as possible in Ready, top one next to pick. A floor (for example five) is the alarm level, never the target.
+Grooms an engineering backlog into a ranked Ready list in which every item can be started with zero questions.
 
 ## Trigger
-The ready queue drops below the floor the team agreed, a planning cycle starts, or the owner asks what is next.
+The Ready list drops below the floor the team agreed, a planning cycle starts, or the owner asks what is next.
 
 ## Prerequisites
 | Needs | Why | Check |
 |---|---|---|
-| Write access to the tracker, or to `delivery.issue_file` | rank, fold answers, promote | edit one item or the file |
-| A way to request reviews: `hermes` CLI when `delivery.board` is `hermes-kanban` | readiness reviews | `hermes kanban boards list` |
+| Write access to the issue tracker, or to `delivery.issue_file` | rank, fold answers in, promote | edit one item, or the file |
+| The `hermes` CLI, when `delivery.board` is `hermes-kanban` | request reviews | `hermes kanban boards list` |
 
-If a required prerequisite is missing, stop before step 1. Say which one, what it blocks, and the smallest access that would unblock it (read-only first). Do the parts that do not need it only if they still make sense alone. Never replace data you could not read with an estimate, and never report "nothing found" when the lookup failed. With `delivery.issue_tracker` set to `none` there is no backlog to groom: say so and stop.
+If one is missing, stop before step 1 and say which, what it blocks, and the smallest access that would unblock it (read-only first). Never report "nothing found" when the lookup failed. With `delivery.issue_tracker` set to `none` there is no backlog to groom: say so and stop.
 
 ## Configuration
-- `delivery.issue_tracker`, `delivery.issue_file`: where Backlog and Ready live. Tracker: a status, column or label. `file`: two sections of the file, Ready ordered top first. `detect`: infer from where items live and say so.
-- `delivery.board`: how reviews are requested. `hermes-kanban`: one card per reviewer on a review board (for example `ready-review`). `tracker`: a review sub-task or assignment on the item. `none`: ask the reviewers in the conversation and record their verdicts on the item.
-- `owner.channel`: where question sets go.
-Current values appear in the `[Skill config]` block when the skill loads; an unset key shows its declared default. Persist a detected value with `hermes config set skills.config.<key> <value>` (per profile: `hermes -p <profile> config set …`); `hermes config migrate` prompts for keys still unset.
+- `delivery.issue_tracker` and `delivery.issue_file`: where Backlog and Ready live. A tracker: a status, column or label. `file`: two sections of the file, Ready ordered top first. `detect`: infer from where items live, and say so.
+- `delivery.board`: how a review is requested. `hermes-kanban`: one card per review, assigned to the reviewing profile. `tracker`: a review sub-task or an assignment on the item. `none`: ask each reviewer as `delivery.handoff` says, and record the verdict on the item.
+- `owner.channel`: where questions are asked.
+- Persist a detected value with `hermes config set skills.config.<key> <value>`.
 
 ## Steps
-1. **Pick candidates**: highest priority first, then small startable items that can slot ahead of blocked larger ones. Size ranks; it is never a status.
-2. **Request readiness reviews**: a developer (buildable as written?) and the architect (fits, where it goes?), plus compliance when regulated data is touched. Each review is one comment.
-3. **Fold reviews in**: each raised question is answered in the body or becomes a pending question.
-4. **Check precedent before asking.** If the owner already ruled on the same question and nothing superseded it, apply the ruling, cite it, and log it so the owner keeps a veto. Never from precedent: data changes, merges, production, unprecedented money or permission rules, product scope.
-5. **Run the question stream** through `owner.channel`:
-   - exactly one set pending at a time, product questions to the product lead and technical ones to the owner; split mixed questions;
-   - at most five per set, numbered, lettered options with consequences, a recommended default;
-   - a few sets staged and written, so each answer is followed by the next set in the same reply;
-   - on each answer: record it on the item, fold it in, post the next set;
-   - one session owns posting sets and applying answers; others write answers down for it and stop.
-6. **Promote** only when reviews are FITS or FITS WITH CONDITIONS (conditions folded in), no question is pending, and the data-change line is filled.
-7. **Rank Ready** by priority, then size and dependencies; re-rank on every change.
-8. **Keep epics and open decisions out of Ready.**
+1. Pick candidates: highest priority first, as `prioritization` ranks them, then small startable items that can slot ahead of blocked larger ones.
+2. Bring each candidate to the standard of `issue-authoring-standard`, its criteria written with `acceptance-criteria`.
+3. Request the readiness reviews, each answered in one comment:
+   - buildable as written? From a developer profile when one is installed, otherwise a person who would build it.
+   - does it fit, and where does it go? From the software architect profile when it is installed, otherwise the technical owner.
+   - when regulated data is touched, a compliance review, from the compliance reviewer profile when it is installed, otherwise the person accountable for compliance.
+4. Fold the reviews in: each question raised is answered in the body or becomes a pending question.
+5. Check precedent before asking. If the owner already ruled on the same question and nothing superseded it, apply the ruling, cite it, and log it so that the owner keeps a veto.
+6. Ask the pending questions where `owner.channel` says: one decision per question, one question at a time, the most blocking first, each with lettered options, their consequences and a recommended default. Keep the next questions written, so that each answer is followed by the next question in the same reply.
+7. On each answer, record it on the item and fold it in before asking the next.
+8. Promote an item only when its reviews read FITS, or FITS WITH CONDITIONS with the conditions folded in, no question is pending, and its data-change line is filled.
+9. Rank Ready by priority, then size and dependencies. Re-rank on every change.
+10. Report after each pass: the Ready count, the candidates under review, the pending question, the questions staged behind it, and the top three of Ready with links.
+
+## Decision rules
+- As many items as possible in Ready, the top one next to pick. The floor is the alarm level, never the target.
+- Size ranks; it is never a status.
+- Never apply precedent to data changes, merges, production, unprecedented money or permission rules, or product scope: ask.
+- Product questions go to whoever leads the product, technical ones to the technical owner. Split a mixed question.
+- One session owns asking the questions and applying the answers. Others write answers down for it and stop: two sessions applying the same answer diverge.
+- NEEDS DECISION is not a soft yes: the item stays out of Ready, and so do epics and open decisions.
+- An item promoted with a hidden question is the developer's first blocked turn.
+- Never write a review in the reviewer's place. A review that failed to run, or has nobody to give it, is reported, never silently retried or skipped.
 
 ## Done when
 - The Ready list holds at least the agreed floor of items, each ranked, with acceptance criteria and no open question.
 - Every item that could not be made ready is listed with what blocks it and who can unblock it.
-
-## Output standard
-After each pass: Ready count, candidates under review, the pending set, staged sets, and the top three of Ready with links. A crashing review worker is reported, never silently retried.
-
-## Traps
-- Questions dripped one at a time cost a context switch each. Batch them.
-- NEEDS DECISION is not a soft yes; the item stays out of Ready.
-- An item promoted with a hidden question is the developer's first blocked turn.
-- Two sessions applying the same answer diverge.

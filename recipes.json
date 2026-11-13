@@ -16,7 +16,8 @@
       },
       "workflow": ["Product Manager freezes outcome and acceptance criteria.", "Architect and Technical Lead establish boundaries only when architecture work is material.", "One implementation owner builds the feature; avoid parallel authorship without clean seams.", "Code Review and QA independently verify the result.", "Security review is added when risk justifies it.", "Git Steward and Release Manager close integration and release evidence."],
       "success_criteria": ["Every deliverable has one owner.", "Implementation and independent review are distinct when risk warrants it.", "Tests or equivalent evidence demonstrate the requested behavior.", "Source-control and release state are explicit."],
-      "optional_routines": ["Chief of Staff or Project Manager board review for long-running work", "Release readiness review before production rollout"]
+      "optional_routines": ["Chief of Staff or Project Manager board review for long-running work", "Release readiness review before production rollout"],
+      "workflows": ["issue-to-merge"]
     },
     {
       "id": "api-backend",
@@ -198,33 +199,33 @@
       "id": "gated-repo-delivery",
       "display_name": "Gated Repository Delivery",
       "pack": "agency",
-      "description": "A small team that delivers work items on a code repository end to end under one shared gate: clarified items, real test runs with counts, a ready-to-merge check, and merges and applies only by the configured policy.",
+      "description": "The Software Delivery Team run as explicit workflows on a board, with the loop closed after the merge: the orchestrator routes each work item through build, independent review, real test runs and the merge gate, then the knowledge update; infrastructure changes are applied only by the configured human or pipeline.",
       "when_to_use": "Use when agents work a repository for weeks and the cost of a false 'done' is high: autonomous delivery, regulated code, or a team that merges only on a human's word.",
       "keywords": ["gated", "merge", "ready-to-merge", "regression", "repository", "repo", "monorepo", "backlog", "golang", "migration", "autonomous", "squad"],
       "tiers": {
-        "minimal": ["agency-product-manager", "agency-backend-engineer", "agency-qa-tester"],
-        "recommended": ["agency-product-manager", "agency-backend-engineer", "agency-qa-tester", "agency-orchestrator", "agency-software-architect"],
-        "expanded": ["agency-product-manager", "agency-backend-engineer", "agency-qa-tester", "agency-orchestrator", "agency-software-architect", "agency-infrastructure-engineer", "agency-compliance-reviewer", "agency-knowledge-manager"]
+        "minimal": ["agency-orchestrator", "agency-product-manager", "agency-fullstack-engineer", "agency-code-reviewer", "agency-qa-tester", "agency-git-steward"],
+        "recommended": ["agency-orchestrator", "agency-product-manager", "agency-software-architect", "agency-fullstack-engineer", "agency-code-reviewer", "agency-qa-tester", "agency-security-reviewer", "agency-git-steward", "agency-knowledge-manager"],
+        "expanded": ["agency-orchestrator", "agency-product-manager", "agency-software-architect", "agency-technical-lead", "agency-fullstack-engineer", "agency-backend-engineer", "agency-code-reviewer", "agency-qa-tester", "agency-security-reviewer", "agency-git-steward", "agency-knowledge-manager", "agency-infrastructure-engineer", "agency-database-engineer", "agency-compliance-reviewer"]
       },
-      "workflow": ["Every member loads the gated-delivery skill and reads its [Skill config] first: code host, repo layout, issue tracker, board, merge and apply policy.", "Product Manager keeps a queue of ready items (the ready-queue workflow) and coordinates each item through the issue-to-merge workflow: shape, clarify, build, verify with real runs, readiness review when boundaries move, the ready-to-merge gate, and the merge by whoever delivery.merge_policy names.", "Each merge starts the after-merge workflow: the developer's follow-ups, the knowledge update and the item's closure.", "Infrastructure changes run through the infra-change workflow, where the apply follows delivery.apply_policy."],
-      "success_criteria": ["Every 'done' claim carries a test run with PASS/SKIP/FAIL counts.", "Nothing is merged or applied outside the configured merge and apply policies.", "Each work item has one owner and a visible state.", "Findings not fixed now are recorded in the configured tracker, or in the report when there is none."],
+      "workflow": ["Orchestrator coordinates each accepted work item through the issue-to-merge workflow and routes every step to its owner.", "Product Manager shapes the item and its acceptance criteria; Architect gives a readiness verdict only when boundaries move.", "One implementation owner clarifies and builds the change as a draft request, proven by a run.", "Code Review and QA verify the same head independently; Security review is added when risk justifies it.", "Git Steward brings the request to merge-ready and checks the merge gate; the merge follows delivery.merge_policy.", "Each merge starts the after-merge workflow: the implementation owner's follow-ups, the knowledge update and the item's closure.", "Infrastructure changes run through the infra-plan-to-apply workflow, where the apply follows delivery.apply_policy."],
+      "success_criteria": ["Every 'done' claim carries a test run with PASS/SKIP/FAIL counts on the head it describes.", "Review, verification and the merge gate all refer to the merged head.", "Nothing is merged or applied outside the configured merge and apply policies.", "Findings not fixed now are recorded in the configured tracker, or in the report when there is none."],
       "optional_routines": ["Weekly audit of open pull or merge requests and work items, when the operator configures it", "Live regression run after each merge"],
-      "workflows": ["issue-to-merge", "after-merge", "infra-change"]
+      "workflows": ["issue-to-merge", "after-merge", "infra-plan-to-apply"]
     },
     {
       "id": "solo-founder-portfolio",
       "display_name": "Solo Founder Portfolio",
       "pack": "agency",
-      "description": "A founder running several ventures at once: one scoped operator per venture, a chief of staff for owner decisions, revenue-first growth, approval-gated publishing, and company books.",
-      "when_to_use": "Use when one person runs several ventures or side projects and wants each one worked in its own scope, with every outward action approved by them.",
+      "description": "A founder running several products at once: a chief of staff for scope and owner decisions, a strategist who tests plans against the binding constraint, one implementation owner, revenue-first growth, approval-gated publishing, and company books.",
+      "when_to_use": "Use when one person runs several products or side projects and wants each one worked from its own brief, with every outward action approved by them.",
       "keywords": ["founder", "solo", "ventures", "venture", "portfolio", "startup", "startups", "revenue", "bootstrapped", "cofounder", "side-projects"],
       "tiers": {
-        "minimal": ["agency-chief-of-staff", "agency-venture-operator"],
-        "recommended": ["agency-chief-of-staff", "agency-venture-operator", "agency-growth-marketer", "agency-social-media-manager", "agency-finance-ops"],
-        "expanded": ["agency-chief-of-staff", "agency-venture-operator", "agency-growth-marketer", "agency-social-media-manager", "agency-finance-ops", "agency-email-marketer", "agency-content-writer", "agency-git-steward", "agency-onchain-engineer", "agency-code-reviewer", "agency-security-reviewer"]
+        "minimal": ["agency-chief-of-staff", "agency-product-strategist", "agency-fullstack-engineer"],
+        "recommended": ["agency-chief-of-staff", "agency-product-strategist", "agency-fullstack-engineer", "agency-growth-marketer", "agency-social-media-manager", "agency-finance-ops"],
+        "expanded": ["agency-orchestrator", "agency-chief-of-staff", "agency-product-strategist", "agency-fullstack-engineer", "agency-technical-lead", "agency-growth-marketer", "agency-social-media-manager", "agency-content-writer", "agency-email-marketer", "agency-finance-ops", "agency-git-steward", "agency-code-reviewer", "agency-security-reviewer", "agency-onchain-engineer"]
       },
-      "workflow": ["Install one Venture Operator per venture from a copy and fill in its Scope; each copy works one venture only, through its repo-audit-to-issues and bounded-task-delivery workflows.", "Chief of Staff routes requests to the right venture, asks the owner one decision at a time (owner-question-protocol), and tracks owner actions (owner-action-handoff).", "Growth Marketer audits the measured revenue state before proposing work (revenue-state-audit).", "Posts and campaigns run through the publish-with-approval and email-send-with-approval workflows: drafts are free, claims are fact-checked, and nothing is published, sent or scheduled before the owner approves the exact version.", "Finance Ops keeps the company books (double-entry-books), separate from the owner's personal books."],
-      "success_criteria": ["No venture's facts or credentials reach another venture's profile.", "Every outward action has a recorded owner approval.", "Revenue claims cite a measured source and its date.", "Owner questions arrive one decision at a time, with options and a recommendation."],
+      "workflow": ["Install the team once per product, each installation with its own project.brief, so one product's facts and credentials never reach another's.", "Chief of Staff records the product's scope from the owner (venture-scope-setup), asks one decision at a time (owner-question-protocol), and tracks owner actions (owner-action-handoff).", "Product Strategist tests every plan against the product's one binding constraint before work starts (binding-constraint-check).", "The implementation owner delivers one bounded change at a time as a draft request, proven by a run (bounded-task-delivery).", "Growth Marketer audits the measured revenue state before proposing work (revenue-state-audit).", "Posts and campaigns run through the publish-with-approval and email-send-with-approval workflows: nothing is published, sent or scheduled before the owner approves the exact version.", "Finance Ops keeps the company books (double-entry-books), separate from the owner's personal books."],
+      "success_criteria": ["No product's facts or credentials reach another product's installation.", "Every outward action has a recorded owner approval.", "Revenue claims cite a measured source and its date.", "Owner questions arrive one decision at a time, with options and a recommendation."],
       "optional_routines": ["Weekly cross-venture digest, when the operator configures it", "Monthly close of the company books"],
       "workflows": ["publish-with-approval", "email-send-with-approval", "contract-change"]
     },
@@ -232,7 +233,7 @@
       "id": "property-deal-review",
       "display_name": "Property Deal Review (BE/FR)",
       "pack": "property",
-      "description": "A French-language expert panel that reviews one property deal in Belgium or France: strategies and scenarios, works costing, tax, deed and lease, each prepared for the real professional who signs.",
+      "description": "An expert panel that reviews one property deal in Belgium or France: strategies and scenarios, works costing, tax, deed and lease, each prepared for the real professional who signs.",
       "when_to_use": "Use when an investor weighs a purchase, an option, a public sale, a division or a rental in Belgium or France and wants every figure as a range with its basis, before talking to a notary, accountant or architect.",
       "keywords": ["property", "real", "estate", "building", "buy", "resale", "investment", "notary", "renovation", "division", "belgium", "rental", "deal", "immobilier", "immeuble", "achat", "acheter", "notaire", "travaux", "diviser", "belgique", "location"],
       "tiers": {

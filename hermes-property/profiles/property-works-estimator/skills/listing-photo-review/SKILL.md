@@ -10,10 +10,7 @@ metadata:
 ---
 # Listing and photo review
 
-## When to use
-
-As soon as a property arrives with a listing, photos, an energy certificate
-or a report; before any estimate; to prepare a viewing.
+Use when a property arrives with a listing, photos, an energy certificate or a report, before any estimate, or to prepare a viewing.
 
 ## Prerequisites
 
@@ -38,7 +35,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Inventory what you have**: number of photos, rooms shown, rooms missing,
    certificates (energy, electrical, asbestos, soil) and their date.
@@ -60,17 +57,21 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 7. **What is missing**: every element not visible becomes a "to check at the
    viewing" line, never an assumption.
 
-## Output
+## Decision rules
 
-A table of visible items (element, observed condition, photo no., likely
+- A photo shows what it shows: never assume the condition of what is not
+  photographed. A room not photographed, a roof seen from below, a cellar
+  missing from the photos (often missing for a reason) are "to check at the
+  viewing".
+- A retouched or old agency photo is not the current condition.
+- Flag a structural doubt, do not diagnose it from a single photo: an engineer
+  or an expert will.
+- Count the common parts of a building in co-ownership.
+
+## Quality gate
+
+The review is done when every visible element has an observed condition and
+every element not visible has a line to check at the viewing. The deliverable
+is a table of visible items (element, observed condition, photo no., likely
 level of intervention), the risk signals, and the "to check at the viewing"
 list ranked by impact on the budget.
-
-## Pitfalls
-
-- Assuming the condition of what is not photographed: a cellar missing from
-  the photos is often missing for a reason.
-- Taking a retouched or old agency photo as the current condition.
-- Concluding on the structure from a single photo: flag it, do not diagnose
-  it — an engineer or an expert will.
-- Forgetting the common parts of a building in co-ownership.

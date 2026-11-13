@@ -4,11 +4,7 @@ description: "Redo an external analysis and say what holds"
 ---
 # Challenge an external analysis
 
-## When to use
-
-When the investor forwards a study, a yield spreadsheet, a seller's file, an
-agency valuation or an answer from a general-purpose assistant, and asks "is
-this right?".
+Use when the investor forwards a study, a yield spreadsheet, a seller's file, an agency valuation or an answer from a general-purpose assistant, and asks "is this right?".
 
 ## Prerequisites
 
@@ -28,7 +24,7 @@ found" when the lookup failed.
 No setting of its own: the settings of the skills it draws on (comparables,
 works estimate, duties) apply to their parts.
 
-## Steps
+## Procedure
 
 1. **Identify the author and their interest**: a seller, an agency, a broker
    get paid if the deal happens. That is not a flaw; it is a reading
@@ -46,16 +42,19 @@ works estimate, duties) apply to their parts.
 6. **Test the safety scenario** on their own figures.
 7. **Give a verdict per assumption**: holds, optimistic, wrong, unverifiable.
 
-## Output
+## Decision rules
 
-A table: assumption, their value, your value (range, source), verdict. Then
-the result redone in three scenarios, and the main gap in one sentence. Legal
-points you spot go to `property-lawyer`.
+- Rebuild, do not patch, a spreadsheet whose structure is wrong.
+- Never reuse one of their assumptions for convenience without saying so.
+- Objectivity is not hostility: what holds is said too.
+- On a document meant for third parties, never align figures with the
+  investor's target: objectivity comes first, and the target is quoted as the
+  investor's.
 
-## Pitfalls
+## Quality gate
 
-- Patching a spreadsheet whose structure is wrong: rebuild it.
-- Reusing one of their assumptions for convenience without saying so.
-- Confusing objectivity with hostility: what holds is said too.
-- On a document meant for third parties, aligning figures with the investor's
-  target: objectivity comes first, and his target is quoted as his.
+The challenge is done when every numeric assumption has a verdict and the
+result was rebuilt on your own bases. The deliverable is a table: assumption,
+their value, your value (range, source), verdict; then the result redone in
+three scenarios, and the main gap in one sentence. Legal points you spot go to
+`property-lawyer`.

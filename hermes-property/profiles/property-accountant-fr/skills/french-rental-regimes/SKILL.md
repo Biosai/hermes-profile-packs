@@ -10,10 +10,7 @@ metadata:
 ---
 # French rental regimes
 
-## When to use
-
-When a French property is meant to be let, or when the investor wonders
-through which entity to hold a French property.
+Use when a French property is meant to be let, or the investor wonders through which entity to hold a French property.
 
 ## Prerequisites
 
@@ -31,7 +28,7 @@ found" when the lookup failed.
 ## Configuration
 
 - `property.jurisdictions`: without FR, say that France is not configured and
-  propose nothing French on your own; a question he asks himself still gets
+  propose nothing French on your own; a question the investor asks still gets
   its answer. `detect` (default): FR if the property is in France, then
   confirmed.
 
@@ -39,7 +36,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **State the status of your sources**: without a text read, **TO VERIFY**.
 2. **Qualify the letting**: unfurnished (property income), long-term
@@ -62,17 +59,20 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 7. **Cash flow**: rent and cost figures come from
    `property-investment-partner`; you add the tax per entity, as ranges.
 
-## Output
+## Decision rules
 
-A table of regime × entity: tax, depreciation, authorizations, obligations,
-exit, effect as a range, text and version (or TO VERIFY). Then the Belgian
-opinion quoted and the question for a French chartered accountant.
+- The entity is chosen before the purchase: changing it later costs duties.
+  Say it before the investor signs, not after.
+- Never compute a short-term yield without checking that it is authorized in
+  the municipality.
+- Never ignore a letting-ban timetable that falls within the holding period.
+- Never present one entity as "the best": that is the call of the investor and
+  their chartered accountant.
 
-## Pitfalls
+## Quality gate
 
-- Choosing the entity after the purchase: changing it later costs duties.
-- Computing a short-term yield without checking that it is authorized in the
-  municipality.
-- Ignoring a letting-ban timetable that falls within the holding period.
-- Presenting one entity as "the best": that is the call of the investor and
-  his chartered accountant.
+The comparison is done when every regime and entity is set side by side,
+without a choice made for the investor. The deliverable is a table of regime ×
+entity: tax, depreciation, authorizations, obligations, exit, effect as a
+range, text and version (or TO VERIFY); then the Belgian opinion quoted and
+the question for a French chartered accountant.

@@ -13,11 +13,7 @@ metadata:
 ---
 # Open questions to the investor
 
-## When to use
-
-On every message from the investor, before you answer; on every scheduled
-reminder; when he says "stop"; when he answers a question asked elsewhere,
-even days later.
+Use when the investor writes (before you answer), a scheduled reminder fires, the investor says "stop", or they answer a question asked elsewhere, even days later.
 
 ## Prerequisites
 
@@ -25,7 +21,7 @@ even days later.
 |---|---|---|
 | The question register (required) | know what is open, settled or stopped | its latest entry can be read |
 | A scheduled task on the host (only to send reminders) | a reminder exists only if a mechanism carries it | it appears in the host's scheduled tasks |
-| Access to `owner.channel`, if it is not this conversation | ask where he will read it | this session can write to that channel |
+| Access to `owner.channel`, if it is not this conversation | ask where the investor will read it | this session can write to that channel |
 
 If a required prerequisite is missing, stop before step 1. Say which one, what
 it blocks, and the smallest access that would unblock it (read-only first). Do
@@ -38,52 +34,52 @@ found" when the lookup failed.
 - `property.question_register`: `memory` (default) → this profile's persistent
   memory, re-read before every question; a path → that file, re-read and
   updated on every answer. Unreadable: no question is asked.
-- `owner.channel`: where the question reaches him; default, this conversation.
-  A channel this session cannot reach: prepare the question and say so,
-  without asking it elsewhere.
+- `owner.channel`: where the question reaches the investor; default, this
+  conversation. A channel this session cannot reach: prepare the question and
+  say so, without asking it elsewhere.
 
 If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Read the question register**, not your recollection: open, answered,
    settled, stopped. A settled or stopped question leaves the game for good.
-2. **Deliver first** what he asked for, saying what it rests on. The question
-   comes after the answer, never before.
-3. **Choose a single question**: the one his message has just made concrete.
-   He mentions a building to divide → ask about his margin threshold for a
-   division, not about short-term letting. If nothing makes a question
-   concrete, ask none.
-4. **Phrase it so he can answer in one line**: a choice between two or three
-   costed options beats an open question. Say what his answer unlocks ("with
-   this figure, the ceiling price becomes exact").
-5. **Record his answer in the same conversation** (skill
-   `investor-data-capture`): the question becomes "answered", with his words,
-   the date and the channel.
+2. **Deliver first** what the investor asked for, saying what it rests on. The
+   question comes after the answer, never before.
+3. **Choose a single question**: the one the investor's message has just made
+   concrete. They mention a building to divide → ask about their margin
+   threshold for a division, not about short-term letting. If nothing makes a
+   question concrete, ask none.
+4. **Phrase it for a one-line answer**: a choice between two or three costed
+   options beats an open question. Say what the answer unlocks ("with this
+   figure, the ceiling price becomes exact").
+5. **Record the answer in the same conversation** (skill
+   `investor-data-capture`): the question becomes "answered", with the
+   investor's words, the date and the channel.
 6. **Reminder**: only if a scheduled task on the host carries it (see
-   Prerequisites), through `owner.channel`. A reminder carries one question and
-   its reference, so that his answer attaches without ambiguity. No scheduled
-   task, no reminder, and no promise of one.
-7. **Stop**: "stop on this point" stops that question; "stop reminders" stops
-   them all. Record the stop with his words and the date, confirm in one line,
-   and never ask it again, anywhere.
+   Prerequisites), through `owner.channel`, with one question and its
+   reference. No scheduled task, no reminder, and no promise of one.
+7. **Stop**: record it with the investor's words and the date, confirm in one
+   line, and never ask it again, anywhere. What a stop covers, and the whole
+   routine for a message:
+   [references/message-routine.md](references/message-routine.md).
 
-## Output
+## Decision rules
 
-- In the conversation: the answer, then at most one question.
-- In the register: each question with its state (open, answered, settled,
-  stopped), its source and date, and what it unlocks.
+- Ask one question per message: with two, the investor answers the easier one,
+  or neither.
+- The register is the authority: never ask a settled question again, in
+  conversation or as "to do" or "waiting on you" in a summary made from
+  recollection.
+- Only the investor lifts a stop, even when the data would be useful: just say
+  what the result rests on without it.
+- Only you ask the investor: an expert names the missing data and what it
+  blocks.
 
-## Pitfalls
+## Quality gate
 
-- Two questions in one message: he answers the easier one, or neither.
-- Asking a settled question again because it "looks open" in a summary made
-  from recollection. The register is the authority.
-- Lifting a stop yourself because the data would be useful: only the investor
-  lifts a stop. Without the data, just say what the result rests on.
-- Turning a question into "to do" or "waiting on you" in a summary: that is
-  asking it again.
-- Letting an expert ask the question: the expert names the missing data; only
-  you ask for it.
+The work is done when the investor has the answer, then at most one question,
+and the register holds each question with its state (open, answered, settled,
+stopped), its source and date, and what it unlocks.

@@ -14,53 +14,43 @@ metadata:
 ---
 # Post-Merge Knowledge Update
 
-Keeps the knowledge base, glossary and shared skills true to merged code, by stable concept id, and reviews knowledge PRs (pull or merge requests) others open after a merge. A wrong page is worse than a missing one: every profile that loads it repeats the mistake with confidence. Code wins.
+Use when code has merged and the knowledge base, glossary or shared skills must be made true to it, or when a knowledge change someone else wrote after a merge needs review.
 
 ## Prerequisites
 | Needs | Why | Check |
 |---|---|---|
-| Code-host CLI with read access: `gh` (github), `glab` (gitlab) | the merged diff and PR state | `gh auth status` / `glab auth status` |
+| Read access to the code host | the merged diff and its state | github: `gh auth status`; gitlab: `glab auth status` |
 | A clone of the code repositories, with fetch access | check every claim against code | `git fetch --dry-run` |
-| Push access to branches of the knowledge and skills repositories | open update PRs | `git push --dry-run` on a scratch branch |
+| Push access to branches of the knowledge repositories | open the update | `git push --dry-run` on a scratch branch |
 | The knowledge repository's validator, when it has one | links, frontmatter, ids | run it on the current head |
 
-If a required prerequisite is missing, stop before step 1. Say which one, what it blocks, and the smallest access that would unblock it (read-only first). Do the parts that do not need it only if they still make sense alone. Never replace data you could not read with an estimate, and never report "nothing found" when the lookup failed.
+If one is missing, stop before step 1 and say which, what it blocks, and the smallest access that would unblock it (read-only first). Never replace code you could not read with a description of it, and never report "nothing to update" when the lookup failed.
 
 ## Configuration
-- `delivery.code_host`: how you read the merged diff (for example `gh pr diff N`, `glab mr diff N`). Detect from `git remote get-url origin`.
-- `delivery.repo_layout`, `delivery.repos`: where the knowledge lives. `monorepo`: docs and skills may be folders of the same repository; one PR can carry them. `multi-repo`: one PR per knowledge repository in `delivery.repos`, each linking the merged code PR.
-- `delivery.default_branch`: claims are checked at `origin/<default>` of the code repository; detect with `git symbolic-ref --short refs/remotes/origin/HEAD`.
-- `delivery.merge_policy`: who merges knowledge PRs. `owner` (default): never merge; hand over. `reviewer`: the approving reviewer merges; you never merge your own. `auto-when-green`: auto-merge only after your checks pass. A written, scoped exception from the owner overrides only within its scope.
-Current values appear in the `[Skill config]` block when the skill loads; an unset key shows its declared default. Persist a detected value with `hermes config set skills.config.<key> <value>` (per profile: `hermes -p <profile> config set …`); `hermes config migrate` prompts for keys still unset.
+- `delivery.code_host`: how the merged diff is read (github: `gh pr diff <n>`; gitlab: `glab mr diff <n>`; another host: its own CLI or web UI, saying what was done by hand).
+- `delivery.repo_layout` and `delivery.repos`: where the knowledge lives. `monorepo`: docs and skills may be folders of the code repository, and one change carries them. `multi-repo`: one change per knowledge repository in `delivery.repos`, each linking the merged code change.
+- `delivery.default_branch`: claims are checked there, freshly fetched.
+- `delivery.merge_policy`: who merges knowledge changes, as in `gated-delivery`. You never merge your own.
+- For `detect`, say what was detected and suggest `hermes config set skills.config.<key> <value>`.
 
-## Procedure: write the update
-1. **Read the merged diff**, not the description: every concept, enum value, status, field, endpoint, default, limit and flow it adds, changes or removes.
-2. **Pin** `origin/<default> @ <sha>` after the merge.
-3. **Find every description of each concept**: the knowledge base by stable id, shared skills, the repository's docs; grep the glossary term and known synonyms.
-4. **Per target**: update, or skip with a reason.
-5. **Update by id**: never a second entry for the same concept. Quote values exactly as in code, link the merged PR, cite `path:line @ <sha>`, mark what is verified versus intended.
-6. **Run the validator** on a fresh export; an error is a FAIL.
-7. **Open the PR**: `<concept>: <what changed> (after <merged PR link>)`. Never push directly to a shared branch.
+## Procedure
+1. Read the merged diff, not its description: every concept, enum value, status, field, endpoint, default, limit and flow it adds, changes or removes.
+2. Pin the default branch at its commit after the merge.
+3. Find every description of each concept: the knowledge base by stable id, shared skills, the repository's docs. Search the glossary term and its known synonyms.
+4. Per target, update, or skip with a reason.
+5. Update by id. Quote values exactly as in code, link the merged change, cite `path:line @ <commit>`, and mark what is verified versus intended.
+6. Run the validator on a fresh export. An error is a FAIL.
+7. Open a pull or merge request titled `<concept>: <what changed> (after <merged change link>)`. Never push directly to a shared branch.
+8. To review someone else's knowledge change, follow [the review checklist](references/review-a-knowledge-change.md), and merge only as `delivery.merge_policy` allows.
 
-## Procedure: review someone else's knowledge PR
-1. Read the linked code PR's state now; a PR describing unmerged code waits.
-2. Run the validator on the PR head.
-3. Grep `origin/<default>` for every value, field, status code, default and flow the PR states; any claim not found is a defect.
-4. Check structure, id scheme, template, glossary terms, and that no secret, internal-only host or regulated data appears.
-5. Small and certain defects (typo, broken link, synonym): fix or suggest. Substantive ones (unverifiable claim, change of meaning): hold, comment with evidence, report.
-6. Merge only as `delivery.merge_policy` allows.
+## Decision rules
+- Code wins. A wrong page is worse than a missing one: every reader repeats it with confidence.
+- Write from the diff: a merge sometimes differs from what its description intended.
+- Never a second entry for one concept: a new page forks the truth.
+- A knowledge change describing unmerged code waits.
+- A "small" fix that changes meaning is substantive: hold it, comment with evidence, and report.
+- Rerun the validator after every push. Never approve on a stale result.
+- No secret, internal-only host or regulated data in a knowledge page.
 
-## Output standard
-```
-Knowledge after <merged PR link> — origin/<default> @ <sha>
-Concepts changed: <ids>
-Knowledge base / Shared skills / Repo docs: <PR link> | skipped — <reason>
-Validator: PASS | FAIL <error> | none configured
-Reviewed: <PR link> — APPROVED | MERGED (policy) | HELD (<reason>)
-```
-
-## Traps
-- Writing from the PR description; merges sometimes differ from intent.
-- A new page for an existing concept forks the truth.
-- "Small" fixes that change meaning are substantive.
-- Approving on a stale validator result; rerun after every push.
+## Quality gate
+Done when every description of each changed concept is updated or skipped with a reason, and the validator passes on the head. The report gives the merged change and the pinned commit, the concept ids changed, per target (knowledge base, shared skills, repository docs) the change link or the skip reason, the validator result (PASS, FAIL with the error, or none configured), and for a review its verdict.

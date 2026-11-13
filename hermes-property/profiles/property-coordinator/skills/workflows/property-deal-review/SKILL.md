@@ -47,7 +47,7 @@ Establish, unit by unit, which dwellings are legally recognized and what proves 
 - Runs only when the deal counts on more dwellings than the documents prove, a division, or a change of use. Otherwise it is recorded as skipped, with that reason.
 
 ### 4. `notary` — `property-notary`
-Say what the investor would sign, what he inherits, and what to ask before signing.
+Say what the investor would sign, what they inherit, and what to ask before signing.
 - Also loads `auction-conditions` when the property is sold at a public sale.
 - Also loads `co-ownership-file` when the property is in a co-ownership.
 
@@ -70,8 +70,9 @@ Answer the legal questions the deal raises, on the primary text with its version
 Run the expert debate where experts disagree, then write one synthesis that names its weak assumptions.
 
 ### 10. `decide` — the investor
-The investor decides. Nothing is sent to an agency, notary, co-ownership manager or seller without his approval.
+The investor decides. Nothing is sent to an agency, notary, co-ownership manager or seller without the investor's approval.
 - Asks: make an offer, pass, or ask for more on a named point
+- A no stops the workflow at this step.
 
 ## Prerequisites
 | Needs | Why | Check |
@@ -95,9 +96,9 @@ Current values appear in the `[Skill config]` block when this skill loads; an un
 ## Run it
 ### On a Hermes Kanban board (`delivery.board: hermes-kanban`)
 1. Create every card up front, in step order, with `kanban_create`: title `property-deal-review: <step> — <work item>`, `assignee` the step's profile, `skills` the step's skills (plus the ones every step loads, and any extra skill whose condition holds), `parents` the cards of its After steps, and a body with the step's instructions, what it must produce and a link to the work item. For a step with an "On failure" target, the body also says: on a problem, comment the findings and block the card instead of completing it. The dispatcher starts each card when its parents are done.
-2. A human step is a card assigned to you. When it starts, ask through `owner.channel` and block it with `kanban_block(kind="needs_input")`. On a go, comment the answer verbatim and complete the card; a human action (such as a merge) is complete only once you have verified it happened. On a no, comment it, leave the card blocked, and report the workflow stopped at that step.
+2. A human step is a card assigned to you. When it starts, ask through `owner.channel` and block it with `kanban_block(kind="needs_input")`. On a go, comment the answer verbatim and complete the card; a human action (such as a merge) is complete only once you have verified it happened. On a change request, comment it verbatim and follow the step's "On a change request" line. On a plain no, comment it, leave the card blocked, and report the workflow stopped at that step.
 3. An optional step whose condition does not hold is completed with `skipped: <reason>`, so the steps after it proceed.
-4. A step with an "On failure" target that finds a problem comments its findings and blocks its card. Create a fix card for the target step's profile with the findings, make it a parent of the checking card (`kanban_link(parent_id=<fix>, child_id=<check>)`), and unblock the checking card (`kanban_unblock`): it waits until the fix is done, then runs again.
+4. A step with an "On failure" target that finds a problem comments its findings and blocks its card. Create a fix card for the target step's profile with the findings, make it a parent of the checking card (`kanban_link(parent_id=<fix>, child_id=<check>)`), and unblock the checking card (`kanban_unblock`): it waits until the fix is done, then runs again. For every other step that depends on the fixed step and already completed, create a new card (same title plus `— round <n>`) with the fix card as parent, so it runs again on the new head.
 
 ### Without a board (`delivery.board: none` or `tracker`)
 Run the steps in dependency order. A step that names your own profile is yours to do. Hand every other step to its profile the way `delivery.handoff` says:
@@ -105,7 +106,7 @@ Run the steps in dependency order. A step that names your own profile is yours t
 - `channel`: post the brief in that profile's channel and wait for its answer there.
 - `owner-relay`: give the brief to the owner through `owner.channel` and ask them to pass it on.
 
-The brief carries the step's instructions, its skills, the work item and the outputs of its After steps. Wait for the output and check it against "Produces"; an answer that does not produce it is not a completed step. Loop back on failure as above. At a human step, ask through `owner.channel` and wait. With `tracker`, record each step's start, output and decision as comments on the work item.
+The brief carries the step's instructions, its skills, the work item and the outputs of its After steps. Wait for the output and check it against "Produces"; an answer that does not produce it is not a completed step. On a failure or a change request, send the work back as the step says and rerun what depends on it. At a human step, ask through `owner.channel` and wait. With `tracker`, record each step's start, output and decision as comments on the work item.
 
 ## Done when
 - Every figure in the synthesis is a range with its basis and the date it was read.

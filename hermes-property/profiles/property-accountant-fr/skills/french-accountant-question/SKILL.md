@@ -10,10 +10,7 @@ metadata:
 ---
 # The question to a French chartered accountant
 
-## When to use
-
-Before any French operation where a tax figure is still TO VERIFY; when the
-investor asks whom to turn to in France and what to ask.
+Use when a French operation still has a tax figure TO VERIFY, or the investor asks whom to turn to in France and what to ask.
 
 ## Prerequisites
 
@@ -37,7 +34,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Isolate the decisions** that change the figure: buying entity, duty
    regime, VAT regime, permanent establishment, exemption from the annual
@@ -51,23 +48,24 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 4. **List the documents to attach**: articles and register extract of the
    company, draft preliminary sale agreement (*compromis*) or unilateral
    promise, description of the property, financing plan.
-5. **Hand the draft to the investor**; he sends it.
+5. **Hand the draft to the investor**, who sends it.
 6. **When the written answer arrives**: have `property-coordinator` record it,
    word for word, with date, author and scope, and recalculate the figure by
    replacing the scenario with the confirmed rule.
 
-## Output
+## Decision rules
 
-A draft email: minimal context, numbered closed questions with their
-reference text, costed scenarios, attachments listed. After the answer: the
-investor-file line and the recalculated figure.
-
-## Pitfalls
-
-- A question asking for "an overall opinion": the answer will be general and
-  settle nothing.
-- Forgetting the Belgian half: the French accountant will not answer it
+- Ask closed questions: a request for "an overall opinion" gets a general
+  answer that settles nothing.
+- Always state the Belgian half: the French accountant will not answer it
   unprompted.
-- Stretching the answer to an operation other than the one it covers.
-- Keeping a French tax figure before the written answer: until it arrives,
-  the figure stays in scenarios.
+- Never stretch the answer to an operation other than the one it covers.
+- Keep a French tax figure in scenarios until the written answer arrives.
+
+## Quality gate
+
+The work is done when the draft is in the investor's hands and, once the
+written answer arrives, the confirmed rule has replaced the scenario. The
+deliverable is a draft email: minimal context, numbered closed questions with
+their reference text, costed scenarios, attachments listed; after the answer,
+the investor-file line and the recalculated figure.

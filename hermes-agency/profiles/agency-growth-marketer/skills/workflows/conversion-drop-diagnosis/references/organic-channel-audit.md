@@ -18,7 +18,10 @@ A 90% or higher paid share is a finding in itself: the traffic stops the day spe
 ## 2. Probe what a crawler is served
 
 `python3 scripts/crawl_probe.py <site> --routes / /pricing /blog` fetches each route with a
-crawler user agent and always adds an impossible path as a positive control.
+crawler user agent and always adds an impossible path as a positive control. It probes as a
+neutral crawler unless told otherwise: add `--crawler <name>` for a search crawler it has a
+preset for (`--help` lists them), or `--ua-string "<full user agent>"` for any other, when the
+site may serve known crawlers a different page. Say in the report which one was used.
 
 | Observation | Diagnosis | Action |
 |---|---|---|

@@ -14,22 +14,36 @@ except ImportError:  # pragma: no cover - depends on the environment
 
 ROOT = Path(__file__).resolve().parent
 MANIFEST = ROOT / "property.json"
-RULES = ROOT / "shared" / "RULES.md"
-START = "<!-- shared-rules:start -->\n"
-END = "<!-- shared-rules:end -->\n"
 NAME_RE = re.compile(r"^property-[a-z0-9]+(?:-[a-z0-9]+)*$")
 SKILL_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 PROFILE_REF_RE = re.compile(r"`(property-[a-z0-9]+(?:-[a-z0-9]+)*)`")
-DISTRIBUTION_KEYS = ["name", "version", "description", "author", "license"]
+DISTRIBUTION_KEYS = ["name", "version", "description", "author", "license", "preload_skills"]
 MIN_JOBS, MAX_JOBS = 3, 5
 # Category containers that the repository capability tooling (capabilities.py --write)
 # materializes supplemental skills into; they are not role-owned jobs. Same set as
 # hermes-agency/validate.py.
 GENERATED_SKILL_DIRS = {"capabilities", "software-development", "research", "productivity", "creative", "autonomous-ai-agents", "web", "workflows"}  # workflows: rendered by scripts/sync_workflows.py and validated there
+# The panel's shared rules: one canonical skill in <repo>/shared-skills/panel-rules, copied
+# byte-identical into every profile by scripts/sync_shared_skills.py and preloaded by each
+# distribution.yaml. A shared skill is shipped by the profile but is not one of its jobs.
+SHARED_SKILLS = ["panel-rules"]
+SHARED_SOURCE = ROOT.parent / "shared-skills"
 FRONTMATTER_KEYS = {"name", "description", "metadata", "required_environment_variables", "required_credential_files"}
 MAX_DESCRIPTION = 60  # Hermes clips skill-index descriptions at 60 characters.
-REQUIRED_SECTIONS = ("## Prerequisites", "## Configuration")
+# Upstream SOUL shape: a title and exactly these six sections, in this order.
+SOUL_SECTIONS = ["## Role", "## Responsibilities", "## Working standard", "## Collaboration", "## Communication", "## Definition of done"]
+SOUL_MIN_WORDS, SOUL_MAX_WORDS = 250, 450
+SOUL_PRINCIPLE = "do not replace"  # "you prepare the real professional's work; you do not replace them"
+MIN_COLLABORATORS = 3
+# Upstream skill shape, plus the two portability sections of docs/PORTABLE_SKILLS.md:
+# "# Title", one line starting "Use when", then exactly these sections, in this order.
+SKILL_SECTIONS = ["## Prerequisites", "## Configuration", "## Procedure", "## Decision rules", "## Quality gate"]
+USE_WHEN = "Use when "
+MAX_SKILL_WORDS = 650
 PREREQ_TABLE = "| Needs | Why | Check |"
+STOP_RULE = "stop before step 1"
+REFERENCE_RE = re.compile(r"references/[A-Za-z0-9._-]+\.md")
+STEP_RE = re.compile(r"^\d+\. ")
 # Shared keys from docs/PORTABLE_SKILLS.md that this pack may declare, with their registry default.
 KNOWN_CONFIG = {
     "property.investor_file": "memory",
@@ -39,6 +53,7 @@ KNOWN_CONFIG = {
     "owner.channel": "this conversation",
 }
 STALE_COMMAND = "hermes skills " + "config"  # only enables/disables skills; it sets no value
+RETIRED_MARKER = "shared-rules:"  # the rules used to be inlined in every SOUL between two markers
 FORBIDDEN = [
     re.compile(r"/home/[A-Za-z0-9._-]+/"),
     re.compile(r"BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY"),
@@ -58,6 +73,20 @@ def parse_distribution(path: Path) -> tuple[list[str], dict[str, str]]:
         keys.append(key.strip())
         data[key.strip()] = value.strip().strip('"').strip("'")
     return keys, data
+
+
+def distribution_list(path: Path, key: str) -> list[str]:
+    """Items of a top-level YAML block list such as preload_skills."""
+    values: list[str] = []
+    active = False
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        if raw == f"{key}:":
+            active = True
+        elif active and raw and not raw[0].isspace():
+            break
+        elif active and raw.strip().startswith("- "):
+            values.append(raw.strip()[2:].strip().strip('"').strip("'"))
+    return values
 
 
 def split_skill(path: Path) -> tuple[str, str] | None:
@@ -94,6 +123,81 @@ def section(body: str, heading: str) -> str:
     start = lines.index(heading) + 1
     end = next((i for i in range(start, len(lines)) if lines[i].startswith("## ")), len(lines))
     return "\n".join(lines[start:end])
+
+
+def headings(text: str) -> list[str]:
+    return [line for line in text.splitlines() if line.startswith("## ")]
+
+
+def paragraphs(text: str) -> list[str]:
+    return [block for block in re.split(r"\n\s*\n", text.strip("\n")) if block.strip()]
+
+
+def tree(path: Path) -> dict[str, bytes]:
+    return {
+        str(p.relative_to(path)): p.read_bytes()
+        for p in sorted(path.rglob("*"))
+        if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
+    }
+
+
+def check_template(label: str, text: str, body: str) -> list[str]:
+    """The upstream skill shape: title, "Use when" line, then the five sections in order."""
+    errors: list[str] = []
+    content = [line for line in body.splitlines() if line.strip()]
+    if not content or not content[0].startswith("# "):
+        errors.append(f"{label}: the body must start with a '# Title' line")
+    lead = paragraphs(body.split("\n## ", 1)[0])
+    if len(lead) != 2 or "\n" in lead[1] or not lead[1].startswith(USE_WHEN) or not lead[1].endswith("."):
+        errors.append(f"{label}: the title must be followed by exactly one line starting '{USE_WHEN.strip()}'")
+    found = headings(body)
+    if found != SKILL_SECTIONS:
+        errors.append(f"{label}: sections must be exactly {[h[3:] for h in SKILL_SECTIONS]}, found {[h[3:] for h in found]}")
+        return errors
+    prerequisites = section(body, "## Prerequisites")
+    if PREREQ_TABLE not in prerequisites:
+        errors.append(f"{label}: ## Prerequisites needs the table {PREREQ_TABLE}")
+    if STOP_RULE not in " ".join(prerequisites.split()):
+        errors.append(f"{label}: ## Prerequisites needs the stop rule ('{STOP_RULE}')")
+    steps = [line for line in section(body, "## Procedure").splitlines() if line.strip() and not line[0].isspace()]
+    if not steps or not steps[0].startswith("1. ") or not all(STEP_RE.match(line) for line in steps):
+        errors.append(f"{label}: ## Procedure must be a numbered list starting at 1")
+    rules = [line for line in section(body, "## Decision rules").splitlines() if line.strip() and not line[0].isspace()]
+    if not rules or not all(line.startswith("- ") for line in rules):
+        errors.append(f"{label}: ## Decision rules must be a bullet list")
+    gate = paragraphs(section(body, "## Quality gate"))
+    if len(gate) != 1 or gate[0].lstrip().startswith(("- ", "|")) or STEP_RE.match(gate[0].lstrip()):
+        errors.append(f"{label}: ## Quality gate must be one paragraph")
+    words = len(text.split())
+    if words > MAX_SKILL_WORDS:
+        errors.append(f"{label}: SKILL.md has {words} words (max {MAX_SKILL_WORDS}); move detail to references/")
+    return errors
+
+
+def check_references(label: str, folder: Path, text: str, procedure: str) -> list[str]:
+    """A skill folder holds SKILL.md and, optionally, references/*.md linked from its Procedure."""
+    errors: list[str] = []
+    extra = sorted(p.name for p in folder.iterdir() if p.name not in {"SKILL.md", "references"})
+    if extra:
+        errors.append(f"{label}: only SKILL.md and references/ belong in a skill directory, found {extra}")
+    linked = set(REFERENCE_RE.findall(procedure))
+    references = folder / "references"
+    present: set[str] = set()
+    if references.exists():
+        if not references.is_dir():
+            return errors + [f"{label}: references must be a directory"]
+        for item in sorted(references.iterdir()):
+            if not item.is_file() or item.suffix != ".md":
+                errors.append(f"{label}: references/ holds Markdown files only, found {item.name}")
+                continue
+            present.add(f"references/{item.name}")
+        if not present:
+            errors.append(f"{label}: empty references/ directory")
+    for name in sorted(present - linked):
+        errors.append(f"{label}: {name} is not linked from the ## Procedure of SKILL.md")
+    for name in sorted(set(REFERENCE_RE.findall(text)) - present):
+        errors.append(f"{label}: SKILL.md links {name}, which does not exist")
+    return errors
 
 
 def check_skill(label: str, skill_name: str, path: Path, defaults: dict[str, set[str]]) -> list[str]:
@@ -144,25 +248,56 @@ def check_skill(label: str, skill_name: str, path: Path, defaults: dict[str, set
             value = meta.get(field)
             if value is not None and not isinstance(value, list):
                 errors.append(f"{label}: {field} must be a list")
-    lines = body.splitlines()
-    for heading in REQUIRED_SECTIONS:
-        if heading not in lines:
-            errors.append(f"{label}: missing {heading} section")
-    if PREREQ_TABLE not in section(body, "## Prerequisites"):
-        errors.append(f"{label}: ## Prerequisites needs the table {PREREQ_TABLE}")
+    text = path.read_text(encoding="utf-8")
+    errors.extend(check_template(label, text, body))
+    errors.extend(check_references(label, path.parent, text, section(body, "## Procedure")))
     return errors
 
 
-def check_shared_block(name: str, soul: Path, rules: str) -> list[str]:
+def check_soul(name: str, display_name: str, soul: Path, roster: set[str]) -> list[str]:
+    """The upstream SOUL shape: a title, six sections, and no inlined shared rules."""
+    errors: list[str] = []
     text = soul.read_text(encoding="utf-8")
-    if text.count(START) != 1 or text.count(END) != 1:
-        return [f"{name}: SOUL.md must contain exactly one shared-rules block"]
-    if not text.endswith(START + rules + END):
-        return [f"{name}: shared-rules block differs from shared/RULES.md (run: python sync_shared.py)"]
-    body = text[: text.index(START)]
-    if not body.strip():
-        return [f"{name}: SOUL.md has no role body before the shared-rules block"]
-    return []
+    lines = text.splitlines()
+    if not lines or lines[0] != f"# {display_name}":
+        errors.append(f"{name}: SOUL.md must start with '# {display_name}'")
+    found = headings(text)
+    if found != SOUL_SECTIONS:
+        errors.append(f"{name}: SOUL.md sections must be exactly {[h[3:] for h in SOUL_SECTIONS]}, found {[h[3:] for h in found]}")
+    words = len(text.split())
+    if not SOUL_MIN_WORDS <= words <= SOUL_MAX_WORDS:
+        errors.append(f"{name}: SOUL.md has {words} words (expected {SOUL_MIN_WORDS}-{SOUL_MAX_WORDS}); move role detail to a skill or its references/")
+    if RETIRED_MARKER in text:
+        errors.append(f"{name}: SOUL.md still inlines the shared rules; they live in the preloaded skill {SHARED_SKILLS[0]}")
+    if SOUL_PRINCIPLE not in " ".join(section(text, "## Role").split()):
+        errors.append(f"{name}: ## Role must say that the profile prepares the real professional's work and does not replace them")
+    for skill in SHARED_SKILLS:
+        if f"`{skill}`" not in section(text, "## Working standard"):
+            errors.append(f"{name}: ## Working standard must point to the preloaded skill {skill}")
+    for ref in sorted(set(PROFILE_REF_RE.findall(text))):
+        if ref not in roster:
+            errors.append(f"{name}: SOUL.md names unknown profile {ref}")
+    collaborators = set(PROFILE_REF_RE.findall(section(text, "## Collaboration"))) & roster - {name}
+    if len(collaborators) < MIN_COLLABORATORS:
+        errors.append(f"{name}: ## Collaboration must name at least {MIN_COLLABORATORS} other property profiles")
+    return errors
+
+
+def check_shared_skills(name: str, root: Path, canonical: dict[str, dict[str, bytes]]) -> list[str]:
+    """Every profile preloads the shared skills and ships a byte-identical copy of each."""
+    errors: list[str] = []
+    preload = distribution_list(root / "distribution.yaml", "preload_skills")
+    if preload != SHARED_SKILLS:
+        errors.append(f"{name}: distribution preload_skills must be {SHARED_SKILLS}, got {preload}")
+    for skill in SHARED_SKILLS:
+        copy = root / "skills" / skill
+        if not (copy / "SKILL.md").is_file():
+            errors.append(f"{name}: preloads {skill} but does not ship skills/{skill}/SKILL.md")
+            continue
+        wanted = canonical.setdefault(skill, tree(copy))
+        if tree(copy) != wanted:
+            errors.append(f"{name}: skills/{skill} differs from the canonical shared skill (run: python scripts/sync_shared_skills.py)")
+    return errors
 
 
 def main() -> int:
@@ -196,13 +331,16 @@ def main() -> int:
     if expected != actual:
         errors.append(f"profile directory mismatch: missing={sorted(expected-actual)} extra={sorted(actual-expected)}")
 
-    if not RULES.is_file():
-        errors.append("missing shared/RULES.md")
-        rules = ""
-    else:
-        rules = RULES.read_text(encoding="utf-8")
-        if START in rules or END in rules:
-            errors.append("shared/RULES.md must not contain the block markers")
+    for retired in ("shared", "sync_shared.py"):
+        if (ROOT / retired).exists():
+            errors.append(f"{retired} is retired: the shared rules are the skill {SHARED_SKILLS[0]} in the repository's shared-skills/")
+
+    # Inside the repository the canonical source is shared-skills/<skill>; a pack copied on its
+    # own still requires the copies to be identical across its profiles.
+    canonical: dict[str, dict[str, bytes]] = {}
+    for skill in SHARED_SKILLS:
+        if (SHARED_SOURCE / skill / "SKILL.md").is_file():
+            canonical[skill] = tree(SHARED_SOURCE / skill)
 
     config_defaults: dict[str, set[str]] = {}
     for item in entries:
@@ -222,11 +360,7 @@ def main() -> int:
         if not soul.is_file():
             errors.append(f"{name}: missing SOUL.md")
         else:
-            if rules:
-                errors.extend(check_shared_block(name, soul, rules))
-            for ref in sorted(set(PROFILE_REF_RE.findall(soul.read_text(encoding="utf-8")))):
-                if ref not in expected:
-                    errors.append(f"{name}: SOUL.md names unknown profile {ref}")
+            errors.extend(check_soul(name, str(item.get("display_name", "")), soul, expected))
         if (root / ".no-bundled-skills").exists():
             errors.append(f"{name}: unexpected .no-bundled-skills file")
         keys, meta = parse_distribution(dist)
@@ -239,6 +373,7 @@ def main() -> int:
         for field in ("version", "description", "author", "license"):
             if not meta.get(field):
                 errors.append(f"{name}: distribution missing {field}")
+        errors.extend(check_shared_skills(name, root, canonical))
 
         skill_root = root / "skills"
         skill_names: set[str] = set()
@@ -249,16 +384,14 @@ def main() -> int:
                 if not child.is_dir():
                     errors.append(f"{name}: unexpected file under skills/: {child.name}")
                     continue
-                extra = sorted(p.name for p in child.iterdir() if p.name != "SKILL.md")
-                if extra:
-                    errors.append(f"{name}/{child.name}: only SKILL.md belongs in a job directory, found {extra}")
                 if not (child / "SKILL.md").is_file():
-                    errors.append(f"{name}/{child.name}: job directory without SKILL.md")
+                    errors.append(f"{name}/{child.name}: skill directory without SKILL.md")
         for skill in sorted(skill_root.glob("*/SKILL.md")):
             skill_name = skill.parent.name
             if skill_name in GENERATED_SKILL_DIRS:
                 continue
-            skill_names.add(skill_name)
+            if skill_name not in SHARED_SKILLS:
+                skill_names.add(skill_name)
             if not SKILL_RE.fullmatch(skill_name):
                 errors.append(f"{name}: invalid skill name {skill_name}")
             errors.extend(check_skill(f"{name}/{skill_name}", skill_name, skill, config_defaults))
@@ -293,8 +426,10 @@ def main() -> int:
         return 1
     parser = "PyYAML" if yaml is not None else "shallow parser (PyYAML not installed)"
     print(
-        f"Hermes Property validation passed: {len(entries)} profiles, {sum(len(p['jobs']) for p in entries)} skills, "
-        f"shared rules identical in every SOUL, {len(config_defaults)} config keys, frontmatter checked with {parser}"
+        f"Hermes Property validation passed: {len(entries)} profiles with six-section SOULs, "
+        f"{sum(len(p['jobs']) for p in entries)} role skills in the upstream template, "
+        f"{', '.join(SHARED_SKILLS)} preloaded and shipped in every profile, "
+        f"{len(config_defaults)} config keys, frontmatter checked with {parser}"
     )
     return 0
 

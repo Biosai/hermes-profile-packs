@@ -10,11 +10,7 @@ metadata:
 ---
 # Division and permits
 
-## When to use
-
-When a strategy assumes creating a unit, dividing a building, changing a use
-(shop into dwelling, attic into studio), splitting a plot, or regularizing an
-unrecognized dwelling.
+Use when a strategy assumes creating a unit, dividing a building, changing a use (shop into dwelling, attic into studio), splitting a plot, or regularizing an unrecognized dwelling.
 
 ## Prerequisites
 
@@ -40,7 +36,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Region, municipality, plot**: establish them. Read the zoning on the
    official geoportal: the regional zoning plan (*plan de secteur*) in
@@ -51,7 +47,8 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    qualification has its own regime.
 3. **Read the regional code in force** on the official source, with its
    version date: does the operation need a permit, is it exempt, does it need
-   a declaration?
+   a declaration? Coverage by region:
+   [references/planning-rules-by-region.md](references/planning-rules-by-region.md).
 4. **Look for the municipal rules**: division regulation, minimum unit size,
    maximum number of units, parking, planning charges. In Flanders this
    regulation is often the real filter. Note the date of the council decision;
@@ -66,19 +63,23 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    `property-investment-partner`, the legal effects of an existing breach to
    `property-lawyer`.
 
-## Output
+## Decision rules
 
-For each targeted unit: the authorization required (text, article, version),
-the applicable municipal rules (regulation, date), the technical conditions,
-the timeline and risk as ranges, what remains **TO VERIFY**, and the question
-for the municipality (skill `planning-office-question`).
+- Apply the rule of this municipality as in force today, never a neighboring
+  municipality's or the one from two years ago: a division threshold read six
+  months ago is read again before it supports a deal.
+- A permit exemption is not the absence of rules: an exempt operation still
+  has to meet the standards.
+- A permit timeline is holding time and an assumption of the trade-off: give
+  it as a range to `property-investment-partner`; it weighs on the margin as
+  much as a cost does.
+- Never promise a regularization: only the authority grants it.
 
-## Pitfalls
+## Quality gate
 
-- Applying the rule of a neighboring municipality, or the one from two years
-  ago.
-- Confusing a permit exemption with the absence of rules: an exempt operation
-  still has to meet the standards.
-- Forgetting that a permit timeline is holding time: it weighs on the margin
-  as much as a cost does.
-- Promising a regularization: only the authority grants it.
+The work is done when the authorization was read in the code in force and the
+municipal rules in the regulation itself. The deliverable gives, for each
+targeted unit: the authorization required (text, article, version), the
+applicable municipal rules (regulation, date), the technical conditions, the
+timeline and risk as ranges, what remains **TO VERIFY**, and the question for
+the municipality (skill `planning-office-question`).

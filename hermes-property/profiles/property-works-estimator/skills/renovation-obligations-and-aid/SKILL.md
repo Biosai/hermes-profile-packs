@@ -10,11 +10,7 @@ metadata:
 ---
 # Renovation obligations and aid
 
-## When to use
-
-When a property has a poor energy class; when the buyer could be required to
-renovate; when equipment (heating, tank) is at the end of its life; when aid
-is mentioned in a calculation.
+Use when a property has a poor energy class, the buyer could be required to renovate, equipment (heating, tank) is at the end of its life, or aid is mentioned in a calculation.
 
 ## Prerequisites
 
@@ -40,14 +36,14 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Establish the region** and the deed date: obligations differ by region
    and often apply from an acquisition date.
 2. **Renovation obligations on purchase**: is there an obligation to reach a
    class within a period after acquisition? Read the decree in force, not the
-   information page: an official page and the decree have already disagreed on
-   the deadline. A draft text is not law.
+   information page: when an official page and the decree disagree on a
+   deadline, cite the decree. A draft text is not law.
 3. **Certificates and reports at sale**: energy performance certificate (PEB,
    EPC), asbestos certificate, soil certificate, depending on the region.
 4. **Letting bans** below an energy class (notably in France): timetable read
@@ -62,16 +58,21 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 7. **Credit it to a deal** only if every condition is met and verified;
    otherwise, a scenario marked **TO VERIFY**.
 
-## Output
+## Decision rules
 
-A table of obligations (text, version, deadline, cost of compliance as a
-range) and a table of aid (text, status, the investor's eligibility,
-conditions, amount as a range or "not eligible").
+- Never credit to a company that buys to resell an aid scheme reserved for
+  households who occupy the dwelling: check that it is open to a company or a
+  landlord.
+- Cite the text for a deadline, never a press release or an aid website.
+- An obligation creates the discount the investor exploits: cost it, do not
+  dodge it.
+- Obligations differ by region and come in by stages: read the timetable in
+  the decree in force.
 
-## Pitfalls
+## Quality gate
 
-- Crediting aid reserved for households who occupy the dwelling to a company
-  that buys to resell.
-- Citing a deadline from a press release or an aid website: cite the text.
-- Forgetting that an obligation creates the discount the investor exploits:
-  it is costed, not dodged.
+The work is done when every obligation and every aid scheme was read on the
+text in force at the target date. The deliverable is a table of obligations
+(text, version, deadline, cost of compliance as a range) and a table of aid
+(text, status, the investor's eligibility, conditions, amount as a range or
+"not eligible").

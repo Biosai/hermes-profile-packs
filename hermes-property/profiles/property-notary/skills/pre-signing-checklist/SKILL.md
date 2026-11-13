@@ -10,10 +10,7 @@ metadata:
 ---
 # Pre-signing checklist
 
-## When to use
-
-Just before signing a preliminary sale agreement, exercising an option or
-bidding; when the investor says "let's go".
+Use when a preliminary sale agreement is about to be signed, an option exercised or a bid placed, or the investor says "let's go".
 
 ## Prerequisites
 
@@ -30,14 +27,14 @@ found" when the lookup failed.
 
 ## Configuration
 
-- `property.investor_file`: the risks he has accepted by decision; in `memory`
-  (default), ask `property-coordinator` for them.
+- `property.investor_file`: the risks the investor has accepted by decision;
+  in `memory` (default), ask `property-coordinator` for them.
 
 If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Put each question to the file, not to memory.** For each one, the answer
    comes from a quoted document, or it is "unknown".
@@ -61,14 +58,17 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 5. **Hand over**: legal risk → `property-lawyer`; duty regime →
    `property-accountant-be`; dwellings → `property-architect`.
 
-## Output
+## Decision rules
 
-The completed checklist: question, answer, document, status. At the top: the
-points that must be cleared before signing. Then the draft questions.
+- Run the checklist before the signature, never after: an agreement signed
+  before the answers freezes the risks.
+- Never tick "cleared" on the seller's word without a document.
+- Keep the questions that can stop the deal: a list so long that the investor
+  stops reading it protects nobody.
 
-## Pitfalls
+## Quality gate
 
-- Running the checklist after signing: a signed agreement freezes the risks.
-- Ticking "cleared" on the seller's word without a document.
-- Making the list so long that he stops reading it: keep the questions that
-  can stop the deal.
+The checklist is done when every question has an answer taken from a quoted
+document, or is marked unknown. The deliverable is the completed checklist
+(question, answer, document, status), with the points that must be cleared
+before signing at the top, then the draft questions.

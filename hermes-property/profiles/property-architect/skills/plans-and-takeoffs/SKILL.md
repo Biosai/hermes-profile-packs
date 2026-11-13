@@ -10,11 +10,7 @@ metadata:
 ---
 # Plans, measurements and quantity takeoffs
 
-## When to use
-
-When a deal comes with plans (permit, basic deed, architect's drawings, agency
-sketch); when `property-works-estimator` needs quantities; when the announced
-floor area must be checked against a document.
+Use when a deal comes with plans (permit, basic deed, architect's drawings, agency sketch), `property-works-estimator` needs quantities, or the announced floor area must be checked against a document.
 
 ## Prerequisites
 
@@ -39,7 +35,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Identify each document**: type, author, date, scale, revision. A plan
    without a scale or dimensions is only a sketch.
@@ -58,16 +54,20 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 7. **Send the quantities** to `property-works-estimator` with their source and
    precision.
 
-## Output
+## Decision rules
 
-A table of areas (document, type of area, value, source, precision) and a
-table of quantities (work item, unit, quantity, method, source). At the top:
-the main gap between documents, if there is one.
+- Never take the listing's area for granted: it is there to sell.
+- A dimension has a source (plan, permit, site survey or listing): the
+  listing's area is not the deed's, and the gap is often the discount.
+- Check the real scale before measuring a printed or scanned plan.
+- Count heights: an area under a certain ceiling height does not always count
+  as habitable.
+- Never mix plans of different dates without saying so.
 
-## Pitfalls
+## Quality gate
 
-- Taking the listing's area for granted: it is there to sell.
-- Measuring a printed or scanned plan without checking the real scale.
-- Forgetting heights: an area under a certain ceiling height does not always
-  count as habitable.
-- Mixing plans of different dates without saying so.
+The takeoff is done when every area and every quantity names the document it
+comes from and its precision. The deliverable is a table of areas (document,
+type of area, value, source, precision) and a table of quantities (work item,
+unit, quantity, method, source); at the top, the main gap between documents,
+if there is one.

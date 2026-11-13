@@ -1,15 +1,15 @@
 # Hermes Property
 
-Hermes Property is an expert panel for a small property investor who runs his
-own company: buy-to-resell, purchase options, letting (long-term, short-term,
-shared housing, furnished corporate lets), building division and public
-auctions. Belgium comes first, France second.
+Hermes Property is an expert panel for a small property investor, who may act
+in their own name or through a company: buy-to-resell, purchase options,
+letting (long-term, short-term, shared housing, furnished corporate lets),
+building division and public auctions. Belgium comes first, France second.
 
 One orchestrator, `property-coordinator`, is the investor's right hand: it is
-the only profile that asks him questions, keeps his investor file and his
-answers with their source, consults the specialists and delivers the
-synthesis. Seven specialists each mirror a real professional and prepare that
-professional's work.
+the only profile that asks the investor questions, keeps the investor file and
+the investor's answers with their source, consults the specialists and
+delivers the synthesis. Seven specialists each mirror a real professional and
+prepare that professional's work.
 
 The pack is written in English. The profiles reply in the language the
 investor writes in (French, Dutch or English), and keep Belgian and French
@@ -25,7 +25,7 @@ charges*) or registration duties (*droits d'enregistrement*).
 | `property-architect` | technical | How many dwellings are legally recognized, what it takes to create one more, plans and takeoffs, the exact question for the planning office. | `recognized-dwellings`, `division-and-permits`, `plans-and-takeoffs`, `planning-office-question` |
 | `property-investment-partner` | strategy | The skeptical partner of an investment committee: every way to make a property pay, in ranges, and which one survives the worst reasonable case. | `deal-strategies`, `three-scenarios`, `market-value-comparables`, `rental-yield`, `external-analysis-challenge` |
 | `property-lawyer` | legal | Every legal question goes through it: leases, landlord, buyer and building disputes, clauses, public sales, on the primary text, reviewed adversarially. | `adversarial-review`, `primary-law-sources`, `lease-and-tenant`, `clause-analysis`, `dispute-file` |
-| `property-accountant-be` | tax | Belgian tax and accounting of the deal: registration duties by region, VAT, corporate income tax, costs; options until the investor's accountant confirms in writing. | `registration-duties`, `vat-regimes`, `corporate-tax-per-deal`, `deal-costs`, `accountant-question` |
+| `property-accountant-be` | tax | Belgian tax and accounting of the deal: registration duties by region, VAT, corporate income tax when the investor acts through a company, costs; options until the investor's accountant confirms in writing. | `registration-duties`, `vat-regimes`, `corporate-tax-per-deal`, `deal-costs`, `accountant-question` |
 | `property-accountant-fr` | tax | A Belgian company investing in France: French tax first, the Belgian half flagged, the exact question for a French chartered accountant. | `belgian-company-in-france`, `dealer-regime-france`, `french-rental-regimes`, `french-accountant-question` |
 | `property-notary` | conveyancing | What the investor signs, inherits and must ask before signing: preliminary contracts, options, auction conditions, the co-ownership file, documents to request. | `sale-agreement-and-option`, `auction-conditions`, `co-ownership-file`, `documents-to-request`, `pre-signing-checklist` |
 | `property-works-estimator` | works | Turns a listing, photos and certificates into cost items per level of intervention, from a cost library; separates cost price from estimate. | `listing-photo-review`, `cost-library`, `works-estimate`, `materials-quantities-prices`, `renovation-obligations-and-aid` |
@@ -33,17 +33,42 @@ charges*) or registration duties (*droits d'enregistrement*).
 Backbone: `property-coordinator`, `property-investment-partner`,
 `property-accountant-be`, `property-notary`, `property-works-estimator`.
 
+Every profile also ships and preloads the shared skill `panel-rules`. It is
+not one of the profile's jobs: it holds the rules the whole panel follows.
+
+## Shape of a profile
+
+The profiles have the same shape as the upstream packs.
+
+- **`SOUL.md`** is short (250 to 450 words) and has exactly six sections:
+  Role, Responsibilities, Working standard, Collaboration, Communication,
+  Definition of done. Role states the real-world counterpart and the principle
+  every profile keeps: it prepares the real professional's work and the exact
+  question to ask them; it does not replace them.
+- **`distribution.yaml`** preloads `panel-rules`, so the shared rules are in
+  context from the first message without being repeated in each SOUL.
+- **Each role-owned skill** follows one template, in at most 650 words: a
+  title, one line starting "Use when", then `## Prerequisites`,
+  `## Configuration`, `## Procedure` (numbered), `## Decision rules` (bullets)
+  and `## Quality gate` (one paragraph: when the work is done and what the
+  deliverable contains).
+- **Detail that does not fit** lives in `references/<topic>.md` inside the
+  skill's folder, linked from its Procedure: the regimes to examine, the
+  planning rules by region, the official sources, the legal domains covered,
+  the price bases, and so on.
+
 ## How the profiles work together
 
 - **Questions belong to the coordinator.** Specialists name the missing data
   and what it blocks; only `property-coordinator` asks the investor, one
-  question at a time, and never asks again a question he has settled or
-  stopped.
-- **The investor file is the single source of his rules.** Whether he does the
-  works himself (then the works line is a cost price for him and an estimate
-  for everyone else), his areas, thresholds, scenario parameters and decisions
-  are recorded with their source by `property-coordinator`. Nothing in it is
-  assumed.
+  question at a time, and never asks again a question the investor has settled
+  or stopped.
+- **The investor file is the single source of the investor's rules.** Whether
+  the investor acts in their own name or through a company, whether they do
+  the works personally (then the works line is a cost price for them and an
+  estimate for everyone else), their areas, thresholds, scenario parameters
+  and decisions are recorded with their source by `property-coordinator`.
+  Nothing in it is assumed.
 - **Consultation.** A profile that needs another's expertise sends a question
   starting with `[Internal consultation]`, carrying the file and the exact
   question. The answer is quoted as that profile's opinion, reservations
@@ -64,7 +89,7 @@ architect, lawyer, accountant or notary.** Each specialist produces the rule,
 the text that carries it, the documents to gather and the exact question to put
 to the real professional.
 
-Rules every profile follows (from `shared/RULES.md`):
+Rules every profile follows (from the preloaded skill `panel-rules`):
 
 - every figure is a range with its sample size; missing data is named, never
   filled in (`INCOMPLETE`);
@@ -99,8 +124,8 @@ branches on under `metadata.hermes.config`, using the shared keys of
 
 | Key | Values | Default | Used for |
 | --- | --- | --- | --- |
-| `property.investor_file` | `memory`, a path | `memory` | The investor file: what he does himself, areas, thresholds, scenario parameters, decisions, his advisers' written answers. In `memory`, only the profile that keeps it sees it, so the coordinator passes the useful lines to each expert. |
-| `property.question_register` | `memory`, a path | `memory` | Open, answered, settled and stopped questions, plus a section for his requests. |
+| `property.investor_file` | `memory`, a path | `memory` | The investor file: own name or company, what the investor does personally, areas, thresholds, scenario parameters, decisions, their advisers' written answers. In `memory`, only the profile that keeps it sees it, so the coordinator passes the useful lines to each expert. |
+| `property.question_register` | `memory`, a path | `memory` | Open, answered, settled and stopped questions, plus a section for the investor's requests. |
 | `property.jurisdictions` | e.g. `BE-WAL,BE-BRU,BE-VLA,FR`, `detect` | `detect` | Regions in play. `detect`: derived from the property's address, stated and confirmed. Without `FR`, nothing French is proposed unprompted. |
 | `property.cost_library` | a path, `none` | `none` | The work-item cost library. `none`: every cost item rests on a dated, sourced price. |
 | `owner.channel` | free text | this conversation | Where questions reach the investor. No reminder is sent or promised unless a scheduled task really exists on the host. |
@@ -125,22 +150,31 @@ estimate. No skill needs a credential, so none declares
 
 ## Editing the shared rules
 
-The team-wide rules live once in `shared/RULES.md` and are copied, byte for
-byte, into a block at the end of every `SOUL.md`. Edit `shared/RULES.md`, then:
+The panel's rules live once, as the canonical shared skill
+[`shared-skills/panel-rules/`](../shared-skills/panel-rules/) at the root of
+the repository: a `SKILL.md` with the non-negotiable rules, and `references/`
+for the detail (the investor and the investor's data, the rules in full, the
+posture, how to consult another profile and the roster).
+`shared-skills/targets.json` lists the eight property profiles that ship it,
+and each `distribution.yaml` preloads it. Never edit a copy under
+`profiles/*/skills/panel-rules/`: edit the canonical skill, then, from the
+repository root:
 
 ```bash
-python sync_shared.py          # rewrite the block in every SOUL
-python sync_shared.py --check  # report drift without writing
-python validate.py
-python -m unittest discover -s tests -p 'test_*.py'
+python scripts/sync_shared_skills.py          # rewrite every copy
+python scripts/sync_shared_skills.py --check  # report drift without writing
+python hermes-property/validate.py
+python -m unittest discover -s hermes-property/tests -p 'test_*.py'
 ```
 
-`validate.py` fails if any SOUL's block differs from `shared/RULES.md`.
+`validate.py` fails if a profile does not preload `panel-rules`, does not
+ship it, or ships a copy that differs from the canonical skill. It also holds
+every SOUL to the six sections and every skill to the template above.
 
 ## Provenance
 
 This pack was distilled from a team of Hermes profiles running in production
-for one investor's company in Belgium, then generalized and translated: people
+for one property investor in Belgium, then generalized and translated: people
 became roles, the investor's own numbers, strategy choices and deals were
 removed, dated anecdotes became the rules they taught, and every tax rate or
 legal threshold was replaced by the regime, its conditions and where to read

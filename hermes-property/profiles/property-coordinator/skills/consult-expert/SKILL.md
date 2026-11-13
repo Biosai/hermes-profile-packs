@@ -10,11 +10,7 @@ metadata:
 ---
 # Consult an expert on the team
 
-## When to use
-
-As soon as a question touches another profile's domain (table at the end of
-the SOUL) — and always `property-lawyer` for a legal question, even when it
-comes up in passing. Every profile uses this skill, not only the coordinator.
+Use when a question touches another profile's domain (see the roster in the preloaded `panel-rules` skill), and always consult `property-lawyer` for a legal question, even when it comes up in passing.
 
 ## Prerequisites
 
@@ -39,7 +35,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Choose the right profile**: the domain that owns the question, not the
    one that "will probably know". Law → lawyer; tax figure → the accountant of
@@ -61,16 +57,23 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    choose between them.
 8. **Failure or absence**: answer without that opinion, and say so in one line.
 
-## Output
+## Decision rules
 
-The answer to the investor and what it rests on (quoted opinions, documents,
-dated sources), without "I am launching a consultation": the plumbing stays
-hidden.
+- Never answer from general knowledge in another expert's domain to save time.
+- Quote, do not rephrase: a rephrased opinion loses the reservation that
+  mattered.
+- In an internal consultation the expert answers the profile and names what is
+  missing; it never questions the investor.
+- Never announce that an expert was consulted when the call failed.
+- By default on a concrete property, consult `property-investment-partner` to
+  weigh the deal (it consults the works estimator, architect, notary and
+  accountants itself) and `property-lawyer` as soon as a legal point appears,
+  even in passing.
 
-## Pitfalls
+## Quality gate
 
-- Answering from general knowledge in another expert's domain to save time.
-- Rephrasing an opinion until the reservation that mattered disappears.
-- Letting the expert question the investor: in an internal consultation, it
-  answers the profile and names what is missing.
-- Announcing that an expert was consulted when the call failed.
+The consultation is done when the investor has the answer and what it rests on
+(quoted opinions with their reservations, documents, dated sources), diverging
+opinions are both shown, and a profile that was absent or failed is named in
+one line. The deliverable never shows the plumbing: no "I am launching a
+consultation".

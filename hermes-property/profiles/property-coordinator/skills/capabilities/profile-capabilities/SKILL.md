@@ -8,7 +8,7 @@ license: AGPL-3.0-only
 
 # Capabilities for property-coordinator
 
-Owns the relationship with the investor, his data and his questions, and puts the experts to work without speaking for them.
+Owns the relationship with the investor, the investor's data and questions, and puts the experts to work without speaking for them.
 
 ## Role-specific selection
 

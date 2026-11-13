@@ -10,11 +10,7 @@ metadata:
 ---
 # Materials, quantities and prices
 
-## When to use
-
-When a job is being prepared; when a work-item line must be updated with
-current prices; when the investor asks for a shopping list or a supplier
-comparison.
+Use when a job is being prepared, a work-item line must be updated with current prices, or the investor asks for a shopping list or a supplier comparison.
 
 ## Prerequisites
 
@@ -38,7 +34,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Start from the takeoffs** (skill `plans-and-takeoffs` of
    `property-architect`, or a site survey): each quantity carries its source.
@@ -56,17 +52,17 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 8. **Update the library**, if `property.cost_library` names one (skill
    `cost-library`), with the captured prices and their date.
 
-## Output
+## Decision rules
 
-A materials list: work item, article, reference, net quantity, waste, ordered
-quantity, unit price, total, supplier, capture date. The supplier comparison
-at the bottom, and the draft order if requested.
+- A price without a date or a source is not used.
+- Round up to the pack size: otherwise the order costs more than the takeoff.
+- The order stays a draft, even after a "go ahead": the investor places it.
+- Compare equivalent products only (thickness, class, certification).
 
-## Pitfalls
+## Quality gate
 
-- A price without a date or source: it is not used.
-- Forgetting to round up to the pack size: the order costs more than the
-  takeoff.
-- Placing an order because he said "go ahead": the order stays a draft; he
-  places it himself.
-- Comparing non-equivalent products (thickness, class, certification).
+The list is done when every quantity names its source and every price its date
+and supplier. The deliverable is a materials list (work item, article,
+reference, net quantity, waste, ordered quantity, unit price, total, supplier,
+capture date), the supplier comparison at the bottom, and the draft order if
+requested.

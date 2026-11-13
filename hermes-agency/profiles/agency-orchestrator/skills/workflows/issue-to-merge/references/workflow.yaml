@@ -1,0 +1,76 @@
+name: issue-to-merge
+version: 0.2.0
+description: "Take a work item from shaping to a verified merge"
+summary: >-
+  One work item, from a shaped request to a merged change. The implementation owner builds it;
+  code review and QA verify it independently; the git steward checks the merge gate; the merge
+  stays with whoever `delivery.merge_policy` names.
+pack: agency
+coordinator: agency-orchestrator
+trigger: >-
+  A work item is accepted for delivery: it is at the top of the ready queue, or the owner asks for it.
+uses_settings: [delivery.code_host, delivery.repo_layout, delivery.issue_tracker, delivery.merge_policy, owner.channel]
+max_fix_rounds: 3
+steps:
+  - id: shape
+    profile: agency-product-manager
+    skills: [issue-authoring-standard, acceptance-criteria]
+    does: Write or refine the work item so the implementation owner can build it without guessing.
+    output: a work item with problem, scope, acceptance criteria and links
+  - id: boundaries
+    profile: agency-software-architect
+    skills: [readiness-review, fresh-main-evidence]
+    needs: [shape]
+    optional_when: the change moves a module boundary, a public contract or a data model
+    on_fail: shape
+    does: Say whether the planned change fits the architecture, with evidence from the freshly fetched default branch.
+    output: a readiness verdict with path:line@sha evidence
+  - id: build
+    profile: agency-fullstack-engineer
+    skills: [issue-clarification, bounded-task-delivery, gated-delivery]
+    needs: [shape, boundaries]
+    does: >-
+      Ask what the work item leaves open, then implement the change with its tests in your own
+      worktree and open a draft pull or merge request.
+    output: a draft request with tests and the run that proves them
+  - id: review
+    profile: agency-code-reviewer
+    skills: [code-review, test-adequacy-review]
+    needs: [build]
+    on_fail: build
+    does: Review the change and whether its tests would catch the failure they claim to cover.
+    output: findings resolved, or the blocking ones, on the head reviewed
+  - id: verify
+    profile: agency-qa-tester
+    skills: [real-run-verification]
+    needs: [build]
+    on_fail: build
+    does: Verify the change with runs you executed yourself, against a baseline at the head under test.
+    output: PASS/SKIP/FAIL counts against the baseline, with the commands and the head SHA
+  - id: security
+    profile: agency-security-reviewer
+    skills: [security-review]
+    needs: [build]
+    optional_when: the change touches authentication, authorization, secrets, payments or personal data
+    on_fail: build
+    does: Review the change for security boundary violations.
+    output: findings resolved, or the blocking ones, on the head reviewed
+  - id: integrate
+    profile: agency-git-steward
+    skills: [pr-ready, ready-to-merge-gate, gated-delivery]
+    needs: [review, verify, security]
+    on_fail: build
+    does: Bring the request to merge-ready and check every line of the merge gate on the current head.
+    output: a gate report where every line holds, or the failing lines
+  - id: merge
+    human: true
+    decided_by: delivery.merge_policy
+    needs: [integrate]
+    on_reject: build
+    asks: merge the request named in the gate report, or say what to change
+    does: The human or mechanism named by the merge policy merges the request. You verify it is merged.
+    output: the merge commit on the default branch
+done_when:
+  - The merged change meets the work item's acceptance criteria.
+  - The review, the verification counts and the gate report are linked from the work item, all for the merged head.
+then: [after-merge]

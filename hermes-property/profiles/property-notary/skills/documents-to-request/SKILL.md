@@ -10,10 +10,7 @@ metadata:
 ---
 # Documents to request
 
-## When to use
-
-As soon as a property becomes serious: before an offer, a preliminary sale
-agreement, exercising an option, a bid.
+Use when a property becomes serious: before an offer, a preliminary sale agreement, the exercise of an option or a bid.
 
 ## Prerequisites
 
@@ -38,7 +35,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **Establish the region, the type of property and the type of sale**
    (private sale, public sale, off-plan sale). The list depends on them, and
@@ -63,16 +60,20 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    co-ownership manager, agency), how long it takes, and what it can change in
    the deal.
 
-## Output
+## Decision rules
 
-A table: document, mandatory or useful, who holds it, lead time, status
-(received with date / requested / missing), what it can change. At the top,
+- Never work from a list from memory, or another region's.
+- A document "received" but out of date, or about another unit, is not
+  received.
+- Read the planning information before the offer when the strategy depends on
+  it: do not wait for the deed.
+- Never request a document from the seller yourself: the email is a draft for
+  the investor.
+
+## Quality gate
+
+The list is done when every document has a holder and a status, and the
+obligations were checked on the official source in force. The deliverable is a
+table: document, mandatory or useful, who holds it, lead time, status
+(received with date / requested / missing), what it can change; at the top,
 the missing documents that can kill the deal.
-
-## Pitfalls
-
-- A list from memory, or another region's.
-- A document "received" but out of date or about another unit.
-- Waiting for the deed to read the planning information: it must be read
-  before the offer when the strategy depends on it.
-- Requesting from the seller yourself: the email is a draft for the investor.

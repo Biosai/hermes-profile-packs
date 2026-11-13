@@ -13,10 +13,7 @@ metadata:
 ---
 # Every strategy on a property
 
-## When to use
-
-As soon as a concrete property arrives (listing, public sale, seller's offer,
-a building he already owns) and someone has to decide what to do with it.
+Use when a concrete property arrives (listing, public sale, seller's offer, a building the investor already owns) and someone has to decide what to do with it.
 
 ## Prerequisites
 
@@ -44,25 +41,26 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
-1. **Read his investor file**: accepted or refused strategies, by area;
-   thresholds; scenario parameters; whether he does the works.
+1. **Read the investor file**: accepted or refused strategies, by area;
+   thresholds; scenario parameters; whether the investor does the works.
 2. **Establish the facts of the property**: region, type, floor area
    (source), announced and recognized units (`property-architect`), condition
    (`property-works-estimator`), occupancy, co-ownership (`property-notary`).
    Name what is missing.
-3. **List every plausible strategy** before ruling one out:
+3. **List every plausible strategy** before ruling one out (order and rules:
+   [references/strategy-rules.md](references/strategy-rules.md)):
    - option on all units; option on some units + purchase of the rest;
    - purchase, division, full resale, or partial resale keeping some units;
    - resale as is, refreshed, fully renovated;
    - long-term letting, shared housing, short-term letting, furnished
      corporate lets;
    - splitting off land, garages, volumes; combinations.
-4. **Rule out with a written reason**: outside his areas per his file,
-   impossible (unrecognized unit, short-term letting prohibited), or margin
-   below his threshold after calculation. "It does not look interesting" is
-   not a reason.
+4. **Rule out with a written reason**: outside the investor's areas per the
+   investor file, impossible (unrecognized unit, short-term letting
+   prohibited), or margin below the investor's threshold after calculation.
+   "It does not look interesting" is not a reason.
 5. **Cost each remaining strategy** as a range: entry price, acquisition costs
    (scenarios from `property-accountant-be`), works per level
    (`property-works-estimator`), holding costs, exit price or rents
@@ -71,19 +69,21 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
 7. **Rank**: the best first, the one that holds in the safety scenario
    marked.
 
-## Output
+## Decision rules
 
-A table of strategies: profit (range), margin on purchase price, equity tied
-up, return on equity, duration, holds in safety (yes/no), and the strategies
-ruled out with their reason. Footer: works cost, comparables base, acquisition
-tax regime.
-
-## Pitfalls
-
-- Ruling out a building on a whole-building resale alone, without testing
+- Never rule out a building on a whole-building resale alone, without testing
   division or partial resale.
-- Mixing regimes: a rental is judged on cash flow and yield, not on a resale
-  ceiling price.
-- Applying acquisition costs to the full price of a deal where part of the
-  property stays under option.
-- Proposing a strategy that his file reserves for another area: flag it.
+- A rental is judged on cash flow and yield, not on a resale ceiling price.
+- Apply acquisition costs to what is bought, not to the full price when part
+  of the property stays under option.
+- Flag, do not propose, a strategy that the investor file reserves for another
+  area.
+
+## Quality gate
+
+The work is done when every plausible strategy was costed or ruled out with a
+written reason, and the rest went through the three scenarios. The deliverable
+is a table of strategies: profit (range), margin on purchase price, equity
+tied up, return on equity, duration, holds in safety (yes/no), and the
+strategies ruled out with their reason; footer: works cost, comparables base,
+acquisition tax regime.

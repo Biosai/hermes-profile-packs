@@ -10,12 +10,7 @@ metadata:
 ---
 # Lease and tenant
 
-## When to use
-
-A tenant does not pay, disputes a date, an indexation, a deposit, a check-in
-report; the investor wants to give notice, index the rent, draft a lease; a
-purchased property is occupied; a short-term, shared or furnished corporate
-let needs a framework.
+Use when a tenant does not pay or disputes a date, an indexation, a deposit or a check-in report; the investor wants to give notice, index the rent or draft a lease; a purchased property is occupied; or a short-term, shared or furnished corporate let needs a framework.
 
 ## Prerequisites
 
@@ -41,7 +36,7 @@ If a value is unset or `detect`, say what you used, and give the line that
 sets it: `hermes config set skills.config.<key> <value>` (one profile:
 `hermes -p <profile> config set …`).
 
-## Steps
+## Procedure
 
 1. **The property's region**: it designates the text (Wallonia, Flanders and
    Brussels each have their own residential lease legislation; commercial
@@ -58,23 +53,25 @@ sets it: `hermes config set skills.config.<key> <value>` (one profile:
    period, any compensation and the exact condition that triggers it.
 6. **For arrears**: dated statement, formal notice (draft), conciliation,
    justice of the peace (*juge de paix*), what happens to the deposit. Say
-   what he can do alone and what needs a lawyer or a bailiff (*huissier de
-   justice*).
+   what the investor can do alone and what needs a lawyer or a bailiff
+   (*huissier de justice*).
 7. **For an occupied purchased property**: what the buyer takes over
-   (registered lease or not, certain date), and how he can end it.
+   (registered lease or not, certain date), and how the buyer can end it.
 8. **Run the adversarial review** (skill `adversarial-review`).
 
-## Output
+## Decision rules
 
-The dated facts (lease quoted), the rule (text, article, version), the time
-limits computed, the investor's options with their cost and risk, a draft
-letter if useful, and the question for his lawyer.
-
-## Pitfalls
-
-- Applying another region's rule, or the one from before the reform.
-- Confusing the rule and its exception: compensation may be due only if the
-  ground for the notice is not carried out.
-- Evicting or keeping the deposit without a court order: the judge
+- Apply the rule of the property's region, in the version in force: never
+  another region's, or the one from before the reform.
+- Tell the rule from its exception: compensation may be due only if the ground
+  for the notice is not carried out.
+- No eviction and no keeping of the deposit without a court order: the judge
   authorizes it.
-- Sending the letter: it is a draft, he sends it.
+- The letter is a draft: the investor sends it.
+
+## Quality gate
+
+The answer is done when it has gone through the adversarial review. The
+deliverable contains the dated facts (lease quoted), the rule (text, article,
+version), the time limits computed, the investor's options with their cost and
+risk, a draft letter if useful, and the question for the investor's lawyer.

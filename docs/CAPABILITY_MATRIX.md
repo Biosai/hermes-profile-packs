@@ -118,7 +118,6 @@ Every public profile is included. Supplemental skills are shipped on demand; all
 | agency-video-producer | creative-ideation | none | none |
 | agency-worldbuilder | creative-ideation | none | none |
 | agency-onchain-engineer | systematic-debugging, test-driven-development, grounded-citations | none | none |
-| agency-venture-operator | dogfood, systematic-debugging | none | none |
 | academy-dean | retain only | none | none |
 | academy-mathematics-professor | arxiv, concept-diagrams, grounded-citations | none | wolfram |
 | academy-writing-rhetoric-professor | grounded-citations | none | none |
