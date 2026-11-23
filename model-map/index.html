@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://telegram.org; style-src 'unsafe-inline'; img-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Model map</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:var(--tg-theme-bg-color,#0b1020);--bg2:var(--tg-theme-secondary-bg-color,#141b2e);
+  --tx:var(--tg-theme-text-color,#f1f5f9);--hint:var(--tg-theme-hint-color,#9aa4b5);
+  --link:var(--tg-theme-link-color,#60a5fa);--btn:var(--tg-theme-button-color,#2563eb);
+  --btx:var(--tg-theme-button-text-color,#fff);--sep:color-mix(in srgb,var(--hint) 22%,transparent);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--tx);font:16px/1.35 -apple-system,system-ui,'Segoe UI',Roboto,sans-serif;padding:12px 12px 40px}
+header{position:sticky;top:0;background:var(--bg);z-index:5;padding-bottom:8px}
+.top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.total{font-size:32px;font-weight:800;letter-spacing:-.5px}
+.tokens{color:var(--hint);font-size:14px}
+.seg{display:flex;background:var(--bg2);border-radius:10px;padding:3px;gap:3px;margin-top:10px}
+.seg button{flex:1;border:0;background:none;color:var(--tx);font:inherit;font-size:14px;font-weight:600;padding:7px 0;border-radius:8px}
+.seg button.on{background:var(--btn);color:var(--btx)}
+.tabs{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none}
+.tabs button{border:0;background:var(--bg2);color:var(--tx);font:inherit;font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;white-space:nowrap}
+.tabs button.on{background:var(--tx);color:var(--bg)}
+.mix{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--sep);margin-top:8px}
+.mix i{display:block;height:100%}
+.mix.sm{height:5px;margin-top:6px}
+.legend{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:13px;color:var(--hint);margin-top:6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px}
+.insight{background:var(--bg2);border-left:3px solid #f59e0b;border-radius:8px;padding:8px 10px;margin-top:10px;font-size:14px}
+.list{background:var(--bg2);border-radius:12px;margin-top:10px;overflow:hidden}
+.row{display:block;width:100%;text-align:left;border:0;background:none;color:inherit;font:inherit;padding:11px 12px;border-bottom:1px solid var(--sep)}
+.row:last-child{border-bottom:0}
+.row:active{background:var(--sep)}
+.line{display:flex;align-items:center;gap:8px}
+.name{flex:1;min-width:0;font-weight:600;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.cost{font-weight:700;font-variant-numeric:tabular-nums;min-width:46px;text-align:right}
+.chev{color:var(--hint);font-size:20px;line-height:1;margin-left:-2px}
+.sub{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--hint);margin-top:5px;min-width:0}
+.sub span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.warn{color:#f59e0b}
+.pill{display:inline-block;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;color:#fff}
+.fold{margin-top:10px;color:var(--hint);font-size:14px}
+.fold summary{cursor:pointer;padding:6px 2px;font-weight:600}
+.foot{color:var(--hint);font-size:12px;margin-top:16px;line-height:1.5}
+.empty{padding:14px 12px;color:var(--hint)}
+.err{padding:30px 10px;text-align:center;color:var(--hint)}
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.65);opacity:0;pointer-events:none;transition:opacity .15s;z-index:10}
+.scrim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--bg2);border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.4);padding:22px 14px calc(18px + env(safe-area-inset-bottom));
+  max-height:85vh;overflow:auto;transform:translateY(100%);transition:transform .2s;z-index:11}
+.sheet.on{transform:none}
+.sheet h3{font-size:18px;margin-right:30px;word-break:break-word}
+.sheet:before{content:"";position:absolute;top:7px;left:50%;width:38px;height:4px;margin-left:-19px;border-radius:2px;background:var(--hint);opacity:.5}
+.sheet .x{position:absolute;right:12px;top:14px;border:0;background:var(--bg);color:var(--tx);width:32px;height:32px;border-radius:50%;font-size:22px;line-height:32px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;margin-top:10px}
+.kv b{color:var(--hint);font-weight:500}
+.h4{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--hint);margin:16px 0 6px;font-weight:700}
+.models{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.models button{border:2px solid transparent;background:var(--bg);color:var(--tx);font:inherit;font-size:14px;font-weight:600;padding:10px 8px;border-radius:10px;display:flex;align-items:center;gap:7px}
+.models button.cur{border-color:var(--btn)}
+.models button i{width:10px;height:10px;border-radius:50%;flex:none}
+.cmd{background:var(--bg);border-radius:8px;padding:10px;font:13px ui-monospace,monospace;overflow-wrap:anywhere;margin-top:8px;user-select:all}
+.copy{margin-top:8px;border:0;background:var(--btn);color:var(--btx);font:inherit;font-weight:600;padding:9px 14px;border-radius:9px}
+.bars div{display:flex;align-items:center;gap:8px;font-size:13px;margin:4px 0}
+.bars span:first-child{width:92px;flex:none}
+.bars .b{flex:1;height:8px;border-radius:4px;background:var(--sep);overflow:hidden}
+.bars .b i{display:block;height:100%}
+</style>
+</head>
+<body>
+<div id="app"><div class="err">Chargement…</div></div>
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet"></div>
+<script>
+"use strict";
+const tg = window.Telegram && Telegram.WebApp;
+const FAM = {opus:"#7c3aed",sonnet:"#0369a1",haiku:"#059669",kimi:"#d97706",fable:"#db2777"};
+const W_LABEL = {1:"24 h",7:"7 j",30:"30 j"};
+let D, wi = 1, tab = "profiles";
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const colour = i => { const m = (D.m[i] || "").toLowerCase(); if (m.startsWith("eu.") && m.includes("opus")) return "#a78bfa"; for (const f in FAM) if (m.includes(f)) return FAM[f]; return "#64748b"; };
+const labelRaw = i => i < 0 ? "—" : String(D.ml[i] || D.m[i] || "?");
+const label = i => esc(labelRaw(i)).replace(/ /g, "&nbsp;");  // HTML-safe
+const money = x => (x = Number(x) || 0, !x) ? "$0" : x < 1 ? "$" + x.toFixed(2) : "$" + Math.round(x).toLocaleString("en-US");
+const mtok = x => (x = Number(x) || 0, !x) ? "0" : x >= 1000 ? (x / 1000).toFixed(2) + "B" : x >= 1 ? x.toFixed(1) + "M" : Math.round(x * 1000) + "k";
+const pill = i => i < 0 ? `<span class="pill" style="background:#475569">aucun</span>` : `<span class="pill" style="background:${colour(i)}">${label(i)}</span>`;
+const bar = (tm, cls = "") => { const t = tm.reduce((a, x) => a + x[1], 0); if (!t) return "";
+  return `<div class="mix ${cls}">` + tm.filter(x => x[1] / t >= .01).map(x => `<i style="width:${(100 * x[1] / t).toFixed(1)}%;background:${colour(x[0])}"></i>`).join("") + "</div>"; };
+const mixed = (tm, cur) => { const t = tm.reduce((a, x) => a + x[1], 0); if (!t) return null;
+  const own = (tm.find(x => x[0] === cur) || [0, 0])[1] / t; if (own >= .95) return null;
+  const o = tm.filter(x => x[0] !== cur).sort((a, b) => b[1] - a[1])[0]; return o ? `${Math.round(100 * o[1] / t)}% sur ${label(o[0])}` : null; };
+
+async function decode(frag) {
+  const b64 = frag.replace(/-/g, "+").replace(/_/g, "/");
+  const bin = Uint8Array.from(atob(b64 + "===".slice((b64.length + 3) % 4)), c => c.charCodeAt(0));
+  const ds = new Blob([bin]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  return JSON.parse(await new Response(ds).text());
+}
+
+// ---- views -----------------------------------------------------------------------------------
+function header() {
+  const [cost, tok] = D.T[wi], B = D.B[wi].slice().sort((a, b) => b[1] - a[1]);
+  const legend = B.filter(b => b[1] >= 0.5).map(b => `<span><i style="background:${colour(b[0])}"></i>${label(b[0])} ${money(b[1])}</span>`).join("");
+  const age = Math.round((Date.now() / 1000 - D.g) / 60);
+  return `<header>
+    <div class="top"><div class="total">${money(cost)}</div><div class="tokens">${mtok(tok)} tokens · ${W_LABEL[D.w[wi]]}</div></div>
+    ${bar(B.map(b => [b[0], b[1]]))}<div class="legend">${legend}</div>
+    <div class="seg">${D.w.map((w, i) => `<button data-w="${i}" class="${i === wi ? "on" : ""}">${W_LABEL[w]}</button>`).join("")}</div>
+    <div class="tabs">${[["profiles","Profils"],["chats","Chats"],["cron","Crons"],["tasks","Tâches"]].map(([k, l]) =>
+      `<button data-tab="${k}" class="${k === tab ? "on" : ""}">${l}</button>`).join("")}</div>
+  </header><div class="foot" style="margin-top:0">${age < 1 ? "Mis à jour à l'instant" : "Mis à jour il y a " + (age < 60 ? age + " min" : Math.round(age / 60) + " h")} · /modelmap pour rafraîchir</div>`;
+}
+
+const row = (key, name, model, cost, sub = "", extra = "") =>
+  `<button class="row" data-open="${esc(key)}"><div class="line"><div class="name">${esc(name)}</div><div class="cost">${cost}</div><span class="chev">›</span></div><div class="sub">${pill(model)}<span>${sub}</span></div>${extra}</button>`;
+
+function vProfiles() {
+  const ps = D.P.map((p, i) => ({p, i, c: p[2][wi]})).sort((a, b) => b.c[0] - a.c[0]);
+  const tot = D.T[wi][0] || 1;
+  const ins = [];
+  if (ps[0] && ps[0].c[0]) ins.push(`<b>${esc(ps[0].p[0])}</b> = ${Math.round(100 * ps[0].c[0] / tot)}% des dépenses.`);
+  ps.forEach(x => { const m = mixed(x.c[2], x.p[1]); if (m && x.c[0] >= .05 * tot) ins.push(`<b>${esc(x.p[0])}</b> est réglé sur ${label(x.p[1])} mais ${m} (chats épinglés).`); });
+  return (ins.length ? `<div class="insight">${ins.join(" ")}</div>` : "") + `<div class="list">` + ps.map(x => {
+    const m = mixed(x.c[2], x.p[1]);
+    return row("P" + x.i, x.p[0], x.p[1], money(x.c[0]), `${mtok(x.c[1])} tokens` + (m ? ` · <b class="warn">${m}</b>` : ""), m ? bar(x.c[2], "sm") : "");
+  }).join("") + `</div>`;
+}
+
+function vChats() {
+  const hs = D.H.map((h, i) => ({h, i, c: h[3].reduce((a, b) => a + b[2][wi], 0)})).sort((a, b) => b.c - a.c);
+  const n = {}; D.H.forEach(h => n[h[1]] = (n[h[1]] || 0) + 1);
+  const nm = h => (h[1] || h[0]) + (n[h[1]] > 1 ? ` (${String(h[0]).slice(-4)})` : "");
+  return `<div class="list">` + hs.map(x => {
+    const model = x.h[2] >= 0 ? x.h[2] : (x.h[3][0] || [0, -1])[1];
+    const bots = x.h[3].filter(b => b[2][wi] >= .01).map(b => b[0]).join(", ");
+    return row("H" + x.i, nm(x.h), model, money(x.c), (x.h[2] >= 0 ? "📌 épinglé · " : "") + esc(bots || "aucune dépense"));
+  }).join("") + `</div><div class="foot">📌 épinglé = modèle fixé pour tous les bots du chat. Sinon chaque bot suit le modèle de son profil.</div>`;
+}
+
+function vCron() {
+  const cs = D.C.map((c, i) => ({c, i, u: c[7][wi]}));
+  const spent = cs.filter(x => x.u[0] >= .01 && !x.c[4]).sort((a, b) => b.u[0] - a.u[0]);
+  const idle = cs.filter(x => x.u[0] < .01 && !x.c[4]), scripts = cs.filter(x => x.c[4]);
+  const r = x => row("C" + x.i, x.c[2], x.c[5] >= 0 ? x.c[5] : x.c[6], x.c[4] ? "" : money(x.u[0]),
+    `${esc(x.c[0])} · ${x.c[5] >= 0 ? "épinglé" : "défaut du profil"}${x.u[1] ? " · " + Number(x.u[1]) + " runs" : ""}${x.c[3] ? "" : " · <span class=warn>en pause</span>"}`);
+  return `<div class="list">${spent.map(r).join("") || `<div class="empty">Aucune dépense sur la période.</div>`}</div>`
+    + (idle.length ? `<details class="fold"><summary>Sans dépense (${idle.length})</summary><div class="list">${idle.map(r).join("")}</div></details>` : "")
+    + (scripts.length ? `<details class="fold"><summary>Scripts, sans modèle (${scripts.length})</summary><div class="list">${scripts.map(x =>
+        `<div class="row"><div class="name">${esc(x.c[2])}</div><div class="sub">${esc(x.c[0])} · ${esc(x.c[8])}</div></div>`).join("")}</div></details>` : "");
+}
+
+function vTasks() {
+  return `<div class="list">` + (D.K.map((k, i) => row("K" + i, k[2], k[5], k[7] ? money(k[7]) : "—",
+    `${esc(k[3])} · ${esc(k[4])} · ${esc(k[0])}${k[6] ? " · modèle forcé" : ""}`)).join("") || `<div class="empty">Aucune tâche ouverte avec un worker.</div>`)
+    + `</div><div class="foot">Tâches ouvertes avec un worker · coût cumulé${D.kd ? ` · ${Number(D.kd)} tâches omises (taille)` : ""}</div>`;
+}
+
+function render() {
+  const v = {profiles: vProfiles, chats: vChats, cron: vCron, tasks: vTasks}[tab]();
+  $("#app").innerHTML = header() + v + `<div class="foot">Coût = prix catalogue Bedrock depuis les tokens (estimation). Touchez une ligne pour le détail et changer de modèle.</div>`;
+}
+
+// ---- detail sheet + change -------------------------------------------------------------------
+function modelGrid(cur, allowDefault) {
+  const cat = D.cat.slice().sort((a, b) => labelRaw(b).localeCompare(labelRaw(a))).sort((a, b) => fam(a) - fam(b))
+    .filter(i => !D.m[i].startsWith("eu.") || i === cur || D.B.some(w => w.some(b => b[0] === i)));
+  return `<div class="models">${allowDefault ? `<button data-model="default" class="${cur < 0 ? "cur" : ""}"><i style="background:#64748b"></i>Défaut du profil</button>` : ""}`
+    + cat.map(i => `<button data-model="${esc(D.m[i])}" class="${i === cur ? "cur" : ""}"><i style="background:${colour(i)}"></i>${label(i)}</button>`).join("") + `</div>`;
+}
+const fam = i => { const m = D.m[i].toLowerCase(); const k = Object.keys(FAM).findIndex(f => m.includes(f)); return k < 0 ? 9 : k; };
+
+let pending = null;
+function openSheet(key) {
+  const t = key[0], i = +key.slice(1);
+  let title, kv = [], bars = "", grid = "", kind, target, cur, allowDefault = false;
+  if (t === "P") { const p = D.P[i], u = p[2][wi]; title = p[0]; kind = "profile"; target = p[0]; cur = p[1];
+    kv = [["Modèle", pill(p[1])], ["Coût " + W_LABEL[D.w[wi]], money(u[0])], ["Tokens", mtok(u[1])]];
+    const tt = u[2].reduce((a, x) => a + x[1], 0);
+    bars = tt && u[2].length > 1 ? `<div class="h4">Tokens réellement utilisés</div><div class="bars">` + u[2].map(x => `<div><span>${label(x[0])}</span><span class="b"><i style="width:${100 * x[1] / tt}%;background:${colour(x[0])}"></i></span><span>${Math.round(100 * x[1] / tt)}%</span></div>`).join("") + `</div>` : ""; }
+  else if (t === "H") { const h = D.H[i]; title = h[1] || h[0]; kind = "chat"; target = String(h[0]); cur = h[2];
+    kv = [["Épinglé", h[2] >= 0 ? pill(h[2]) + " (tous les bots)" : "non"], ["Chat id", esc(h[0])]];
+    bars = `<div class="h4">Par bot · ${W_LABEL[D.w[wi]]}</div><div class="kv">` + h[3].map(b => `<b>${esc(b[0])}</b><span>${pill(b[1])} ${money(b[2][wi])}</span>`).join("") + `</div>`; }
+  else if (t === "C") { const c = D.C[i], u = c[7][wi]; title = c[2]; kind = "cron"; target = `${c[0]}/${c[1]}`; cur = c[5]; allowDefault = true;
+    kv = [["Profil", esc(c[0])], ["Modèle", c[5] >= 0 ? pill(c[5]) + " épinglé" : pill(c[6]) + " défaut du profil"], ["Planning", `<code>${esc(c[8])}</code>`],
+          ["Coût " + W_LABEL[D.w[wi]], `${money(u[0])} · ${Number(u[1]) || 0} runs`], ["Dernier run", esc(c[9] || "—")], ["État", c[3] ? "actif" : "<span class=warn>en pause</span>"]];
+    if (c[4]) { kind = null; kv.push(["", "Job script : aucun modèle."]); } }
+  else { const k = D.K[i]; title = k[2]; kind = "task"; target = `${k[0]}/${k[1]}`; cur = k[6] ? k[5] : -1; allowDefault = true;
+    kv = [["Tâche", esc(target)], ["État", esc(k[3])], ["Worker", esc(k[4])], ["Modèle", pill(k[5]) + (k[6] ? " forcé" : " défaut")], ["Coût", k[7] ? money(k[7]) : "—"]]; }
+  if (kind) grid = `<div class="h4">Changer de modèle</div>` + modelGrid(cur, allowDefault)
+    + (kind === "chat" && cur >= 0 ? `<div class="foot">Retirer l'épinglage = édition manuelle de la config.</div>` : "");
+  pending = kind ? {kind, target: String(target), title: String(title)} : null;
+  $("#sheet").innerHTML = `<button class="x" data-close>×</button><h3>${esc(title)}</h3><div class="kv">${kv.map(([k, v]) => `<b>${k}</b><span>${v}</span>`).join("")}</div>${bars}${grid}<div id="out"></div>`;
+  $("#sheet").classList.add("on"); $("#scrim").classList.add("on");
+  tg && tg.BackButton && tg.BackButton.show();
+}
+function closeSheet() { $("#sheet").classList.remove("on"); $("#scrim").classList.remove("on"); tg && tg.BackButton && tg.BackButton.hide(); }
+
+function choose(model) {
+  if (!pending) return;
+  const name = model === "default" ? "défaut du profil" : labelRaw(D.m.indexOf(model));
+  const payload = JSON.stringify({a: "set", k: pending.kind, t: pending.target, m: model});
+  const canSend = tg && tg.initData !== undefined && tg.sendData && tg.platform !== "unknown";
+  const go = ok => { if (!ok) return;
+    try { tg.sendData(payload); }  // closes the app; the bot applies it and replies in the chat
+    catch (e) { fallback(); } };
+  const cmd = `/modelmap set ${pending.kind} ${pending.target} ${model}`;
+  const fallback = () => { $("#out").innerHTML = `<div class="h4">Ouvert hors du bouton 📊</div><div class="foot">Le changement direct marche depuis le bouton 📊 du clavier. Sinon, envoie cette commande au bot :</div>
+      <div class="cmd">${esc(cmd)}</div><button class="copy" data-copy="${esc(cmd)}">Copier</button>`; };
+  if (!canSend) return fallback();
+  const msg = `Passer « ${String(pending.title).slice(0, 60)} » sur ${name} ?`;
+  tg.showConfirm ? tg.showConfirm(msg, go) : go(confirm(msg));
+}
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("button,[data-close]");
+  if (e.target.id === "scrim") return closeSheet();
+  if (!b) return;
+  if (b.dataset.w) { wi = +b.dataset.w; render(); }
+  else if (b.dataset.tab) { tab = b.dataset.tab; render(); scrollTo(0, 0); }
+  else if (b.dataset.open) openSheet(b.dataset.open);
+  else if (b.dataset.model) choose(b.dataset.model);
+  else if (b.hasAttribute("data-close")) closeSheet();
+  else if (b.dataset.copy) navigator.clipboard.writeText(b.dataset.copy).then(() => b.textContent = "Copié ✓", () => b.textContent = "Sélectionne le texte ci-dessus");
+  if (b) tg && tg.HapticFeedback && tg.HapticFeedback.selectionChanged();
+});
+
+(async () => {
+  if (tg) { tg.ready(); tg.expand(); tg.BackButton && tg.BackButton.onClick(closeSheet); }
+  const m = location.hash.match(/[#&]d=([A-Za-z0-9_-]+)/);
+  if (!m) { $("#app").innerHTML = `<div class="err">Ouvre la Model map depuis le bouton 📊 du bot (<code>/modelmap</code>).</div>`; return; }
+  try { D = await decode(m[1]); if (D.v !== 1) throw new Error("version " + D.v); render(); }
+  catch (e) { $("#app").innerHTML = `<div class="err">Données illisibles (${esc(e.message)}). Refais <code>/modelmap</code>.</div>`; }
+})();
+</script>
+</body>
+</html>
