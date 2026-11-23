@@ -26,7 +26,7 @@ This fork adds what three teams of Hermes profiles running in production learned
 The packs deliberately separate durable context domains. Agency executes professional work, Council supports the person, and Academy teaches. A work profile should not need private life context, a personal profile should not inherit repository state merely because both run on Hermes, and a teaching profile should not silently become a production executor.
 
 <!-- profile-counts:start -->
-Hermes Agency contains 114 professional specialists. Hermes Council contains 22 focused profiles and 90 purpose-built personal-life skills. Hermes Academy contains 30 faculty profiles and 120 purpose-built teaching skills.
+Hermes Agency contains 114 professional specialists. Hermes Council contains 22 focused profiles and 93 purpose-built personal-life skills. Hermes Academy contains 30 faculty profiles and 120 purpose-built teaching skills.
 Hermes Property contains 8 profiles and 38 role-owned skills.
 <!-- profile-counts:end -->
 
@@ -65,7 +65,7 @@ Where an upstream profile already owned the work, this fork adds role-owned skil
 | `agency-community-manager` | `token-community-copy` | |
 | `agency-social-media-manager` | `approval-gated-publishing` | |
 | `agency-email-marketer` | `approval-gated-publishing` | `email-send-with-approval`, `one-to-one-email-send` |
-| `agency-finance-ops`, `council-finance-coach` | `double-entry-books` | |
+| `agency-finance-ops`, `council-finance-coach` | `double-entry-books`, `wallet-registry`, `evm-wallet-audit`, `crypto-exchange-exit` | |
 | `council-fitness-coach` | `endurance-race-plan` | `gear-shopping-list` |
 
 New profiles, only where no upstream profile owned the work:
@@ -77,7 +77,7 @@ New profiles, only where no upstream profile owned the work:
 
 **Skills and workflows are separate.** A skill is know-how a role brings to any task; a workflow is an ordered process with a trigger, where each step names who acts, with which skills, and where a human decides. Workflows live in each profile's `skills/workflows/` (the Hermes `workflows` category). A workflow that hands work between profiles is defined once in `workflows/<name>.yaml` and rendered into its coordinating profile by `python scripts/sync_workflows.py`; on a Hermes Kanban board it runs as one card per step. See [`docs/WORKFLOWS.md`](docs/WORKFLOWS.md).
 
-`gated-delivery`, `approval-gated-publishing` and `double-entry-books` ship in several profiles. Each has one canonical source in `shared-skills/`; edit it there and run `python scripts/sync_shared_skills.py`.
+`gated-delivery`, `approval-gated-publishing`, `double-entry-books` and the three crypto-wallet skills ship in several profiles. Each has one canonical source in `shared-skills/`; edit it there and run `python scripts/sync_shared_skills.py`.
 
 ## Role-specific capability upgrade
 

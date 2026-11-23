@@ -53,6 +53,7 @@ In the body, a `## Configuration` section says how each value changes the proced
 | `publishing.mailbox` | gmail, microsoft365, other, none | none | The owner's mailbox for one-to-one emails sent in the owner's name. `none`: the agent prepares each message and the owner sends it. |
 | `books.format` | beancount, hledger, ledger, spreadsheet, detect | detect | Bookkeeping file format. |
 | `books.location` | a path | (empty: ask) | Where the books live. |
+| `wallets.registry` | a path | (empty: ask) | The register of the owner's crypto wallets and exchange accounts: label, owner, purpose, ledger account. Never keys or full addresses in messages. |
 | `training.record` | memory, a file path, an app export | memory | Where the training log lives. |
 | `property.investor_file` | memory, a path | memory | Where the investor's profile and own rules live. |
 | `property.question_register` | memory, a path | memory | Where open questions and answers are recorded. |
