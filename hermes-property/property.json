@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
   "name": "hermes-property",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "An expert panel of Hermes Agent profiles for a property investor acting in their own name or through a company, in Belgium first and France second: a coordinator and seven specialists who prepare the work of real professionals.",
   "orchestrator": "property-coordinator",
   "distribution": {

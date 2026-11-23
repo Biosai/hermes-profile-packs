@@ -29,6 +29,15 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 GENERATED = {"capabilities", "software-development", "research", "productivity", "creative",
              "autonomous-ai-agents", "web", "academy-continuing-education"}
+# Skills upstream added after capabilities/baseline.json was frozen. Upstream does not
+# extend the baseline for new profiles, so record them here at each upstream sync:
+# they are upstream's to shape, not this fork's.
+UPSTREAM_AFTER_BASELINE = {
+    "hermes-agency/profiles/agency-pixel-artist/skills/pixel-asset-export",       # upstream #36
+    "hermes-agency/profiles/agency-pixel-artist/skills/pixel-frame-animation",
+    "hermes-agency/profiles/agency-pixel-artist/skills/pixel-sprite-production",
+    "hermes-agency/profiles/agency-pixel-artist/skills/pixel-tileset-production",
+}
 MAX_DESCRIPTION = 60          # Hermes clips longer descriptions in the skill index
 MAX_WORDS = {"skill": 650, "workflow": 750}
 SKILL_SECTIONS = ["## Prerequisites", "## Procedure", "## Decision rules", "## Quality gate"]
@@ -46,7 +55,7 @@ def added_skills(root: Path) -> list[Path]:
     for path in sorted([*root.glob("hermes-*/profiles/*/skills/**/SKILL.md"), *root.glob("shared-skills/*/SKILL.md")]):
         rel = path.relative_to(root).as_posix()
         parts = path.relative_to(root).parts
-        if rel in baseline:
+        if rel in baseline or path.parent.relative_to(root).as_posix() in UPSTREAM_AFTER_BASELINE:
             continue
         if parts[0] != "shared-skills":
             first = parts[4]                      # hermes-x/profiles/<p>/skills/<first>/...
