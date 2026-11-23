@@ -1233,11 +1233,14 @@
         "academy-continuing-education",
         "budget-tracking",
         "cash-flow-forecast",
+        "crypto-exchange-exit",
         "double-entry-books",
+        "evm-wallet-audit",
         "expense-review",
         "financial-controls",
         "financial-operations-review",
-        "invoice-reconciliation"
+        "invoice-reconciliation",
+        "wallet-registry"
       ],
       "bundled_skills_opt_out": false,
       "skills": [
@@ -4976,9 +4979,12 @@
       "existing_skills": [
         "budget-review",
         "cashflow-plan",
+        "crypto-exchange-exit",
         "debt-plan",
         "double-entry-books",
-        "purchase-decision"
+        "evm-wallet-audit",
+        "purchase-decision",
+        "wallet-registry"
       ],
       "bundled_skills_opt_out": true,
       "skills": [
