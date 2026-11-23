@@ -26,7 +26,7 @@ This fork adds what three teams of Hermes profiles running in production learned
 The packs deliberately separate durable context domains. Agency executes professional work, Council supports the person, and Academy teaches. A work profile should not need private life context, a personal profile should not inherit repository state merely because both run on Hermes, and a teaching profile should not silently become a production executor.
 
 <!-- profile-counts:start -->
-Hermes Agency contains 114 professional specialists. Hermes Council contains 22 focused profiles and 90 purpose-built personal-life skills. Hermes Academy contains 30 faculty profiles and 120 purpose-built teaching skills.
+Hermes Agency contains 115 professional specialists. Hermes Council contains 22 focused profiles and 90 purpose-built personal-life skills. Hermes Academy contains 30 faculty profiles and 120 purpose-built teaching skills.
 Hermes Property contains 8 profiles and 38 role-owned skills.
 <!-- profile-counts:end -->
 
@@ -81,13 +81,13 @@ New profiles, only where no upstream profile owned the work:
 
 ## Role-specific capability upgrade
 
-Every profile, including standalone Wear, now has an on-demand capability guide. The release includes 24 reviewed skill trees with full supporting files, six role-selected plugin opt-ins, and 13 disabled MCP integration templates. Existing role-owned jobs, tool restrictions, bundled-skill opt-outs and user-controlled activation remain intact.
+Every profile, including standalone Wear, now has an on-demand capability guide. The release includes 25 reviewed skill trees with full supporting files, six role-selected plugin opt-ins, and 15 disabled MCP integration templates. Existing role-owned jobs, tool restrictions, bundled-skill opt-outs and user-controlled activation remain intact.
 
 See the [complete profile matrix](docs/CAPABILITY_MATRIX.md), [capability guide and privacy/setup rules](docs/CAPABILITIES.md), and [verified results and limitations](docs/CAPABILITY_VALIDATION.md). Normal profile installation never downloads/enables plugins, authenticates accounts or starts remote integrations.
 
 ## Start small with Team Recipes
 
-You rarely need all 174 profiles. Team Recipes are validated compositions of existing profiles for common outcomes, with `minimal`, `recommended`, and `expanded` tiers.
+You rarely need all 175 profiles. Team Recipes are validated compositions of existing profiles for common outcomes, with `minimal`, `recommended`, and `expanded` tiers.
 
 The main installer understands them directly:
 
@@ -130,6 +130,23 @@ hermes-profile-packs/
 ```
 
 Runtime state is never distributed. Authentication material, `.env` files, logs, caches, databases, local paths, session history, and machine-specific configuration do not belong in this repository.
+
+## Native personalities
+
+Each of the 176 distributions includes a curated, role-specific native Hermes
+personality in addition to `SOUL.md`: professional judgment and boundaries
+remain in the SOUL, while conversational temperament, correction habits and
+voice live in the selected `/personality` preset. Fresh installs receive the
+profile's default personality, and users may select another or clear it.
+Normal updates preserve existing installed `config.yaml`; personality
+migration for existing users requires deliberate, scoped approval.
+
+See [Profile personalities](docs/PROFILE_PERSONALITIES.md) for authoring,
+preserved security settings and the limited behavioral evidence.
+
+## Reviewed updates to existing profiles
+
+Use [reviewed profile source sync](docs/REVIEWED_PROFILE_SYNC.md) to preview SOUL and skill changes before updating an installed profile with local customizations. Updates are scoped to explicitly selected units, tied to a reviewed hash, backed up privately and reversible. This avoids using the native distribution updater to overwrite customized SOULs or skills. It does **not** change installed versions or configuration.
 
 ## Install
 

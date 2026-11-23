@@ -4,6 +4,17 @@ All notable changes to Hermes Profile Packs will be documented here.
 
 ## Unreleased
 
+### Reviewed installed-profile content updates
+
+- Added an optional, read-only-first source sync for individually approved SOUL and skill packages, with exact-file-hash approval, private atomic backups and guarded rollback. The command preserves user-added skills and leaves installed configuration, manifests, runtime state and profile versions untouched. Unlike native `hermes profile update`, it never bulk-overwrites locally different content.
+
+
+### Native profile personalities
+
+- Authored individually differentiated native `/personality` defaults for all 167 public Profile Packs distributions (114 Agency, 30 Academy, 22 Council, Hermes Wear). Each retains its SOUL, existing skills, model/provider freedom, reviewed disabled integrations and restricted execution controls.
+- Made curated personality sources and deterministic configuration materialization part of the authoring standard, including updates to BotFather and regression coverage. Existing installed profiles preserve their local `config.yaml` unless a user explicitly approves a scoped migration.
+- Completed two matched, bounded Parenting Coach live model comparisons (four successful native executions): confirmed actual overlay delivery and modest improvements in focus/precision. No blanket behavioral certification or automatic installation is claimed.
+
 ### Added (fork)
 
 - Distilled three Hermes teams running in production into public, generalized content, adding to upstream profiles wherever one already owned the job:
@@ -20,6 +31,7 @@ All notable changes to Hermes Profile Packs will be documented here.
   - A team with fewer profiles than a workflow has roles renders its own copy (`--render <name> --solo`, or `--assign ROLE=WHO`). When one profile holds every role, the rendering says that no second profile checks the work.
 - Skills shipped by several profiles have one canonical source in `shared-skills/`; `scripts/sync_shared_skills.py` writes the copies and validation holds them byte-identical.
 - The root installer and README count generator read packs from `packs.json` instead of a fixed list of three; a pack may declare its own `display_name` and recommendation `hints` there.
+- Merged upstream through #47 (Pixel Artist, native personalities, personality migration, reviewed profile sync). The nine profiles this fork adds (`agency-onchain-engineer` and the eight `property-*`) have curated personalities in the upstream template; Hermes Property moves to 0.2.0 as its profiles now ship a `config.yaml`. `scripts/check_skill_shape.py` lists upstream skills added after `capabilities/baseline.json` was frozen (`UPSTREAM_AFTER_BASELINE`), so only this fork's skills are held to its shape.
 
 ### Profile quality
 
@@ -29,6 +41,8 @@ All notable changes to Hermes Profile Packs will be documented here.
 - Added profile/skill review coverage, synthetic behavioral cases, a source-to-catalog mapping and explicit acceptance records. Live verification status is documented separately from source content changes.
 
 ### Added
+
+- Added Agency Pixel Artist with editable sprite, frame-animation, tileset and export workflows, two reviewed Hermes Hub skills, and disabled Pixelorama and Aseprite integrations. The pinned bridge builds retain normal editor tools and separate raw script execution from the shipped integrations.
 
 - Completed coordinated capability selection across all 166 public distributions: 24 pinned skill trees across 241 targeted assignments, an on-demand guide for every profile, six optional plugin declarations and 13 disabled MCP templates. Included full skill support trees, provenance, licenses, egress/setup disclosures, native seeding compatibility and offline materialization checks; preserved original role-owned source and restrictions.
 - Added complete machine-readable/readable matrices, a source preservation baseline, native install/seeding/discovery/update proof, least-privilege MCP allowlists, explicit credential/upload/billing gates and documented unsupported-candidate exclusions. Ordinary profile installation activates no external integration.
