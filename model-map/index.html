@@ -91,6 +91,18 @@ const labelRaw = i => i < 0 ? "—" : String(D.ml[i] || D.m[i] || "?");
 const label = i => esc(labelRaw(i)).replace(/ /g, "&nbsp;");  // HTML-safe
 const money = x => (x = Number(x) || 0, !x) ? "$0" : x < 1 ? "$" + x.toFixed(2) : "$" + Math.round(x).toLocaleString("en-US");
 const mtok = x => (x = Number(x) || 0, !x) ? "0" : x >= 1000 ? (x / 1000).toFixed(2) + "B" : x >= 1 ? x.toFixed(1) + "M" : Math.round(x * 1000) + "k";
+// how a model's cost was found (payload "ps", newer bots only): ≈ market price, ? no price
+const mark = i => ({m: "&nbsp;≈", u: "&nbsp;?", i: " (inclus)", l: " (local)"})[(D.ps || [])[i]] || "";
+const kept = key => (D.O || []).includes(key);
+const KEPT = ` · <span class="warn">⟲ gardé</span>`;
+function priceNote() {
+  if (!D.ps) return "Coût = estimation depuis les tokens.";
+  const has = c => D.ps.includes(c);
+  return "Coût = facturé ou publié par le fournisseur"
+    + (has("m") ? " ; ≈ = prix du marché (OpenRouter), faute de prix du fournisseur" : "")
+    + (has("i") ? " ; inclus = compris dans un abonnement" : "")
+    + (has("u") ? " ; ? = aucun prix trouvé" : "") + ".";
+}
 const pill = i => i < 0 ? `<span class="pill" style="background:#475569">aucun</span>` : `<span class="pill" style="background:${colour(i)}">${label(i)}</span>`;
 const bar = (tm, cls = "") => { const t = tm.reduce((a, x) => a + x[1], 0); if (!t) return "";
   return `<div class="mix ${cls}">` + tm.filter(x => x[1] / t >= .01).map(x => `<i style="width:${(100 * x[1] / t).toFixed(1)}%;background:${colour(x[0])}"></i>`).join("") + "</div>"; };
@@ -108,7 +120,7 @@ async function decode(frag) {
 // ---- views -----------------------------------------------------------------------------------
 function header() {
   const [cost, tok] = D.T[wi], B = D.B[wi].slice().sort((a, b) => b[1] - a[1]);
-  const legend = B.filter(b => b[1] >= 0.5).map(b => `<span><i style="background:${colour(b[0])}"></i>${label(b[0])} ${money(b[1])}</span>`).join("");
+  const legend = B.filter(b => b[1] >= 0.5 || (D.ps || [])[b[0]] === "u").map(b => `<span><i style="background:${colour(b[0])}"></i>${label(b[0])}${mark(b[0])} ${money(b[1])}</span>`).join("");
   const age = Math.round((Date.now() / 1000 - D.g) / 60);
   return `<header>
     <div class="top"><div class="total">${money(cost)}</div><div class="tokens">${mtok(tok)} tokens · ${W_LABEL[D.w[wi]]}</div></div>
@@ -128,9 +140,11 @@ function vProfiles() {
   const ins = [];
   if (ps[0] && ps[0].c[0]) ins.push(`<b>${esc(ps[0].p[0])}</b> = ${Math.round(100 * ps[0].c[0] / tot)}% des dépenses.`);
   ps.forEach(x => { const m = mixed(x.c[2], x.p[1]); if (m && x.c[0] >= .05 * tot) ins.push(`<b>${esc(x.p[0])}</b> est réglé sur ${label(x.p[1])} mais ${m} (chats épinglés).`); });
+  const nk = (D.O || []).length;
+  if (nk) ins.push(`${nk} changement${nk > 1 ? "s" : ""} fait${nk > 1 ? "s" : ""} ici (⟲), gardé${nk > 1 ? "s" : ""} aux redémarrages : <code>/modelmap kept</code>.`);
   return (ins.length ? `<div class="insight">${ins.join(" ")}</div>` : "") + `<div class="list">` + ps.map(x => {
     const m = mixed(x.c[2], x.p[1]);
-    return row("P" + x.i, x.p[0], x.p[1], money(x.c[0]), `${mtok(x.c[1])} tokens` + (m ? ` · <b class="warn">${m}</b>` : ""), m ? bar(x.c[2], "sm") : "");
+    return row("P" + x.i, x.p[0], x.p[1], money(x.c[0]), `${mtok(x.c[1])} tokens` + (m ? ` · <b class="warn">${m}</b>` : "") + (kept("P:" + x.p[0]) ? KEPT : ""), m ? bar(x.c[2], "sm") : "");
   }).join("") + `</div>`;
 }
 
@@ -141,7 +155,7 @@ function vChats() {
   return `<div class="list">` + hs.map(x => {
     const model = x.h[2] >= 0 ? x.h[2] : (x.h[3][0] || [0, -1])[1];
     const bots = x.h[3].filter(b => b[2][wi] >= .01).map(b => b[0]).join(", ");
-    return row("H" + x.i, nm(x.h), model, money(x.c), (x.h[2] >= 0 ? "📌 épinglé · " : "") + esc(bots || "aucune dépense"));
+    return row("H" + x.i, nm(x.h), model, money(x.c), (x.h[2] >= 0 ? "📌 épinglé · " : "") + esc(bots || "aucune dépense") + (kept("H:" + x.h[0]) ? KEPT : ""));
   }).join("") + `</div><div class="foot">📌 épinglé = modèle fixé pour tous les bots du chat. Sinon chaque bot suit le modèle de son profil.</div>`;
 }
 
@@ -165,7 +179,7 @@ function vTasks() {
 
 function render() {
   const v = {profiles: vProfiles, chats: vChats, cron: vCron, tasks: vTasks}[tab]();
-  $("#app").innerHTML = header() + v + `<div class="foot">Coût = prix catalogue Bedrock depuis les tokens (estimation). Touchez une ligne pour le détail et changer de modèle.</div>`;
+  $("#app").innerHTML = header() + v + `<div class="foot">${priceNote()} Touchez une ligne pour le détail et changer de modèle.</div>`;
 }
 
 // ---- detail sheet + change -------------------------------------------------------------------
@@ -183,10 +197,13 @@ function openSheet(key) {
   let title, kv = [], bars = "", grid = "", kind, target, cur, allowDefault = false;
   if (t === "P") { const p = D.P[i], u = p[2][wi]; title = p[0]; kind = "profile"; target = p[0]; cur = p[1];
     kv = [["Modèle", pill(p[1])], ["Coût " + W_LABEL[D.w[wi]], money(u[0])], ["Tokens", mtok(u[1])]];
+    if (kept("P:" + p[0])) kv.push(["⟲", "changé ici, gardé aux redémarrages (<code>/modelmap reset</code> : retour au dépôt)"]);
     const tt = u[2].reduce((a, x) => a + x[1], 0);
     bars = tt && u[2].length > 1 ? `<div class="h4">Tokens réellement utilisés</div><div class="bars">` + u[2].map(x => `<div><span>${label(x[0])}</span><span class="b"><i style="width:${100 * x[1] / tt}%;background:${colour(x[0])}"></i></span><span>${Math.round(100 * x[1] / tt)}%</span></div>`).join("") + `</div>` : ""; }
   else if (t === "H") { const h = D.H[i]; title = h[1] || h[0]; kind = "chat"; target = String(h[0]); cur = h[2];
+    allowDefault = h[2] >= 0;  // "Défaut du profil" = remove the pin
     kv = [["Épinglé", h[2] >= 0 ? pill(h[2]) + " (tous les bots)" : "non"], ["Chat id", esc(h[0])]];
+    if (kept("H:" + h[0])) kv.push(["⟲", "changé ici, gardé aux redémarrages (<code>/modelmap reset</code> : retour au dépôt)"]);
     bars = `<div class="h4">Par bot · ${W_LABEL[D.w[wi]]}</div><div class="kv">` + h[3].map(b => `<b>${esc(b[0])}</b><span>${pill(b[1])} ${money(b[2][wi])}</span>`).join("") + `</div>`; }
   else if (t === "C") { const c = D.C[i], u = c[7][wi]; title = c[2]; kind = "cron"; target = `${c[0]}/${c[1]}`; cur = c[5]; allowDefault = true;
     kv = [["Profil", esc(c[0])], ["Modèle", c[5] >= 0 ? pill(c[5]) + " épinglé" : pill(c[6]) + " défaut du profil"], ["Planning", `<code>${esc(c[8])}</code>`],
@@ -195,7 +212,7 @@ function openSheet(key) {
   else { const k = D.K[i]; title = k[2]; kind = "task"; target = `${k[0]}/${k[1]}`; cur = k[6] ? k[5] : -1; allowDefault = true;
     kv = [["Tâche", esc(target)], ["État", esc(k[3])], ["Worker", esc(k[4])], ["Modèle", pill(k[5]) + (k[6] ? " forcé" : " défaut")], ["Coût", k[7] ? money(k[7]) : "—"]]; }
   if (kind) grid = `<div class="h4">Changer de modèle</div>` + modelGrid(cur, allowDefault)
-    + (kind === "chat" && cur >= 0 ? `<div class="foot">Retirer l'épinglage = édition manuelle de la config.</div>` : "");
+    + (kind === "chat" && cur >= 0 ? `<div class="foot">« Défaut du profil » retire l'épinglage : chaque bot reprend le modèle de son profil.</div>` : "");
   pending = kind ? {kind, target: String(target), title: String(title)} : null;
   $("#sheet").innerHTML = `<button class="x" data-close>×</button><h3>${esc(title)}</h3><div class="kv">${kv.map(([k, v]) => `<b>${k}</b><span>${v}</span>`).join("")}</div>${bars}${grid}<div id="out"></div>`;
   $("#sheet").classList.add("on"); $("#scrim").classList.add("on");
